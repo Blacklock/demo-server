@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <iostream>
+#include <string>
 
 // Platform detection
 
@@ -20,7 +21,8 @@
 
 #if PLATFORM == PLATFORM_WINDOWS
 	#include <WinSock2.h>
-	#pragma comment(lib, "wsock32.lib")
+	#include <ws2tcpip.h>
+	#pragma comment(lib, "ws2_32.lib") // Previously wsock32.lib
 #elif PLATFORM == PLATFORM_MAC || PLATFORM == PLATFORM_UNIX
 	#include <sys/socket.h>
 	#include <netinet/in.h>
@@ -30,6 +32,9 @@
 
 class Server {
 	public:
+		int handle;
+		unsigned int max_packet_size = 256;
+
 		Server(unsigned short port) {
 			// Initialize the WinSock DLL
 			initSockets();
@@ -38,12 +43,63 @@ class Server {
 			// Create a socket, bind it to a port, and set it to non-blocking mode
 			createSocket(port);
 			std::cout << "Created a socket...\n";
-
-
 		}
 
 		~Server() {
 			stopSockets();
+		}
+
+		bool sendPacket(const char packet[], const char destIp[INET_ADDRSTRLEN], unsigned short port) {
+			sockaddr_in address;
+
+			if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
+				throw std::exception("IP address conversion failed.");
+			}
+
+			address.sin_family = AF_INET;
+			address.sin_port = htons(port);
+
+			size_t packet_size = strlen(packet);
+
+			int sent_bytes = sendto(handle, (const char*)packet, packet_size, 0, (sockaddr*)&address, sizeof(address));
+
+			if (sent_bytes != packet_size) {
+				throw std::exception("Failed to send packet.");
+			}
+
+			return true;
+		}
+
+		void receivePackets() {
+			std::cout << "Receiving packets.\n";
+
+			while (true) {
+				unsigned char packet[256];
+
+				#if PLATFORM == PLATFORM_WINDOWS
+					typedef int socklen_t;
+				#endif
+
+				sockaddr_in sender; // Will hold the sender's address
+				socklen_t senderLength = sizeof(sender);
+
+				int received_bytes = recvfrom(handle, (char*)packet, max_packet_size, 0, (sockaddr*)&sender, &senderLength);
+
+				if (received_bytes <= 0) break; // No more packets to receive
+
+				unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
+				unsigned int sender_port = ntohl(sender.sin_port);
+
+				std::cout << "Received " << received_bytes << " bytes.\n";
+				
+				for (int i = 0; i < received_bytes; i++) {
+					std::cout << packet[i];
+				}
+
+				std::cout << "\n";
+			}
+
+			std::cout << "All packets received.\n";
 		}
 
 	private:
@@ -66,7 +122,7 @@ class Server {
 		}
 
 		bool createSocket(unsigned short port) {
-			int handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // IPv4 and UDP
+			handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // IPv4 and UDP
 
 			// if (handle <= 0) ...
 			if (handle == INVALID_SOCKET) {
@@ -84,15 +140,17 @@ class Server {
 				throw std::exception("Failed to bind socket to a port.");
 			}
 
+			// Set to non-blocking mode
+
 			#if PLATFORM == PLATFORM_WINDOWS
-				DWORD nonBlocking = 1;
-				if (ioctlsocket(handle, FIONBIO, &nonBlocking) == SOCKET_ERROR) { // Disables blocking mode
+				DWORD nonblocking = 1;
+				if (ioctlsocket(handle, FIONBIO, &nonblocking) == SOCKET_ERROR) { // Disables blocking mode
 					throw std::exception("Failed to set socket to non-blocking mode.");
 				}
 			#elif PLATFORM == PLATFORM_MAC || PLATFORM == PLATFORM_UNIX
-				int nonBlocking = 1;
-				if (fcntl(handle, F_SETFL, O_NONBLOCK, nonBlocking) == -1) { // Disablex blocking mode
-					throw std::exception("Failed to set socket to non_blocking mode.");
+				int nonblocking = 1;
+				if (fcntl(handle, F_SETFL, O_NONBLOCK, nonblocking) == -1) { // Disablex blocking mode
+					throw std::exception("Failed to set socket to non-blocking mode.");
 				}
 			#endif
 
@@ -104,7 +162,38 @@ int main()
 {
     std::cout << "Starting...\n";
 	try {
-		Server server = Server(25444);
+		Server server = Server(25445);
+
+		// Send a test socket (temp)
+		//char destIp[INET_ADDRSTRLEN] = "127.0.0.1";
+		/*server.sendPacket("Hello, world!", "127.0.0.1", 25444);
+		server.sendPacket("Another message...", "127.0.0.1", 25444);
+		server.sendPacket("...and the last one.", "127.0.0.1", 25444);*/
+
+		while (true) {
+			std::cout << "\n\n\nWould you like to send (1) or receive (2) packets?\n";
+			
+			std::string input;
+			getline(std::cin, input);
+
+			if (input == "1" || input == "s") {
+				std::cout << "Packet data: ";
+
+				std::string input2;
+				getline(std::cin, input2);
+
+				char packetData[1024];
+				strcpy_s(packetData, input2.c_str());
+
+				server.sendPacket(packetData, "127.0.0.1", 25445);
+			}
+			else if (input == "2" || input == "r") {
+				server.receivePackets();
+			}
+			else {
+				std::cout << "Invalid input. ";
+			}
+		}
 	}
 	catch (const std::exception &ex) {
 		std::cerr << ex.what();
