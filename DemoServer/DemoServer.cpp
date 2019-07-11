@@ -30,10 +30,14 @@
 
 class Server {
 	public:
-		Server() {
-			if (!initSockets()) {
-				throw std::runtime_error("Failed to initialize sockets.");
-			}
+		Server(unsigned short port) {
+			// Initialize the WinSock DLL
+			initSockets();
+			std::cout << "Initialized sockets...\n";
+
+			// Create a socket, bind it to a port, and set it to non-blocking mode
+			createSocket(port);
+			std::cout << "Created a socket...\n";
 
 
 		}
@@ -46,11 +50,13 @@ class Server {
 		bool initSockets() {
 			#if PLATFORM == PLATFORM_WINDOWS
 				WSADATA WsaData; // Contains information about the socket implementation
-				// Initiates use of the WinSock DLL, must be the first winsock function called
-				return WSAStartup(MAKEWORD(2, 2), &WsaData) == NO_ERROR;
-			#else
-				return true;
+
+				if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR) { // This must be the first winsock function called
+					throw std::exception("Failed to initialize the WinSock DLL.");
+				}
 			#endif
+
+			return true;
 		}
 
 		void stopSockets() {
@@ -58,13 +64,47 @@ class Server {
 				WSACleanup(); // Terminates use of the WinSock DLL
 			#endif
 		}
+
+		bool createSocket(unsigned short port) {
+			int handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // IPv4 and UDP
+
+			// if (handle <= 0) ...
+			if (handle == INVALID_SOCKET) {
+				throw std::exception("Failed to create a socket.");
+			}
+
+			// Bind the socket to a port
+
+			sockaddr_in address;
+			address.sin_family = AF_INET; // IPv4
+			address.sin_addr.s_addr = INADDR_ANY; // Any incoming IP address
+			address.sin_port = htons(port); // Convert int to big-endian
+
+			if (bind(handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0) {
+				throw std::exception("Failed to bind socket to a port.");
+			}
+
+			#if PLATFORM == PLATFORM_WINDOWS
+				DWORD nonBlocking = 1;
+				if (ioctlsocket(handle, FIONBIO, &nonBlocking) == SOCKET_ERROR) { // Disables blocking mode
+					throw std::exception("Failed to set socket to non-blocking mode.");
+				}
+			#elif PLATFORM == PLATFORM_MAC || PLATFORM == PLATFORM_UNIX
+				int nonBlocking = 1;
+				if (fcntl(handle, F_SETFL, O_NONBLOCK, nonBlocking) == -1) { // Disablex blocking mode
+					throw std::exception("Failed to set socket to non_blocking mode.");
+				}
+			#endif
+
+			return true;
+		}
 };
 
 int main()
 {
     std::cout << "Starting...\n";
 	try {
-		Server server;
+		Server server = Server(25444);
 	}
 	catch (const std::exception &ex) {
 		std::cerr << ex.what();
