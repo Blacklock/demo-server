@@ -25,10 +25,10 @@
 #endif
 
 
-class PacketManager {
+class SocketManager {
 public:
-	PacketManager(unsigned short port);
-	~PacketManager();
+	SocketManager(unsigned short port);
+	~SocketManager();
 
 	bool sendPacket(const char packet[], const char destIp[46], unsigned short port);
 	void receivePackets();
@@ -37,7 +37,5 @@ private:
 	SOCKET handle;
 	unsigned int max_packet_size = 256;
 
-	bool initSockets();
-	void stopSockets();
 	bool createSocket(unsigned short port);
 };

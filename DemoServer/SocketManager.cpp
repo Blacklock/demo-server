@@ -1,24 +1,31 @@
-#include "PacketManager.h"
+#include "SocketManager.h"
 
 #include <iostream>
 #include <string>
 
 
-PacketManager::PacketManager(unsigned short port) {
+SocketManager::SocketManager(unsigned short port) {
 	// Initialize the WinSock DLL
-	initSockets();
-	std::cout << "Initialized sockets...\n";
+	
+	#if PLATFORM == PLATFORM_WINDOWS
+		WSADATA WsaData; // Contains information about the socket implementation
+
+		if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR) { // Must be first winsock func called on windows
+			throw std::exception("Failed to initialize the WinSock DLL.");
+		}
+	#endif
 
 	// Create a socket, bind it to a port, and set it to non-blocking mode
 	createSocket(port);
-	std::cout << "Created a socket...\n";
 }
 
-PacketManager::~PacketManager() {
-	stopSockets();
+SocketManager::~SocketManager() {
+	#if PLATFORM == PLATFORM_WINDOWS
+		WSACleanup(); // Terminates use of the WinSock DLL
+	#endif
 }
 
-bool PacketManager::sendPacket(const char packet[], const char destIp[46], unsigned short port) {
+bool SocketManager::sendPacket(const char packet[], const char destIp[46], unsigned short port) {
 	sockaddr_in address;
 
 	if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
@@ -40,9 +47,9 @@ bool PacketManager::sendPacket(const char packet[], const char destIp[46], unsig
 	return true;
 }
 
-void PacketManager::receivePackets() {
+void SocketManager::receivePackets() {
 	std::cout << "Receiving packets.\n";
-		
+	
 	while (true) {
 		unsigned char packet[256];
 
@@ -60,7 +67,7 @@ void PacketManager::receivePackets() {
 		unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
 		unsigned int sender_port = ntohl(sender.sin_port);
 
-		std::cout << "Received " << received_bytes << " bytes.\n";
+		// std::cout << "Received " << received_bytes << " bytes.\n";
 
 		for (int i = 0; i < received_bytes; i++) {
 			std::cout << packet[i];
@@ -72,25 +79,7 @@ void PacketManager::receivePackets() {
 	std::cout << "All packets received.\n";
 }
 
-bool PacketManager::initSockets() {
-	#if PLATFORM == PLATFORM_WINDOWS
-			WSADATA WsaData; // Contains information about the socket implementation
-
-			if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR) { // This must be the first winsock function called
-				throw std::exception("Failed to initialize the WinSock DLL.");
-			}
-	#endif
-
-	return true;
-}
-
-void PacketManager::stopSockets() {
-	#if PLATFORM == PLATFORM_WINDOWS
-			WSACleanup(); // Terminates use of the WinSock DLL
-	#endif
-}
-
-bool PacketManager::createSocket(unsigned short port) {
+bool SocketManager::createSocket(unsigned short port) {
 	handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // IPv4 and UDP
 
 	// if (handle <= 0) ...
@@ -113,12 +102,12 @@ bool PacketManager::createSocket(unsigned short port) {
 
 	#if PLATFORM == PLATFORM_WINDOWS
 			DWORD nonblocking = 1;
-			if (ioctlsocket(handle, FIONBIO, &nonblocking) == SOCKET_ERROR) { // Disables blocking mode
+			if (ioctlsocket(handle, FIONBIO, &nonblocking) == SOCKET_ERROR) {
 				throw std::exception("Failed to set socket to non-blocking mode.");
 			}
 	#elif PLATFORM == PLATFORM_UNIX
 			int nonblocking = 1;
-			if (fcntl(handle, F_SETFL, O_NONBLOCK, nonblocking) == -1) { // Disablex blocking mode
+			if (fcntl(handle, F_SETFL, O_NONBLOCK, nonblocking) == -1) {
 				throw std::exception("Failed to set socket to non-blocking mode.");
 			}
 	#endif
