@@ -46,36 +46,32 @@ void Socket::sendPacket(const char packet[], const char destIp[46], unsigned sho
 	}
 }
 
-void Socket::receivePackets() {
-	// std::cout << "Receiving packets.\n";
-	
-	while (true) {
-		unsigned char packet[256];
+int Socket::receivePacket(unsigned char* out_buffer) {
+	//while (true) {
+	// unsigned char packet[256];
 
-		#if PLATFORM == PLATFORM_WINDOWS
-			typedef int socklen_t;
-		#endif
+	#if PLATFORM == PLATFORM_WINDOWS
+		typedef int socklen_t;
+	#endif
 
-		sockaddr_in sender; // Will hold the sender's address
-		socklen_t senderLength = sizeof(sender);
+	sockaddr_in sender; // Will hold the sender's address
+	socklen_t senderLength = sizeof(sender);
 
-		int received_bytes = recvfrom(handle, (char*)packet, max_packet_size, 0, (sockaddr*)&sender, &senderLength);
+	int received_bytes = recvfrom(handle, (char*)out_buffer, max_packet_size, 0, (sockaddr*)&sender, &senderLength);
 
-		if (received_bytes <= 0) break; // No more packets to receive
+	//if (received_bytes <= 0) break; // No more packets to receive
 
-		unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
-		unsigned int sender_port = ntohl(sender.sin_port);
+	unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
+	unsigned int sender_port = ntohl(sender.sin_port);
 
-		// std::cout << "Received " << received_bytes << " bytes.\n";
+	/*if (received_bytes > 0) {
+		memcpy(out_buffer, packet, received_bytes);
+	}*/
 
-		for (int i = 0; i < received_bytes; i++) {
-			std::cout << packet[i];
-		}
+	return received_bytes;
+	//}
 
-		std::cout << "\n";
-	}
-
-	// std::cout << "All packets received.\n";
+	//return -1;
 }
 
 void Socket::create(unsigned short port) {

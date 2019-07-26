@@ -19,10 +19,10 @@ int main()
 	std::cin >> serverPort;
 	std::cout << "Set your sending port number: ";
 	std::cin >> sendPort;
-
 	std::cin.ignore(1, '\n');
 
-	GameServer server = GameServer(serverPort);
+	//GameServer server = GameServer(serverPort);
+	GameServer server(serverPort);
 
 	/*std::string input2;
 	getline(std::cin, input2);

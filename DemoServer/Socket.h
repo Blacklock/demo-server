@@ -33,7 +33,7 @@ public:
 	~Socket();
 
 	void sendPacket(const char packet[], const char destIp[46], unsigned short port);
-	void receivePackets();
+	int receivePacket(unsigned char* outBuffer);
 	void create(unsigned short port);
 
 private:
