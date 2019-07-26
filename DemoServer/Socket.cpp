@@ -1,10 +1,11 @@
-#include "SocketManager.h"
+#include "Socket.h"
+#include "GameServer.h"
 
 #include <iostream>
 #include <string>
 
 
-SocketManager::SocketManager(unsigned short port) {
+Socket::Socket() {
 	// Initialize the WinSock DLL
 	
 	#if PLATFORM == PLATFORM_WINDOWS
@@ -14,18 +15,18 @@ SocketManager::SocketManager(unsigned short port) {
 			throw std::exception("Failed to initialize the WinSock DLL.");
 		}
 	#endif
-
-	// Create a socket, bind it to a port, and set it to non-blocking mode
-	createSocket(port);
 }
 
-SocketManager::~SocketManager() {
-	#if PLATFORM == PLATFORM_WINDOWS
+Socket::~Socket() {
+	#if PLATFORM == PLATFORM_UNIX
+		close(handle);
+	#elif PLATFORM == PLATFORM_WINDOWS
+		closesocket(handle);
 		WSACleanup(); // Terminates use of the WinSock DLL
 	#endif
 }
 
-bool SocketManager::sendPacket(const char packet[], const char destIp[46], unsigned short port) {
+void Socket::sendPacket(const char packet[], const char destIp[46], unsigned short port) {
 	sockaddr_in address;
 
 	if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
@@ -43,12 +44,10 @@ bool SocketManager::sendPacket(const char packet[], const char destIp[46], unsig
 	if (sent_bytes != packet_size) {
 		throw std::exception("Failed to send packet.");
 	}
-
-	return true;
 }
 
-void SocketManager::receivePackets() {
-	std::cout << "Receiving packets.\n";
+void Socket::receivePackets() {
+	// std::cout << "Receiving packets.\n";
 	
 	while (true) {
 		unsigned char packet[256];
@@ -76,10 +75,14 @@ void SocketManager::receivePackets() {
 		std::cout << "\n";
 	}
 
-	std::cout << "All packets received.\n";
+	// std::cout << "All packets received.\n";
 }
 
-bool SocketManager::createSocket(unsigned short port) {
+void Socket::create(unsigned short port) {
+	if (port != 0 && (port < 2000 || port > 45000)) {
+		throw std::out_of_range("Port number out of allowed range (0 || 2000-45000).");
+	}
+
 	handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // IPv4 and UDP
 
 	// if (handle <= 0) ...
@@ -111,6 +114,4 @@ bool SocketManager::createSocket(unsigned short port) {
 				throw std::exception("Failed to set socket to non-blocking mode.");
 			}
 	#endif
-
-	return true;
 }

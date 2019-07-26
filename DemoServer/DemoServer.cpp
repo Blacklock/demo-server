@@ -1,7 +1,8 @@
 // DemoServer.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "SocketManager.h"
+#include "Socket.h"
+#include "GameServer.h"
 
 #include <iostream>
 #include <string>
@@ -10,7 +11,40 @@
 int main()
 {
     std::cout << "Starting...\n";
-	try {
+
+	unsigned short serverPort;
+	unsigned short sendPort;
+
+	std::cout << "Set your receiving port number: ";
+	std::cin >> serverPort;
+	std::cout << "Set your sending port number: ";
+	std::cin >> sendPort;
+
+	std::cin.ignore(1, '\n');
+
+	GameServer server = GameServer(serverPort);
+
+	/*std::string input2;
+	getline(std::cin, input2);
+	char packetData[1024];
+	strcpy_s(packetData, input2.c_str());
+
+	server.send(packetData, "127.0.0.1", sendPort);*/
+
+	/*while (true) {
+		std::string input;
+		getline(std::cin, input);
+
+		char packetData[1024];
+		strcpy_s(packetData, input.c_str());
+
+		//server.sendPacket(packetData, "127.0.0.1", sendPort);
+	}*/
+
+
+
+
+	/*try {
 		unsigned short serverPort;
 		unsigned short sendPort;
 
@@ -19,7 +53,8 @@ int main()
 		std::cout << "Set your sending port number: ";
 		std::cin >> sendPort;
 
-		SocketManager server = SocketManager(serverPort);
+		Socket server;
+		server.create(serverPort);
 
 		std::cin.ignore(1, '\n');
 
@@ -50,5 +85,5 @@ int main()
 	}
 	catch (const std::exception &ex) {
 		std::cerr << ex.what();
-	}
+	}*/
 }

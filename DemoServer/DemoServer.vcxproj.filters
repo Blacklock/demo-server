@@ -18,7 +18,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SocketManager.h">
+    <ClInclude Include="GameServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,7 +32,10 @@
     <ClCompile Include="DemoServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SocketManager.cpp">
+    <ClCompile Include="GameServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
