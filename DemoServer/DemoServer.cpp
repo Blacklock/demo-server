@@ -12,14 +12,14 @@ int main()
 {
     std::cout << "Starting...\n";
 
-	unsigned short serverPort;
-	unsigned short sendPort;
+	unsigned short serverPort = 12345;
+	unsigned short sendPort = 23456;
 
-	std::cout << "Set your receiving port number: ";
+	/*std::cout << "Set your receiving port number: ";
 	std::cin >> serverPort;
 	std::cout << "Set your sending port number: ";
 	std::cin >> sendPort;
-	std::cin.ignore(1, '\n');
+	std::cin.ignore(1, '\n');*/
 
 	//GameServer server = GameServer(serverPort);
 	GameServer server(serverPort);

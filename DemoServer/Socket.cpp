@@ -1,11 +1,12 @@
 #include "Socket.h"
-#include "GameServer.h"
 
 #include <iostream>
 #include <string>
 
 
-Socket::Socket() {
+Socket::Socket(unsigned int max_packet_size) {
+	MAX_PACKET_SIZE = max_packet_size;
+
 	// Initialize the WinSock DLL
 	
 	#if PLATFORM == PLATFORM_WINDOWS
@@ -47,9 +48,6 @@ void Socket::sendPacket(const char packet[], const char destIp[46], unsigned sho
 }
 
 int Socket::receivePacket(unsigned char* out_buffer) {
-	//while (true) {
-	// unsigned char packet[256];
-
 	#if PLATFORM == PLATFORM_WINDOWS
 		typedef int socklen_t;
 	#endif
@@ -57,21 +55,12 @@ int Socket::receivePacket(unsigned char* out_buffer) {
 	sockaddr_in sender; // Will hold the sender's address
 	socklen_t senderLength = sizeof(sender);
 
-	int received_bytes = recvfrom(handle, (char*)out_buffer, max_packet_size, 0, (sockaddr*)&sender, &senderLength);
-
-	//if (received_bytes <= 0) break; // No more packets to receive
+	int received_bytes = recvfrom(handle, (char*)out_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&sender, &senderLength);
 
 	unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
 	unsigned int sender_port = ntohl(sender.sin_port);
 
-	/*if (received_bytes > 0) {
-		memcpy(out_buffer, packet, received_bytes);
-	}*/
-
 	return received_bytes;
-	//}
-
-	//return -1;
 }
 
 void Socket::create(unsigned short port) {

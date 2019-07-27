@@ -1,4 +1,5 @@
 #include "GameServer.h"
+#include "Packet.h"
 
 #include <iostream>
 #include <thread>
@@ -28,7 +29,7 @@ GameServer::GameServer(unsigned short port) {
 	using namespace std::chrono_literals;
 	while (true) { // work on this abomination later
 
-		std::this_thread::sleep_for(1s / 64); // 64 tick, supposedly
+		std::this_thread::sleep_for(1s / 64); // 64 tick
 
 		tick();
 	}*/
@@ -61,7 +62,7 @@ void GameServer::startGameLoop() {
 void GameServer::tick() {
 	// TODO: Circular buffers, all of this is temporary
 
-	unsigned char buffer[256];
+	unsigned char buffer[MAX_PACKET_SIZE];
 	int buffer_size;
 
 	while (true) {
@@ -72,6 +73,9 @@ void GameServer::tick() {
 		}
 
 		// Do something with received datagram
+
+		Packet received_packet = Packet(buffer, buffer_size);
+		
 		for (int i = 0; i < buffer_size; i++) {
 			std::cout << buffer[i];
 		}
