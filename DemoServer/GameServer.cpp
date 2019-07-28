@@ -14,25 +14,9 @@ GameServer::GameServer(unsigned short port) {
 	//std::thread t{&GameServer::startGameLoop, this};
 	std::thread t(&GameServer::startGameLoop, this);
 
-	while (true) {
+	while (true) { // Remove this
 		std::cin;
 	}
-
-	/*{
-		std::lock_guard<std::mutex> lk(mtx);
-		stopGameLoop = true;
-	}
-	
-	t.join();*/
-
-	/*
-	using namespace std::chrono_literals;
-	while (true) { // work on this abomination later
-
-		std::this_thread::sleep_for(1s / 64); // 64 tick
-
-		tick();
-	}*/
 }
 
 GameServer::~GameServer() {}
@@ -66,15 +50,37 @@ void GameServer::tick() {
 	int buffer_size;
 
 	while (true) {
-		buffer_size = socket.receivePacket(buffer);
+		InPacketInfo packet_info = socket.receivePacket(buffer);
 
-		if (buffer_size <= 0) { // No more packets to receive
+		if (packet_info.buffer_size <= 0) { // No more packets to receive
 			break;
 		}
 
-		// Do something with received datagram
+		// Do something with the received datagram
 
-		Packet received_packet = Packet(buffer, buffer_size);
+		try {
+			Packet message = Packet(buffer, packet_info.buffer_size);
+
+			// std::cout << "Packet type: " << static_cast<std::underlying_type_t<PacketType>>(message.packet_type) << "\n";
+			// std::cout << "Packet length: " << message.packet_length << "\n";
+
+			switch (message.packet_type) {
+				case PacketType::Unreliable:
+				case PacketType::Reliable:
+					break;
+				case PacketType::Control:
+					switch (message.packet_cmd.c_cmd) {
+						case ControlCmd::ConnRequest:
+							std::cout << "CONN REQUEST --- SEND RESPONSE\n";
+							break;
+					}
+					break;
+			}
+
+		} catch (const std::invalid_argument ex) {
+			std::cerr << ex.what();
+			std::cout << "\n========\n";
+		}
 		
 		for (int i = 0; i < buffer_size; i++) {
 			std::cout << buffer[i];

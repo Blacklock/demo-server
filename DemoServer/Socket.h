@@ -25,6 +25,12 @@
 #endif
 
 
+struct InPacketInfo {
+	int buffer_size;
+	unsigned int sender_address;
+	unsigned int sender_port;
+};
+
 class Socket {
 private:
 	SOCKET handle;
@@ -33,7 +39,7 @@ public:
 	~Socket();
 
 	void sendPacket(const char packet[], const char destIp[46], unsigned short port);
-	int receivePacket(unsigned char* outBuffer);
+	InPacketInfo receivePacket(unsigned char* outBuffer);
 	void create(unsigned short port);
 private:
 	unsigned int MAX_PACKET_SIZE;

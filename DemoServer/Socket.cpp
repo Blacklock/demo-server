@@ -47,7 +47,7 @@ void Socket::sendPacket(const char packet[], const char destIp[46], unsigned sho
 	}
 }
 
-int Socket::receivePacket(unsigned char* out_buffer) {
+InPacketInfo Socket::receivePacket(unsigned char* out_buffer) {
 	#if PLATFORM == PLATFORM_WINDOWS
 		typedef int socklen_t;
 	#endif
@@ -55,12 +55,13 @@ int Socket::receivePacket(unsigned char* out_buffer) {
 	sockaddr_in sender; // Will hold the sender's address
 	socklen_t senderLength = sizeof(sender);
 
-	int received_bytes = recvfrom(handle, (char*)out_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&sender, &senderLength);
+	InPacketInfo packet_info;
 
-	unsigned int sender_address = ntohl(sender.sin_addr.s_addr);
-	unsigned int sender_port = ntohl(sender.sin_port);
+	packet_info.buffer_size = recvfrom(handle, (char*)out_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&sender, &senderLength);
+	packet_info.sender_address = ntohl(sender.sin_addr.s_addr);
+	packet_info.sender_port = ntohl(sender.sin_port);
 
-	return received_bytes;
+	return packet_info;
 }
 
 void Socket::create(unsigned short port) {
