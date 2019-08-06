@@ -27,18 +27,18 @@ Socket::~Socket() {
 	#endif
 }
 
-void Socket::sendPacket(const char packet[], const char destIp[46], unsigned short port) {
+void Socket::sendPacket(unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port) { // was: const char destIp[46]
 	sockaddr_in address;
 
-	if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
+	/*if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
 		throw std::exception("IP address conversion failed.");
-	}
+	}*/
 
+	address.sin_addr.s_addr = htonl(destIp);
 	address.sin_family = AF_INET;
 	address.sin_port = htons(port);
 
-	//size_t packet_size = strlen(packet);
-	unsigned int packet_size = (unsigned int)strlen(packet);
+	// unsigned int packet_size = (unsigned int)strlen((char*)packet);
 
 	int sent_bytes = sendto(handle, (const char*)packet, packet_size, 0, (sockaddr*)&address, sizeof(address));
 
@@ -59,7 +59,7 @@ InPacketInfo Socket::receivePacket(unsigned char* out_buffer) {
 
 	packet_info.buffer_size = recvfrom(handle, (char*)out_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&sender, &senderLength);
 	packet_info.sender_address = ntohl(sender.sin_addr.s_addr);
-	packet_info.sender_port = ntohl(sender.sin_port);
+	packet_info.sender_port = ntohs(sender.sin_port);
 
 	return packet_info;
 }

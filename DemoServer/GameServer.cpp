@@ -1,5 +1,4 @@
 #include "GameServer.h"
-#include "Packet.h"
 
 #include <iostream>
 #include <thread>
@@ -20,10 +19,6 @@ GameServer::GameServer(unsigned short port) {
 }
 
 GameServer::~GameServer() {}
-
-void GameServer::send(const char packet[], const char destIp[46], unsigned short port) {
-	socket.sendPacket(packet, destIp, port);
-}
 
 void GameServer::startGameLoop() {
 	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>;
@@ -47,7 +42,6 @@ void GameServer::tick() {
 	// TODO: Circular buffers, all of this is temporary
 
 	unsigned char buffer[MAX_PACKET_SIZE];
-	int buffer_size;
 
 	while (true) {
 		InPacketInfo packet_info = socket.receivePacket(buffer);
@@ -59,19 +53,26 @@ void GameServer::tick() {
 		// Do something with the received datagram
 
 		try {
-			Packet message = Packet(buffer, packet_info.buffer_size);
+			Packet in_packet = Packet(buffer, packet_info.buffer_size);
 
-			// std::cout << "Packet type: " << static_cast<std::underlying_type_t<PacketType>>(message.packet_type) << "\n";
-			// std::cout << "Packet length: " << message.packet_length << "\n";
+			std::cout << "Packet type: " << static_cast<std::underlying_type_t<PacketType>>(in_packet.packet_type) << "\n";
+			std::cout << "Packet length: " << in_packet.packet_length << "\n";
 
-			switch (message.packet_type) {
+			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:
 				case PacketType::Reliable:
 					break;
 				case PacketType::Control:
-					switch (message.packet_cmd.c_cmd) {
+					switch (in_packet.packet_cmd.c_cmd) {
 						case ControlCmd::ConnRequest:
-							std::cout << "CONN REQUEST --- SEND RESPONSE\n";
+							Packet out_packet = Packet(buffer, PacketType::Control);
+							unsigned short number = 1;
+							out_packet.append(number);
+
+							std::cout << "PORT [" << packet_info.sender_port << "]\n";
+							
+							send(buffer, out_packet, packet_info.sender_address, packet_info.sender_port);
+
 							break;
 					}
 					break;
@@ -82,10 +83,15 @@ void GameServer::tick() {
 			std::cout << "\n========\n";
 		}
 		
-		for (int i = 0; i < buffer_size; i++) {
+		for (int i = 0; i < packet_info.buffer_size; i++) {
 			std::cout << buffer[i];
 		}
 
 		std::cout << "\n";
 	}
+}
+
+void GameServer::send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port) { // const char destIp[46]
+	packet.setPacketLength();
+	socket.sendPacket(buffer, packet.packet_length, destIp, port);
 }

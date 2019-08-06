@@ -1,15 +1,20 @@
 #pragma once
 
 
-enum class PacketType : unsigned char { 
+enum class PacketType : unsigned char {
 	Unreliable = 'U', // Fire-and-forget commands
 	Reliable = 'R', // Reliable commands, ensured to arrive
 	Control = 'C' // Reliable commands, used for connection 
 };
 
-enum class UnreliableCmd : unsigned char {};
+enum class UnreliableCmd : unsigned char {
+	PosUpdate
+};
 
-enum class ReliableCmd : unsigned char {};
+enum class ReliableCmd : unsigned char {
+	PlayerJoin,
+	PlayerLeave
+};
 
 enum class ControlCmd : unsigned char {
 	ConnRequest = 'R', // Client requesting connection [control command, protocol]
@@ -28,7 +33,18 @@ public:
 	PacketType packet_type;
 	unsigned short packet_length;
 	Command packet_cmd;
-	// TODO: receiving address/port
+private:
+	unsigned char* buffer = nullptr;
+	unsigned short buffer_index = 0;
+	// TODO: multiple command/value sets
+public:
+	Packet(unsigned char buffer_in[], PacketType packet_type);
+	Packet(unsigned char buffer_in[], unsigned short import_size);
 
-	Packet(unsigned char buffer[], int buffer_size);
+	void setPacketLength();
+
+	void append(unsigned char value);
+	void append(unsigned short value);
+private:
+	void build(int buffer_size);
 };

@@ -27,7 +27,7 @@
 
 struct InPacketInfo {
 	int buffer_size;
-	unsigned int sender_address;
+	unsigned long sender_address;
 	unsigned int sender_port;
 };
 
@@ -38,7 +38,7 @@ public:
 	Socket(unsigned int max_packet_size);
 	~Socket();
 
-	void sendPacket(const char packet[], const char destIp[46], unsigned short port);
+	void sendPacket(unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port);
 	InPacketInfo receivePacket(unsigned char* outBuffer);
 	void create(unsigned short port);
 private:

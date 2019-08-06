@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Packet.h"
 #include "Socket.h"
 #include "Client.h"
 
@@ -20,9 +21,8 @@ private:
 public:
 	GameServer(unsigned short port);
 	~GameServer();
-	
-	void send(const char packet[], const char destIp[46], unsigned short port);
 private:
 	void startGameLoop();
 	void tick();
+	void send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port);
 };
