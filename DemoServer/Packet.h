@@ -38,13 +38,13 @@ private:
 	unsigned short buffer_index = 0;
 	// TODO: multiple command/value sets
 public:
-	Packet(unsigned char buffer_in[], PacketType packet_type);
+	Packet(PacketType type, unsigned char buffer_in[]);
 	Packet(unsigned char buffer_in[], unsigned short import_size);
 
 	void setPacketLength();
 
-	void append(unsigned char value);
-	void append(unsigned short value);
+	void write(unsigned char value);
+	void write(unsigned short value);
 private:
 	void build(int buffer_size);
 };

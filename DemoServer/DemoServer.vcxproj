@@ -214,6 +214,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Socket.h" />
@@ -222,6 +223,7 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="DemoServer.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Socket.cpp" />

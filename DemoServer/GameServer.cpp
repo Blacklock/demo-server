@@ -1,4 +1,5 @@
 #include "GameServer.h"
+#include "Client.h"
 
 #include <iostream>
 #include <thread>
@@ -7,11 +8,11 @@
 
 GameServer::GameServer(unsigned short port) {
 	stopGameLoop = false;
-
 	socket.create(port);
 
-	//std::thread t{&GameServer::startGameLoop, this};
 	std::thread t(&GameServer::startGameLoop, this);
+
+	createGame();
 
 	while (true) { // Remove this
 		std::cin;
@@ -19,6 +20,21 @@ GameServer::GameServer(unsigned short port) {
 }
 
 GameServer::~GameServer() {}
+
+void GameServer::createGame() {
+	Game* game = new Game(this);
+	games.push_back(game);
+}
+
+void GameServer::send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port) {
+	packet.setPacketLength();
+	socket.sendPacket(buffer, packet.packet_length, destIp, port);
+}
+
+void GameServer::send(unsigned char buffer[], Packet packet, Client client) {
+	packet.setPacketLength();
+	socket.sendPacket(buffer, packet.packet_length, client.address, client.port);
+}
 
 void GameServer::startGameLoop() {
 	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>;
@@ -41,7 +57,7 @@ void GameServer::startGameLoop() {
 void GameServer::tick() {
 	// TODO: Circular buffers, all of this is temporary
 
-	unsigned char buffer[MAX_PACKET_SIZE];
+	unsigned char buffer[MAX_PACKET_SIZE]; // Make it a member?
 
 	while (true) {
 		InPacketInfo packet_info = socket.receivePacket(buffer);
@@ -63,35 +79,35 @@ void GameServer::tick() {
 				case PacketType::Reliable:
 					break;
 				case PacketType::Control:
-					switch (in_packet.packet_cmd.c_cmd) {
-						case ControlCmd::ConnRequest:
-							Packet out_packet = Packet(buffer, PacketType::Control);
-							unsigned short number = 1;
-							out_packet.append(number);
+					if (in_packet.packet_cmd.c_cmd == ControlCmd::ConnRequest) {
+						// TODO: Right now we are picking the first (and only) game instance.
+						// Update this once a lobby system is implemented
 
-							std::cout << "PORT [" << packet_info.sender_port << "]\n";
-							
-							send(buffer, out_packet, packet_info.sender_address, packet_info.sender_port);
+						bool game_found = false;
+						for (Game* game : games) {
+							if (game->connRequest(packet_info.sender_address, packet_info.sender_port)) {
+								game_found = true;
+								break;
+							}
+						}
 
-							break;
+						Packet out_packet = Packet(PacketType::Control, buffer);
+						if (game_found) {
+							out_packet.write(static_cast<unsigned char>(ControlCmd::ConnAccept));
+						} else {
+							out_packet.write(static_cast<unsigned char>(ControlCmd::ConnDeny));
+						}
+						send(buffer, out_packet, packet_info.sender_address, packet_info.sender_port);
+
+						break;
 					}
-					break;
 			}
-
 		} catch (const std::invalid_argument ex) {
 			std::cerr << ex.what();
 			std::cout << "\n========\n";
 		}
-		
-		for (int i = 0; i < packet_info.buffer_size; i++) {
-			std::cout << buffer[i];
-		}
 
 		std::cout << "\n";
+		// TODO: At the end of the tick, send out packets
 	}
-}
-
-void GameServer::send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port) { // const char destIp[46]
-	packet.setPacketLength();
-	socket.sendPacket(buffer, packet.packet_length, destIp, port);
 }

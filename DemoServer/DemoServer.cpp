@@ -24,6 +24,8 @@ int main()
 	//GameServer server = GameServer(serverPort);
 	GameServer server(serverPort);
 
+	//server.createGame();
+
 	/*std::string input2;
 	getline(std::cin, input2);
 	char packetData[1024];
