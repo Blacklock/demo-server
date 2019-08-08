@@ -33,18 +33,27 @@ public:
 	PacketType packet_type;
 	unsigned short packet_length;
 	Command packet_cmd;
-private:
+protected:
 	unsigned char* buffer = nullptr;
 	unsigned short buffer_index = 0;
-	// TODO: multiple command/value sets
+};
+
+class InPacket : public Packet {
 public:
-	Packet(PacketType type, unsigned char buffer_in[]);
-	Packet(unsigned char buffer_in[], unsigned short import_size);
+	InPacket(unsigned char buffer_in[], unsigned short import_size);
+
+	template<typename T> T read();
+private:
+	void build(int buffer_size);
+};
+
+class OutPacket : public Packet {
+public:
+	OutPacket(PacketType type, unsigned char buffer_in[]);
 
 	void setPacketLength();
 
+	void write(ControlCmd value);
 	void write(unsigned char value);
 	void write(unsigned short value);
-private:
-	void build(int buffer_size);
 };

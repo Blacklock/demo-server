@@ -24,8 +24,8 @@ public:
 	~GameServer();
 
 	void createGame();
-	void send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port);
-	void send(unsigned char buffer[], Packet packet, Client client);
+	void send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port);
+	void send(unsigned char buffer[], OutPacket packet, Client client);
 private:
 	void startGameLoop();
 	void tick();

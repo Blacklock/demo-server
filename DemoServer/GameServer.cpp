@@ -26,12 +26,12 @@ void GameServer::createGame() {
 	games.push_back(game);
 }
 
-void GameServer::send(unsigned char buffer[], Packet packet, unsigned long destIp, unsigned short port) {
+void GameServer::send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port) {
 	packet.setPacketLength();
 	socket.sendPacket(buffer, packet.packet_length, destIp, port);
 }
 
-void GameServer::send(unsigned char buffer[], Packet packet, Client client) {
+void GameServer::send(unsigned char buffer[], OutPacket packet, Client client) {
 	packet.setPacketLength();
 	socket.sendPacket(buffer, packet.packet_length, client.address, client.port);
 }
@@ -69,38 +69,35 @@ void GameServer::tick() {
 		// Do something with the received datagram
 
 		try {
-			Packet in_packet = Packet(buffer, packet_info.buffer_size);
+			InPacket in_packet = InPacket(buffer, packet_info.buffer_size);
 
-			std::cout << "Packet type: " << static_cast<std::underlying_type_t<PacketType>>(in_packet.packet_type) << "\n";
-			std::cout << "Packet length: " << in_packet.packet_length << "\n";
+			//int x = in_packet.read<int>();
 
 			switch (in_packet.packet_type) {
-				case PacketType::Unreliable:
-				case PacketType::Reliable:
-					break;
-				case PacketType::Control:
-					if (in_packet.packet_cmd.c_cmd == ControlCmd::ConnRequest) {
-						// TODO: Right now we are picking the first (and only) game instance.
-						// Update this once a lobby system is implemented
-
-						bool game_found = false;
-						for (Game* game : games) {
-							if (game->connRequest(packet_info.sender_address, packet_info.sender_port)) {
-								game_found = true;
-								break;
-							}
+			case PacketType::Unreliable:
+			case PacketType::Reliable:
+				break;
+			case PacketType::Control:
+				ControlCmd command = in_packet.read<ControlCmd>();
+				if (command == ControlCmd::ConnRequest) {
+					bool game_found = false;
+					for (Game* game : games) {
+						if (game->connRequest(packet_info.sender_address, packet_info.sender_port)) {
+							game_found = true;
+							break;
 						}
-
-						Packet out_packet = Packet(PacketType::Control, buffer);
-						if (game_found) {
-							out_packet.write(static_cast<unsigned char>(ControlCmd::ConnAccept));
-						} else {
-							out_packet.write(static_cast<unsigned char>(ControlCmd::ConnDeny));
-						}
-						send(buffer, out_packet, packet_info.sender_address, packet_info.sender_port);
-
-						break;
 					}
+
+					OutPacket out_packet = OutPacket(PacketType::Control, buffer);
+					if (game_found) {
+						out_packet.write(ControlCmd::ConnAccept);
+					} else {
+						out_packet.write(ControlCmd::ConnDeny);
+					}
+
+					send(buffer, out_packet, packet_info.sender_address, packet_info.sender_port);
+					break;
+				}
 			}
 		} catch (const std::invalid_argument ex) {
 			std::cerr << ex.what();
