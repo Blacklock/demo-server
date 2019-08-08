@@ -14,12 +14,6 @@ InPacket::InPacket(unsigned char buffer_in[], unsigned short import_size) {
 	}
 };
 
-/*template<typename T>
-T InPacket::read() {
-	std::cout << "unknown\n";
-	return (T)7;
-}*/
-
 template<> ControlCmd InPacket::read<ControlCmd>() {
 	buffer_index += 1;
 	return static_cast<ControlCmd>(buffer[buffer_index - 1]);
