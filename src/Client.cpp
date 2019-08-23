@@ -1,6 +1,6 @@
 #include "Client.h"
 
 
-Client::Client(unsigned long a, unsigned short p) : address(a), port(p) {
-
+Client::Client(Game* client_game) {
+	game = client_game;
 }

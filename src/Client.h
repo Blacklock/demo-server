@@ -1,14 +1,14 @@
 #pragma once
 
 
-enum class ClientStatus { Disconnected, Connecting, Connected };
+class Game;
 
 class Client {
 public:
-	Client(unsigned long a, unsigned short p);
+	Game* game;
+
+	double pos_x;
+	double pos_y;
 public:
-	unsigned int id;
-	ClientStatus status;
-	const unsigned long address;
-	const unsigned short port;
+	Client(Game* client_game);
 };

@@ -2,10 +2,12 @@
 
 #include "Socket.h"
 #include "Packet.h"
+#include "Client.h"
 #include "Game.h"
 
 #include <vector>
 #include <condition_variable>
+#include <unordered_map>
 
 
 class GameServer {
@@ -19,13 +21,14 @@ private:
 	bool stopGameLoop;
 
 	std::vector<Game*> games;
+	std::unordered_map<long long, Client*> connections;
 public:
 	GameServer(unsigned short port);
 	~GameServer();
 
 	void createGame();
 	void send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port);
-	void send(unsigned char buffer[], OutPacket packet, Client client);
+	//void send(unsigned char buffer[], OutPacket packet, Conne client);
 private:
 	void startGameLoop();
 	void tick();

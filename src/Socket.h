@@ -34,6 +34,7 @@ struct InPacketInfo {
 class Socket {
 private:
 	SOCKET handle;
+	unsigned int MAX_PACKET_SIZE;
 public:
 	Socket(unsigned int max_packet_size);
 	~Socket();
@@ -41,6 +42,4 @@ public:
 	void sendPacket(unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port);
 	InPacketInfo receivePacket(unsigned char* outBuffer);
 	void create(unsigned short port);
-private:
-	unsigned int MAX_PACKET_SIZE;
 };

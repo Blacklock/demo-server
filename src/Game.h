@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Packet.h"
 #include "Client.h"
 
 
@@ -15,5 +16,6 @@ private:
 public:
 	Game(GameServer* gameServer);
 
-	bool connRequest(unsigned long address, unsigned short port);
+	Client* connRequest();
+	void receiveCommand(Client* client, InPacket packet);
 };
