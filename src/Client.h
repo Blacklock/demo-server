@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/CircularBuffer.h"
+#include "Utils/AckBuffer.h"
 
 #include <chrono>
 
@@ -12,9 +12,7 @@ public:
 	Game* game;
 
 	//CircularBuffer<unsigned short> client_sequences = CircularBuffer<unsigned short>(5);
-
-	unsigned short server_sequence;
-	unsigned short client_sequence;
+	AckBuffer client_sequences = AckBuffer();
 
 	double pos_x;
 	double pos_y;

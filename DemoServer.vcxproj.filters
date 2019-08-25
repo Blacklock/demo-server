@@ -51,6 +51,9 @@
     <ClInclude Include="src\Utils\CircularBuffer.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\AckBuffer.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/Client.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files\Packet</Filter>
     </ClCompile>
     <ClCompile Include="src\Utils\CircularBuffer.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\AckBuffer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
