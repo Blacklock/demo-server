@@ -22,38 +22,12 @@ enum class ControlCmd : unsigned char {
 	ConnDeny = 'D' // Server denying the client's connection request [control command]
 };
 
-union Command {
-	UnreliableCmd u_cmd;
-	ReliableCmd r_cmd;
-	ControlCmd c_cmd;
-};
-
 class Packet {
 public:
 	PacketType packet_type;
 	unsigned short packet_length;
-	Command packet_cmd;
+	unsigned short packet_sequence;
 protected:
 	unsigned char* buffer = nullptr;
 	unsigned short buffer_index = 0;
-};
-
-class InPacket : public Packet {
-public:
-	InPacket(unsigned char buffer_in[], unsigned short import_size);
-
-	template<typename T> T read();
-private:
-	void build(int buffer_size);
-};
-
-class OutPacket : public Packet {
-public:
-	OutPacket(PacketType type, unsigned char buffer_in[]);
-
-	void setPacketLength();
-
-	void write(ControlCmd value);
-	void write(unsigned char value);
-	void write(unsigned short value);
 };

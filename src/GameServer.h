@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Socket.h"
-#include "Packet.h"
+#include "Packet/InPacket.h"
+#include "Packet/OutPacket.h"
 #include "Client.h"
 #include "Game.h"
 
@@ -28,7 +29,6 @@ public:
 
 	void createGame();
 	void send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port);
-	//void send(unsigned char buffer[], OutPacket packet, Conne client);
 private:
 	void startGameLoop();
 	void tick();

@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Packet">
+      <UniqueIdentifier>{02e21a75-02e4-49e3-a896-e7b22b8666d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packet">
+      <UniqueIdentifier>{f7bd1250-40c7-4f74-857e-502a8b0f6870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{0c6b9e76-5b0c-4175-82c3-a8ef561c9bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{f36702b9-ac68-43a6-9223-2ee41d9cfcad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/Client.h">
@@ -24,11 +36,20 @@
     <ClInclude Include="src/GameServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/Packet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/Socket.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Packet\Packet.h">
+      <Filter>Header Files\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Packet\InPacket.h">
+      <Filter>Header Files\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Packet\OutPacket.h">
+      <Filter>Header Files\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\CircularBuffer.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,11 +65,20 @@
     <ClCompile Include="src/GameServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/Packet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/Socket.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Packet\Packet.cpp">
+      <Filter>Source Files\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Packet\OutPacket.cpp">
+      <Filter>Source Files\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Packet\InPacket.cpp">
+      <Filter>Source Files\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\CircularBuffer.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

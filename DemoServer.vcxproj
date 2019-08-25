@@ -232,16 +232,22 @@
     <ClInclude Include="src/Client.h" />
     <ClInclude Include="src/Game.h" />
     <ClInclude Include="src/GameServer.h" />
-    <ClInclude Include="src/Packet.h" />
+    <ClInclude Include="src\Packet\Packet.h" />
     <ClInclude Include="src/Socket.h" />
+    <ClInclude Include="src\Packet\OutPacket.h" />
+    <ClInclude Include="src\Packet\InPacket.h" />
+    <ClInclude Include="src\Utils\CircularBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/Client.cpp" />
     <ClCompile Include="src/DemoServer.cpp" />
     <ClCompile Include="src/Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
-    <ClCompile Include="src/Packet.cpp" />
+    <ClCompile Include="src\Packet\Packet.cpp" />
     <ClCompile Include="src/Socket.cpp" />
+    <ClCompile Include="src\Packet\InPacket.cpp" />
+    <ClCompile Include="src\Packet\OutPacket.cpp" />
+    <ClCompile Include="src\Utils\CircularBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

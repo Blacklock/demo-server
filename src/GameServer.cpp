@@ -54,7 +54,8 @@ void GameServer::startGameLoop() {
 }
 
 void GameServer::tick() {
-	// TODO: Circular buffers, all of this is temporary(?)
+	// TIMER START >>>
+	//auto t1 = std::chrono::high_resolution_clock::now();
 
 	unsigned char buffer[MAX_PACKET_SIZE]; // Make it a member?
 
@@ -76,6 +77,7 @@ void GameServer::tick() {
 				case PacketType::Unreliable:			
 					if (connections.find(connection) == connections.end()) {
 						// Connection doesn't exist, simply ignore the packets (for now?)
+						std::cout << "Connection does not exist.\n";
 					} else {
 						connections[connection]->game->receiveCommand(connections[connection], in_packet);
 					}
@@ -84,14 +86,15 @@ void GameServer::tick() {
 					break;
 				case PacketType::Control:
 					ControlCmd command = in_packet.read<ControlCmd>();
-					if (command == ControlCmd::ConnRequest) {
 
+					if (command == ControlCmd::ConnRequest) {
 						bool game_found = false;
 
 						unsigned char protocol = in_packet.read<unsigned char>();
 						if (protocol == GAME_PROTOCOL) {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find game
+								std::cout << "new connection, find game\n";
 
 								Client* result;
 								for (Game* game : games) {
@@ -120,6 +123,8 @@ void GameServer::tick() {
 
 						send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
 						break;
+					} else {
+						throw std::invalid_argument("Invalid control command.");
 					}
 			}
 		} catch (const std::invalid_argument ex) {
@@ -130,4 +135,9 @@ void GameServer::tick() {
 		std::cout << "\n";
 		// TODO: At the end of the tick, send out packets
 	}
+
+	// TIMER END >>>
+	/*auto t2 = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+	std::cout << duration << " microseconds\n";*/
 }

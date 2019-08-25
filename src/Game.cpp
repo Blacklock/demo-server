@@ -4,6 +4,12 @@
 #include <iostream>
 
 
+struct SnapshotFields { // Shows fields that have changed
+	bool pos_x : 1;
+	bool pos_y : 1;
+	bool score : 1;
+};
+
 Game::Game(GameServer* gameServer) {
 	server = gameServer;
 }
