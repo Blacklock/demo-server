@@ -7,7 +7,7 @@
 
 Game::Game(GameServer* gameServer) :
 	server(gameServer),
-	snapshot_manager() {}
+	snapshot_manager(&server->dummy_snapshot) {}
 
 Client* Game::connRequest() {
 	if (connections < MAX_CONNECTIONS) {
@@ -22,35 +22,20 @@ Client* Game::connRequest() {
 	return nullptr;
 }
 
-void Game::receiveCommand(Client* client, InPacket packet) {
+void Game::receiveCommand(Client& client, InPacket packet) {
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 
 	switch (command) {
-		/*case UnreliableCmd::PosUpdate:
-			int32_t x = packet.read<int32_t>();
-			int32_t y = packet.read<int32_t>();
-			
-			client->pos_x = (double)x / 1000;
-			client->pos_y = (double)y / 1000;
-
-			std::cout << "X: " << client->pos_x << " Y: " << client->pos_y << "\n";
-
-			OutPacket ping_packet = OutPacket(PacketType::Control, server->buffer);
-			
-			// temp command, remove this later.
-
-			break;*/
 		case UnreliableCmd::Snapshot:
-			{ Snapshot snapshot = Snapshot(nullptr); } // temp
-			
+			// work on this once we finish up with acks
 			break;
 		default:
 			throw std::invalid_argument("Unknown command.");
 	}
 
-	client->client_sequences.put(packet.packet_sequence);
+	client.client_sequences.put(packet.packet_sequence);
 }
 
-void Game::sendCommand(Client* client, OutPacket packet) {
+void Game::sendCommand(Client& client, OutPacket packet) {
 	
 }

@@ -1,8 +1,9 @@
 #include "Client.h"
 
 
-Client::Client(Game* client_game) {
-	game = client_game;
+Client::Client(Game* client_game) :
+	game(client_game)
+{
 	bump();
 }
 

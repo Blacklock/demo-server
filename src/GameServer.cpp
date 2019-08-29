@@ -6,8 +6,9 @@
 #include <chrono>
 
 
-GameServer::GameServer(unsigned short port) {
-	stopGameLoop = false;
+GameServer::GameServer(unsigned short port) :
+	dummy_snapshot(nullptr)
+{
 	socket.create(port);
 
 	std::thread t(&GameServer::startGameLoop, this);
@@ -80,7 +81,7 @@ void GameServer::tick() {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
-						connections[connection]->game->receiveCommand(connections[connection], in_packet);
+						connections[connection]->game->receiveCommand(*connections[connection], in_packet);
 					}
 					break;
 				case PacketType::Reliable:

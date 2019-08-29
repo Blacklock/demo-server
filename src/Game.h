@@ -20,6 +20,6 @@ public:
 	Game(GameServer* gameServer);
 
 	Client* connRequest();
-	void receiveCommand(Client* client, InPacket packet);
-	void sendCommand(Client* client, OutPacket packet);
+	void receiveCommand(Client& client, InPacket packet);
+	void sendCommand(Client& client, OutPacket packet);
 };

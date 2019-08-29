@@ -3,8 +3,7 @@
 #include <iostream>
 
 
-Snapshot::Snapshot(Snapshot* source_snapshot)
-{
+Snapshot::Snapshot(Snapshot* source_snapshot) {
 	snapshot_bitfield.raw = 0;
 
 	if (!source_snapshot) { // nullptr, it's either a master or dummy snapshot
@@ -22,13 +21,13 @@ void Snapshot::read(InPacket packet) {
 		if (field_flags & 1) { // Field has been changed
 			switch ((SnapshotFields)i) {
 				case SnapshotFields::PosX:
-					pos_x = packet.read<int32_t>();
+					//pos_x = packet.read<int32_t>();
 					break;
 				case SnapshotFields::PosY:
-					pos_y = packet.read<int32_t>();
+					//pos_y = packet.read<int32_t>();
 					break;
 				case SnapshotFields::Score:
-					score = packet.read<unsigned char>();
+					//score = packet.read<unsigned char>();
 					break;
 				default:
 					throw std::invalid_argument("Unknown snapshot field.");

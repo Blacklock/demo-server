@@ -9,7 +9,7 @@ enum class PacketType : unsigned char {
 };
 
 enum class UnreliableCmd : unsigned char {
-	PosUpdate,
+	PlayerSnapshot,
 	Snapshot
 };
 
