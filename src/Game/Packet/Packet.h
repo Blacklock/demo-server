@@ -4,11 +4,13 @@
 enum class PacketType : unsigned char {
 	Unreliable = 'U', // Fire-and-forget commands
 	Reliable = 'R', // Reliable commands, ensured to arrive
-	Control = 'C' // Reliable commands, used for connection 
+	Control = 'C', // Reliable commands, used for connection
+	Fragment = 'F' // Packet fragment
 };
 
 enum class UnreliableCmd : unsigned char {
-	PosUpdate
+	PosUpdate,
+	Snapshot
 };
 
 enum class ReliableCmd : unsigned char {

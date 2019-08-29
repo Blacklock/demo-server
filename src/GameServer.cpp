@@ -1,6 +1,7 @@
 #include "GameServer.h"
 
 #include <iostream>
+#include <stdint.h>
 #include <thread>
 #include <chrono>
 
@@ -90,11 +91,10 @@ void GameServer::tick() {
 					if (command == ControlCmd::ConnRequest) {
 						bool game_found = false;
 
-						unsigned char protocol = in_packet.read<unsigned char>();
+						uint32_t protocol = in_packet.read<uint32_t>();
 						if (protocol == GAME_PROTOCOL) {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find game
-								std::cout << "new connection, find game\n";
 
 								Client* result;
 								for (Game* game : games) {
@@ -110,18 +110,22 @@ void GameServer::tick() {
 								// Connection already exists, send an accept packet again
 								game_found = true;
 							}
-						}
 
-						// Send conn-accept/deny packet
+							// Send conn response packet
 
-						OutPacket out_packet = OutPacket(PacketType::Control, buffer);
-						if (game_found) {
-							out_packet.write(ControlCmd::ConnAccept);
+							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
+							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
+							send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
+							/*if (game_found) {
+								out_packet.write(ControlCmd::ConnAccept);
+							} else {
+								out_packet.write(ControlCmd::ConnDeny);
+							}*/
+
 						} else {
-							out_packet.write(ControlCmd::ConnDeny);
+							throw std::invalid_argument("Unknown protocol.");
 						}
 
-						send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
 						break;
 					} else {
 						throw std::invalid_argument("Invalid control command.");

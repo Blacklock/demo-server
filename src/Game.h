@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Packet/InPacket.h"
-#include "Client.h"
+#include "Game/Packet/InPacket.h"
+#include "Game/Packet/OutPacket.h"
+#include "Game/Client.h"
+#include "Game/SnapshotManager.h"
 
 
 class GameServer;
@@ -11,6 +13,7 @@ private:
 	static const unsigned int MAX_CONNECTIONS = 4;
 
 	GameServer* server;
+	SnapshotManager snapshot_manager;
 	Client* clients[MAX_CONNECTIONS] = {};
 	unsigned int connections = 0;
 public:
@@ -18,4 +21,5 @@ public:
 
 	Client* connRequest();
 	void receiveCommand(Client* client, InPacket packet);
+	void sendCommand(Client* client, OutPacket packet);
 };

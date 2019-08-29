@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Socket.h"
-#include "Packet/InPacket.h"
-#include "Packet/OutPacket.h"
-#include "Client.h"
+#include "Game/Packet/InPacket.h"
+#include "Game/Packet/OutPacket.h"
+#include "Game/Client.h"
+#include "Game/SnapshotManager.h"
 #include "Game.h"
 
 #include <vector>
@@ -13,7 +14,7 @@
 
 class GameServer {
 public:
-	static const unsigned char GAME_PROTOCOL = 100;
+	static const unsigned int GAME_PROTOCOL = 100100;
 	static const unsigned int MAX_PACKET_SIZE = 256;
 private:
 	Socket socket = Socket(MAX_PACKET_SIZE);

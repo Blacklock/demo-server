@@ -1,7 +1,7 @@
 #pragma once
 
 
-template <class T>
+template<class T>
 class CircularBuffer {
 private:
 	T* buffer;
@@ -14,7 +14,7 @@ public:
 		buffer_size(size),
 		buffer(new T[size]) {}
 
-	template <class T> void put(T value) {
+	template<class T> void put(T value) {
 		// Appends value to end of buffer
 
 		buffer[head] = value;
@@ -27,7 +27,7 @@ public:
 		full = head == tail;
 	};
 
-	template <class T> void get_buffer(T buffer_out[]) {
+	template<class T> void get_buffer(T buffer_out[]) {
 		// Returns the whole buffer, from tail to head
 
 		for (int i = 0; i < buffer_size; i++) {

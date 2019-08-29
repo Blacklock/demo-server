@@ -1,18 +1,13 @@
 #include "Game.h"
 #include "GameServer.h"
+#include "Game/Snapshot.h"
 
 #include <iostream>
 
 
-struct SnapshotFields { // Shows fields that have changed
-	bool pos_x : 1;
-	bool pos_y : 1;
-	bool score : 1;
-};
-
-Game::Game(GameServer* gameServer) {
-	server = gameServer;
-}
+Game::Game(GameServer* gameServer) :
+	server(gameServer),
+	snapshot_manager() {}
 
 Client* Game::connRequest() {
 	if (connections < MAX_CONNECTIONS) {
@@ -31,7 +26,7 @@ void Game::receiveCommand(Client* client, InPacket packet) {
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 
 	switch (command) {
-		case UnreliableCmd::PosUpdate:
+		/*case UnreliableCmd::PosUpdate:
 			int32_t x = packet.read<int32_t>();
 			int32_t y = packet.read<int32_t>();
 			
@@ -39,6 +34,23 @@ void Game::receiveCommand(Client* client, InPacket packet) {
 			client->pos_y = (double)y / 1000;
 
 			std::cout << "X: " << client->pos_x << " Y: " << client->pos_y << "\n";
+
+			OutPacket ping_packet = OutPacket(PacketType::Control, server->buffer);
+			
+			// temp command, remove this later.
+
+			break;*/
+		case UnreliableCmd::Snapshot:
+			{ Snapshot snapshot = Snapshot(nullptr); } // temp
+			
 			break;
+		default:
+			throw std::invalid_argument("Unknown command.");
 	}
+
+	client->client_sequences.put(packet.packet_sequence);
+}
+
+void Game::sendCommand(Client* client, OutPacket packet) {
+	
 }
