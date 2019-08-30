@@ -9,12 +9,12 @@ class Game;
 
 class Client {
 public:
-	const unsigned ip;
-	const unsigned port;
+	const unsigned long ip;
+	const unsigned short port;
 
 	Game* game;
-	AckBuffer sequences = AckBuffer();
 	unsigned short server_sequence = 1; // Sequences start at 1
+	AckBuffer sequences = AckBuffer();
 private:
 	std::chrono::steady_clock::time_point last_received;
 public:

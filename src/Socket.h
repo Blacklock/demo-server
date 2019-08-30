@@ -28,7 +28,7 @@
 struct InPacketInfo {
 	int buffer_size;
 	unsigned long sender_address;
-	unsigned int sender_port;
+	unsigned short sender_port;
 };
 
 class Socket {

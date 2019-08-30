@@ -7,20 +7,22 @@
 AckBuffer::AckBuffer() {}
 
 void AckBuffer::put(unsigned short sequence) {
-	int difference;
-	bool overflow;
-
 	if (empty) {
 		last_sequence = sequence;
 		empty = false;
 		return;
 	}
 
+	int difference;
+	bool overflow;
+
 	// Check for overflow
 	if (sequence - last_sequence <= 32768) {
 		overflow = false;
 	} else if (last_sequence - sequence > 32768) {
 		overflow = true;
+	} else {
+		throw std::exception();
 	}
 
 	// Check if new sequence is larger than the previous & get difference

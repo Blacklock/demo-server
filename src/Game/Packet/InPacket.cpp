@@ -5,7 +5,7 @@
 #include <bitset>
 
 
-InPacket::InPacket(unsigned char buffer_in[], unsigned short import_size) {
+InPacket::InPacket(unsigned char buffer_in[], int import_size) {
 	buffer = buffer_in;
 
 	if (import_size > 0) {

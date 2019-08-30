@@ -34,9 +34,9 @@ struct Snapshot {
 			bool pos_y : 1;
 			bool score : 1;
 			bool empty : 5;
-		};
+		} fields;
 		unsigned char raw;
-	} snapshot_bitfield;
+	} modified_fields;
 
 	Snapshot(Snapshot* source_snapshot);
 	void read(InPacket packet);

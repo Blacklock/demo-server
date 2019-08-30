@@ -14,7 +14,7 @@ Client* Game::connRequest(unsigned long ip, unsigned short port) {
 		Client* client = new Client(this, ip, port);
 
 		clients[connections] = client;
-		connections += 1;
+		connections++;
 
 		return client;
 	}
@@ -46,7 +46,7 @@ void Game::sendCommand(Client& client, OutPacket packet) {
 	);
 
 	// Increase our sequence by one
-	client.server_sequence += 1;
+	client.server_sequence++;
 
 	server->send(packet.buffer, packet, client.ip, client.port);
 }
