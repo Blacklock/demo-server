@@ -19,7 +19,7 @@ private:
 public:
 	Game(GameServer* gameServer);
 
-	Client* connRequest();
+	Client* connRequest(unsigned long ip, unsigned short port);
 	void receiveCommand(Client& client, InPacket packet);
 	void sendCommand(Client& client, OutPacket packet);
 };

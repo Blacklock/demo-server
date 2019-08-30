@@ -100,7 +100,7 @@ void GameServer::tick() {
 								Client* result;
 								for (Game* game : games) {
 								
-									result = game->connRequest();
+									result = game->connRequest(p_info.sender_address, p_info.sender_port);
 									if (result != nullptr) {
 										game_found = true;
 										connections[connection] = result;

@@ -29,7 +29,7 @@ public:
 	PacketType packet_type;
 	unsigned short packet_length;
 	unsigned short packet_sequence;
-protected:
 	unsigned char* buffer = nullptr;
+protected:
 	unsigned short buffer_index = 0;
 };

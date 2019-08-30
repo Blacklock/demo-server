@@ -4,12 +4,17 @@
 #include <bitset>
 
 
-AckBuffer::AckBuffer(unsigned short start_sequence) :
-	last_sequence(start_sequence) {}
+AckBuffer::AckBuffer() {}
 
 void AckBuffer::put(unsigned short sequence) {
 	int difference;
 	bool overflow;
+
+	if (empty) {
+		last_sequence = sequence;
+		empty = false;
+		return;
+	}
 
 	// Check for overflow
 	if (sequence - last_sequence <= 32768) {
@@ -42,7 +47,7 @@ void AckBuffer::put(unsigned short sequence) {
 	last_sequence = sequence;
 }
 
-void AckBuffer::reset(unsigned short start_sequence) {
-	last_sequence = start_sequence;
+void AckBuffer::reset() {
+	empty = true;
 	ack_bitfield = 0;
 }

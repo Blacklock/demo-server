@@ -1,8 +1,10 @@
 #include "Client.h"
 
 
-Client::Client(Game* client_game) :
-	game(client_game)
+Client::Client(Game* client_game, unsigned long ip, unsigned short port) :
+	game(client_game),
+	ip(ip),
+	port(port)
 {
 	bump();
 }

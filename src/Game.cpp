@@ -9,9 +9,9 @@ Game::Game(GameServer* gameServer) :
 	server(gameServer),
 	snapshot_manager(&server->dummy_snapshot) {}
 
-Client* Game::connRequest() {
+Client* Game::connRequest(unsigned long ip, unsigned short port) {
 	if (connections < MAX_CONNECTIONS) {
-		Client* client = new Client(this);
+		Client* client = new Client(this, ip, port);
 
 		clients[connections] = client;
 		connections += 1;
@@ -23,6 +23,7 @@ Client* Game::connRequest() {
 }
 
 void Game::receiveCommand(Client& client, InPacket packet) {
+	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 
 	switch (command) {
@@ -33,9 +34,19 @@ void Game::receiveCommand(Client& client, InPacket packet) {
 			throw std::invalid_argument("Unknown command.");
 	}
 
-	client.client_sequences.put(packet.packet_sequence);
+	client.sequences.put(packet.packet_sequence);
 }
 
 void Game::sendCommand(Client& client, OutPacket packet) {
-	
+	// Set the headers
+	packet.setHeaders(
+		client.server_sequence, 
+		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
+		client.sequences.ack_bitfield
+	);
+
+	// Increase our sequence by one
+	client.server_sequence += 1;
+
+	server->send(packet.buffer, packet, client.ip, client.port);
 }
