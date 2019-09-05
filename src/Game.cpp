@@ -6,12 +6,12 @@
 
 
 Game::Game(GameServer* gameServer) :
-	server(gameServer),
-	snapshot_manager(&server->dummy_snapshot) {}
+	server(gameServer) {}
 
 Client* Game::connRequest(unsigned long ip, unsigned short port) {
 	if (connections < MAX_CONNECTIONS) {
-		Client* client = new Client(this, ip, port);
+		// Once we implement disconnection, the ID system will be improved
+		Client* client = new Client(this, connections, ip, port);
 
 		clients[connections] = client;
 		connections++;

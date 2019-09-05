@@ -16,8 +16,6 @@ class GameServer {
 public:
 	static const unsigned int GAME_PROTOCOL = 100100;
 	static const unsigned int MAX_PACKET_SIZE = 512;
-
-	Snapshot dummy_snapshot;
 private:
 	Socket socket = Socket(MAX_PACKET_SIZE);
 	std::condition_variable control;

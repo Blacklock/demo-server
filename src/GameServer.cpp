@@ -6,13 +6,9 @@
 #include <chrono>
 
 
-GameServer::GameServer(unsigned short port) :
-	dummy_snapshot(nullptr)
-{
+GameServer::GameServer(unsigned short port) {
 	socket.create(port);
-
 	std::thread t(&GameServer::startGameLoop, this);
-
 	createGame();
 
 	while (true) { // Remove this
@@ -31,11 +27,6 @@ void GameServer::send(unsigned char buffer[], OutPacket packet, unsigned long de
 	packet.setPacketLength();
 	socket.sendPacket(buffer, packet.packet_length, destIp, port);
 }
-
-/*void GameServer::send(unsigned char buffer[], OutPacket packet, Connection conn) {
-	packet.setPacketLength();
-	socket.sendPacket(buffer, packet.packet_length, conn.address, conn.port);
-}*/
 
 void GameServer::startGameLoop() {
 	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>;
@@ -117,12 +108,6 @@ void GameServer::tick() {
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
 							send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
-							/*if (game_found) {
-								out_packet.write(ControlCmd::ConnAccept);
-							} else {
-								out_packet.write(ControlCmd::ConnDeny);
-							}*/
-
 						} else {
 							throw std::invalid_argument("Unknown protocol.");
 						}
