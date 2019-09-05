@@ -1,8 +1,9 @@
 #include "Client.h"
 
 
-Client::Client(Game* client_game, unsigned long ip, unsigned short port) :
+Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
 	game(client_game),
+	id(id),
 	ip(ip),
 	port(port)
 {

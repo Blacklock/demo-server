@@ -4,6 +4,7 @@
 #include "Client.h"
 
 #include <stdint.h>
+#include <vector>
 #include <unordered_map>
 
 
@@ -20,27 +21,29 @@ struct PlayerState { // Player state fields
 	unsigned char score;
 };
 
-// Shows which player state fields have been modified
-union ModifiedFields {
-	struct {
-		bool pos_x : 1;
-		bool pos_y : 1;
-		bool score : 1;
-		bool empty : 5;
-	} fields;
-	unsigned char raw;
-};
-
-struct Snapshot {
-	// Snapshot packet sequence
-	unsigned short sequence;
-
+class Snapshot {
+public:
+	// Map of player IDs/states
+	std::unordered_map<unsigned char, PlayerState*> player_states;
+private:
 	// Source snapshot to be compared with (delta compression)
 	Snapshot* source_snapshot;
 
-	// Map of player IDs and their states
-	std::unordered_map<unsigned char, PlayerState> player_states;
+	// Empty vector of player states
+	//std::vector<PlayerState> player_states;
 
+	// Shows which fields have been modified
+	union {
+		struct {
+			bool pos_x : 1;
+			bool pos_y : 1;
+			bool score : 1;
+			bool empty : 5;
+		} fields;
+		unsigned char raw;
+	} modified_fields;
+public:
 	Snapshot(Snapshot* source_snapshot);
-	void read(InPacket packet);
+	void updateGameState(InPacket& packet, Client& client);
+	//void read(InPacket packet);
 };
