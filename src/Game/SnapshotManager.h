@@ -7,7 +7,7 @@
 
 class SnapshotManager {
 private:
-	static Snapshot dummy_snapshot;
+	Snapshot dummy_snapshot;
 	Snapshot master_snapshot = Snapshot(nullptr);
 public:
 	SnapshotManager(Snapshot* dummy_snapshot);

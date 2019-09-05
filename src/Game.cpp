@@ -3,7 +3,10 @@
 #include "Game/Snapshot.h"
 
 #include <iostream>
+#include <stdint.h>
 
+
+Snapshot Game::dummy_snapshot = Snapshot();
 
 Game::Game(GameServer* gameServer) :
 	server(gameServer) {}
@@ -23,13 +26,21 @@ Client* Game::connRequest(unsigned long ip, unsigned short port) {
 }
 
 void Game::receiveCommand(Client& client, InPacket packet) {
+	// Do something with these later
+	/*unsigned short sequence = packet.read<unsigned short>();
+	unsigned short ack = packet.read<unsigned short>();
+	uint32_t ack_bitfield = packet.read<uint32_t>();*/
+
+	std::cout << "Sequence " << packet.packet_sequence << 
+	" Ack " << packet.packet_ack << " AckBitfield " << packet.ack_bitfield << "\n";
+
 	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 
 	switch (command) {
-		case UnreliableCmd::Snapshot: // rename to PlayerData or something like that
+		case UnreliableCmd::PlayerState: // rename to PlayerData or something like that
 			// Update master game state
-
+			snapshot_manager.updatePlayerState(packet, client);
 			break;
 		default:
 			throw std::invalid_argument("Unknown command.");

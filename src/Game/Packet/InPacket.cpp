@@ -56,10 +56,14 @@ void InPacket::build(int buffer_size) {
 	buffer_index += 3;
 
 	if (packet_type == PacketType::Unreliable) {
-		packet_sequence = (static_cast<unsigned short>(buffer[3]) << 8) | buffer[4];
+		//packet_sequence = (static_cast<unsigned short>(buffer[3]) << 8) | buffer[4];
 		// std::cout << "Sequence: " << packet_sequence << "\n";
-		buffer_index += 2;
+		packet_sequence = read<unsigned short>();
+		packet_ack = read<unsigned short>();
+		ack_bitfield = read<uint32_t>();
 	}
+
+	std::cout << buffer_index;
 
 	std::cout << "BUILD\n";
 	for (int i = 0; i < buffer_size; i++) {

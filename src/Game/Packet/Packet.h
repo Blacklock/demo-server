@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 
 enum class PacketType : unsigned char {
 	Unreliable = 'U', // Fire-and-forget commands
@@ -9,7 +11,7 @@ enum class PacketType : unsigned char {
 };
 
 enum class UnreliableCmd : unsigned char {
-	PlayerSnapshot,
+	PlayerState,
 	Snapshot
 };
 
@@ -30,6 +32,9 @@ public:
 	PacketType packet_type;
 	unsigned short packet_length;
 	unsigned short packet_sequence;
+	unsigned short packet_ack;
+	uint32_t ack_bitfield;
+
 	unsigned char* buffer = nullptr;
 protected:
 	unsigned short buffer_index = 0;

@@ -4,7 +4,6 @@
 #include "Client.h"
 
 #include <stdint.h>
-#include <vector>
 #include <unordered_map>
 
 
@@ -18,7 +17,18 @@ enum class SnapshotFields : unsigned char { // Shows what fields have changed
 struct PlayerState { // Player state fields
 	int32_t pos_x;
 	int32_t pos_y;
-	unsigned char score;
+	int32_t score;
+};
+
+// Shows which fields have been modified
+union ModifiedFields {
+	struct {
+		bool pos_x : 1;
+		bool pos_y : 1;
+		bool score : 1;
+		bool empty : 5;
+	} fields;
+	unsigned char raw;
 };
 
 class Snapshot {
@@ -28,22 +38,6 @@ public:
 private:
 	// Source snapshot to be compared with (delta compression)
 	Snapshot* source_snapshot;
-
-	// Empty vector of player states
-	//std::vector<PlayerState> player_states;
-
-	// Shows which fields have been modified
-	union {
-		struct {
-			bool pos_x : 1;
-			bool pos_y : 1;
-			bool score : 1;
-			bool empty : 5;
-		} fields;
-		unsigned char raw;
-	} modified_fields;
 public:
-	Snapshot(Snapshot* source_snapshot);
-	void updateGameState(InPacket& packet, Client& client);
-	//void read(InPacket packet);
+	Snapshot(Snapshot* source_snapshot = nullptr);
 };

@@ -13,7 +13,8 @@ private:
 	static const unsigned int MAX_CONNECTIONS = 4;
 
 	GameServer* server;
-	SnapshotManager snapshot_manager = SnapshotManager();
+	static Snapshot dummy_snapshot;
+	SnapshotManager snapshot_manager = SnapshotManager(&dummy_snapshot);
 	Client* clients[MAX_CONNECTIONS] = {};
 	unsigned int connections = 0;
 public:
