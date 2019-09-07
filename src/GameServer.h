@@ -31,7 +31,7 @@ public:
 	~GameServer();
 
 	void createGame();
-	void send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port);
+	void send(OutPacket packet, unsigned long destIp, unsigned short port);
 private:
 	void startGameLoop();
 	void tick();

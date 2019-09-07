@@ -76,9 +76,10 @@ void OutPacket::write(uint32_t value) {
 
 void OutPacket::write(int32_t value) {
 	// no need to rewrite all of this
-	buffer[buffer_index] = (unsigned char)(value >> 24);
+	/*buffer[buffer_index] = (unsigned char)(value >> 24);
 	buffer[buffer_index + 1] = (unsigned char)(value >> 16);
 	buffer[buffer_index + 2] = (unsigned char)(value >> 8);
 	buffer[buffer_index + 3] = (unsigned char)value;
-	buffer_index += 4;
+	buffer_index += 4;*/
+	write((uint32_t)value);
 }

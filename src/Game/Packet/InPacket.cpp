@@ -33,21 +33,22 @@ template<> unsigned short InPacket::read<unsigned short>() {
 	return (static_cast<unsigned short>(buffer[buffer_index - 2]) << 8) | buffer[buffer_index - 1];
 };
 
-template<> int32_t InPacket::read<int32_t>() {
-	buffer_index += 4;
-	return (int32_t)buffer[buffer_index - 4] << 24 |
-		(int32_t)buffer[buffer_index - 3] << 16 |
-		(int32_t)buffer[buffer_index - 2] << 8 |
-		(int32_t)buffer[buffer_index - 1];
-};
-
 template<> uint32_t InPacket::read<uint32_t>() {
-	// no need to rewrite all of this
 	buffer_index += 4;
 	return (uint32_t)buffer[buffer_index - 4] << 24 |
 		(uint32_t)buffer[buffer_index - 3] << 16 |
 		(uint32_t)buffer[buffer_index - 2] << 8 |
 		(uint32_t)buffer[buffer_index - 1];
+};
+
+template<> int32_t InPacket::read<int32_t>() {
+	// no need to rewrite all of this
+	/*buffer_index += 4;
+	return (int32_t)buffer[buffer_index - 4] << 24 |
+		(int32_t)buffer[buffer_index - 3] << 16 |
+		(int32_t)buffer[buffer_index - 2] << 8 |
+		(int32_t)buffer[buffer_index - 1];*/
+	return (int32_t)read<uint32_t>();
 };
 
 void InPacket::build(int buffer_size) {

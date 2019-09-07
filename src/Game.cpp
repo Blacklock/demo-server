@@ -27,11 +27,6 @@ Client* Game::connRequest(unsigned long ip, unsigned short port) {
 }
 
 void Game::receiveCommand(Client& client, InPacket& packet) {
-	// Do something with these later
-	/*unsigned short sequence = packet.read<unsigned short>();
-	unsigned short ack = packet.read<unsigned short>();
-	uint32_t ack_bitfield = packet.read<uint32_t>();*/
-
 	std::cout << "Sequence " << packet.packet_sequence << 
 	" Ack " << packet.packet_ack << " AckBitfield " << packet.ack_bitfield << "\n";
 
@@ -61,7 +56,7 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 	// Increase our sequence by one
 	client.server_sequence++;
 
-	server->send(packet.buffer, packet, client.ip, client.port);
+	server->send(packet, client.ip, client.port);
 }
 
 void Game::sendSnapshots() {
@@ -70,6 +65,8 @@ void Game::sendSnapshots() {
 		OutPacket ss_packet = OutPacket(PacketType::Unreliable, server->buffer);
 		ss_packet.write(UnreliableCmd::Snapshot);
 
-		snapshot_manager.sendSnapshot(ss_packet, *clients[i]);
+		snapshot_manager.writeSnapshot(ss_packet, *clients[i]); // Write snapshot data
+
+		sendCommand(*clients[i], ss_packet); // Send the packet
 	}
 }

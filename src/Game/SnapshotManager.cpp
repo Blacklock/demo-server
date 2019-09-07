@@ -49,8 +49,8 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 				 "\nScore\t" << +master_snapshot.player_states[client.id]->score << "\n";
 }
 
-void SnapshotManager::sendSnapshot(OutPacket& packet, Client& client) {
-	packet; client;
+void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
+	client;
 	// This method isn't fully finished yet
 	// For now we are going to always send the full master gamestate every time
 

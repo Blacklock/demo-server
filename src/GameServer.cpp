@@ -23,7 +23,7 @@ void GameServer::createGame() {
 	games.push_back(game);
 }
 
-void GameServer::send(unsigned char buffer[], OutPacket packet, unsigned long destIp, unsigned short port) {
+void GameServer::send(OutPacket packet, unsigned long destIp, unsigned short port) {
 	packet.setPacketLength();
 	socket.sendPacket(buffer, packet.packet_length, destIp, port);
 }
@@ -109,7 +109,7 @@ void GameServer::tick() {
 
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
-							send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
+							send(out_packet, p_info.sender_address, p_info.sender_port);
 						} else {
 							throw std::invalid_argument("Unknown protocol.");
 						}
@@ -123,14 +123,12 @@ void GameServer::tick() {
 			std::cerr << ex.what();
 		}
 
-		std::cout << "\n";
-
-		// At the end of the tick, send out packets
-
 		// Loop over all games and send snapshots to all clients
 		for (size_t i = 0; i < games.size(); ++i) {
 			games[i]->sendSnapshots();
 		}
+
+		std::cout << "\n";
 	}
 
 	// TIMER END >>>
