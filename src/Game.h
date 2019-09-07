@@ -16,11 +16,12 @@ private:
 	static Snapshot dummy_snapshot;
 	SnapshotManager snapshot_manager = SnapshotManager(&dummy_snapshot);
 	Client* clients[MAX_CONNECTIONS] = {};
-	unsigned int connections = 0;
+	unsigned char connections = 0;
 public:
 	Game(GameServer* gameServer);
 
 	Client* connRequest(unsigned long ip, unsigned short port);
-	void receiveCommand(Client& client, InPacket packet);
-	void sendCommand(Client& client, OutPacket packet);
+	void receiveCommand(Client& client, InPacket& packet);
+	void sendCommand(Client& client, OutPacket& packet);
+	void sendSnapshots();
 };

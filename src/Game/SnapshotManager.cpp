@@ -25,7 +25,6 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 
 	for (int i = 0; i != (int)SnapshotFields::End; i++) {
 		if (field_flags & 1) { // Field has been changed
-			//std::cout << i << " changed\n";
 			// In the future we will have to check the validity of the given data
 			switch ((SnapshotFields)i) {
 				case SnapshotFields::PosX:
@@ -48,4 +47,30 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	std::cout << "[Master Gamestate]\nPosX\t" << master_snapshot.player_states[client.id]->pos_x <<
 				 "\nPosY\t" << master_snapshot.player_states[client.id]->pos_y <<
 				 "\nScore\t" << +master_snapshot.player_states[client.id]->score << "\n";
+}
+
+void SnapshotManager::sendSnapshot(OutPacket& packet, Client& client) {
+	packet; client;
+	// This method isn't fully finished yet
+	// For now we are going to always send the full master gamestate every time
+
+	// Iterate over all entities (currently just players)
+	// PS: We are creating the it every single time ... we might not need to (same in game.cpp)
+	for (std::unordered_map<unsigned char, PlayerState*>::iterator it; it != master_snapshot.player_states.end(); ++it) {
+		// Write the player ID (we might not actually need to send it every single time, look into it later)
+		packet.write(it->first); // const!
+		
+		// Write the snapshot fields (currently all fields)
+
+		// TODO: Delta compression!!! For now just create the ChangedFields struct manually
+		ModifiedFields modified_fields = ModifiedFields();
+		modified_fields.fields.pos_x = true;
+		modified_fields.fields.pos_y = true;
+		modified_fields.fields.score = true;
+		packet.write(modified_fields.raw);
+
+		packet.write(it->second->pos_x);
+		packet.write(it->second->pos_y);
+		packet.write(it->second->score);
+	}
 }

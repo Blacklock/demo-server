@@ -42,6 +42,7 @@ template<> int32_t InPacket::read<int32_t>() {
 };
 
 template<> uint32_t InPacket::read<uint32_t>() {
+	// no need to rewrite all of this
 	buffer_index += 4;
 	return (uint32_t)buffer[buffer_index - 4] << 24 |
 		(uint32_t)buffer[buffer_index - 3] << 16 |
@@ -62,8 +63,6 @@ void InPacket::build(int buffer_size) {
 		packet_ack = read<unsigned short>();
 		ack_bitfield = read<uint32_t>();
 	}
-
-	std::cout << buffer_index;
 
 	std::cout << "BUILD\n";
 	for (int i = 0; i < buffer_size; i++) {

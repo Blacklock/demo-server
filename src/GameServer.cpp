@@ -50,7 +50,7 @@ void GameServer::tick() {
 	// TIMER START >>>
 	//auto t1 = std::chrono::high_resolution_clock::now();
 
-	unsigned char buffer[MAX_PACKET_SIZE]; // Make it a member?
+	//unsigned char buffer[MAX_PACKET_SIZE]; // Make it a member?
 
 	while (true) {
 		InPacketInfo p_info = socket.receivePacket(buffer);
@@ -65,7 +65,7 @@ void GameServer::tick() {
 			InPacket in_packet = InPacket(buffer, p_info.buffer_size);
 
 			long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
-
+			std::cout << "Received a packet " << (unsigned char)in_packet.packet_type << "\n";
 			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:			
 					if (connections.find(connection) == connections.end()) {
@@ -105,6 +105,8 @@ void GameServer::tick() {
 
 							// Send conn response packet
 
+							std::cout << "done!\n";
+
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
 							send(buffer, out_packet, p_info.sender_address, p_info.sender_port);
@@ -119,11 +121,16 @@ void GameServer::tick() {
 			}
 		} catch (const std::invalid_argument ex) {
 			std::cerr << ex.what();
-			std::cout << "\n========\n";
 		}
 
 		std::cout << "\n";
-		// TODO: At the end of the tick, send out packets
+
+		// At the end of the tick, send out packets
+
+		// Loop over all games and send snapshots to all clients
+		for (size_t i = 0; i < games.size(); ++i) {
+			games[i]->sendSnapshots();
+		}
 	}
 
 	// TIMER END >>>

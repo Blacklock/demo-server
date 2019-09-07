@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Game/Packet/Packet.h"
 #include "GameServer.h"
 #include "Game/Snapshot.h"
 
@@ -25,7 +26,7 @@ Client* Game::connRequest(unsigned long ip, unsigned short port) {
 	return nullptr;
 }
 
-void Game::receiveCommand(Client& client, InPacket packet) {
+void Game::receiveCommand(Client& client, InPacket& packet) {
 	// Do something with these later
 	/*unsigned short sequence = packet.read<unsigned short>();
 	unsigned short ack = packet.read<unsigned short>();
@@ -49,7 +50,7 @@ void Game::receiveCommand(Client& client, InPacket packet) {
 	client.sequences.put(packet.packet_sequence);
 }
 
-void Game::sendCommand(Client& client, OutPacket packet) {
+void Game::sendCommand(Client& client, OutPacket& packet) {
 	// Set the headers
 	packet.setHeaders(
 		client.server_sequence, 
@@ -61,4 +62,14 @@ void Game::sendCommand(Client& client, OutPacket packet) {
 	client.server_sequence++;
 
 	server->send(packet.buffer, packet, client.ip, client.port);
+}
+
+void Game::sendSnapshots() {
+	// Iterate over all clients
+	for (unsigned char i = 0; i < connections; ++i) {
+		OutPacket ss_packet = OutPacket(PacketType::Unreliable, server->buffer);
+		ss_packet.write(UnreliableCmd::Snapshot);
+
+		snapshot_manager.sendSnapshot(ss_packet, *clients[i]);
+	}
 }

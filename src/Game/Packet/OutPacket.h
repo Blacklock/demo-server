@@ -9,7 +9,7 @@ class OutPacket : public Packet {
 public:
 	OutPacket(PacketType type, unsigned char buffer_in[]);
 
-	void setHeaders(unsigned short sequence, unsigned short ack, uint32_t ack_bitfield);
+	void setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield);
 	void setPacketLength();
 
 	void write(ControlCmd value);
@@ -17,4 +17,5 @@ public:
 	void write(unsigned char value);
 	void write(unsigned short value);
 	void write(uint32_t value);
+	void write(int32_t value);
 };
