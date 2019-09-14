@@ -4,7 +4,7 @@
 #include "Game/Packet/InPacket.h"
 #include "Game/Packet/OutPacket.h"
 #include "Game/Client.h"
-#include "Game/Snapshot.h"
+#include "Game/Snapshot/Snapshot.h"
 #include "Game.h"
 
 #include <vector>

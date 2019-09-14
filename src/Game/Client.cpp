@@ -5,7 +5,8 @@ Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned s
 	game(client_game),
 	id(id),
 	ip(ip),
-	port(port)
+	port(port),
+	snapshots(SnapshotBuffer(32))
 {
 	bump();
 }

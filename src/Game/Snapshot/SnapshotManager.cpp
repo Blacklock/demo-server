@@ -4,8 +4,7 @@
 #include <unordered_map>
 
 
-SnapshotManager::SnapshotManager(Snapshot* dummy_snapshot) :
-	dummy_snapshot(dummy_snapshot) {}
+SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	// Find the player state struct or create a new one
@@ -52,7 +51,7 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 Snapshot* SnapshotManager::createSnapshot(Snapshot& origin_snapshot, Client& client) {
 	// Create a new snapshot object
 	Snapshot* new_snapshot = new Snapshot(client.server_sequence, &origin_snapshot);
-	client.snapshots.add(new_snapshot);
+	//client.snapshots.add(new_snapshot);
 
 	// TODO: We have to compare given origin_snapshot with master_snapshot, write the delta
 	return new_snapshot;

@@ -236,8 +236,9 @@
     <ClInclude Include="src/Socket.h" />
     <ClInclude Include="src\Game\Packet\OutPacket.h" />
     <ClInclude Include="src\Game\Packet\InPacket.h" />
-    <ClInclude Include="src\Game\Snapshot.h" />
-    <ClInclude Include="src\Game\SnapshotManager.h" />
+    <ClInclude Include="src\Game\Snapshot\Snapshot.h" />
+    <ClInclude Include="src\Game\Snapshot\SnapshotBuffer.h" />
+    <ClInclude Include="src\Game\Snapshot\SnapshotManager.h" />
     <ClInclude Include="src\Utils\CircularBuffer.h" />
     <ClInclude Include="src\Utils\AckBuffer.h" />
   </ItemGroup>
@@ -250,8 +251,9 @@
     <ClCompile Include="src/Socket.cpp" />
     <ClCompile Include="src\Game\Packet\InPacket.cpp" />
     <ClCompile Include="src\Game\Packet\OutPacket.cpp" />
-    <ClCompile Include="src\Game\Snapshot.cpp" />
-    <ClCompile Include="src\Game\SnapshotManager.cpp" />
+    <ClCompile Include="src\Game\Snapshot\Snapshot.cpp" />
+    <ClCompile Include="src\Game\Snapshot\SnapshotBuffer.cpp" />
+    <ClCompile Include="src\Game\Snapshot\SnapshotManager.cpp" />
     <ClCompile Include="src\Utils\CircularBuffer.cpp" />
     <ClCompile Include="src\Utils\AckBuffer.cpp" />
   </ItemGroup>

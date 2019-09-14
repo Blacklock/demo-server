@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Game\Packet">
       <UniqueIdentifier>{f7bd1250-40c7-4f74-857e-502a8b0f6870}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Snapshot">
+      <UniqueIdentifier>{b3b46075-4571-4a2d-a243-a2b6c9de4787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Snapshot">
+      <UniqueIdentifier>{c5de2278-e6a7-4b11-a5ff-ae360898b47c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/Game.h">
@@ -48,12 +54,6 @@
     <ClInclude Include="src\Utils\AckBuffer.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\SnapshotManager.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\Snapshot.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Packet\InPacket.h">
       <Filter>Header Files\Game\Packet</Filter>
     </ClInclude>
@@ -65,6 +65,15 @@
     </ClInclude>
     <ClInclude Include="src\Game\Client.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Snapshot\Snapshot.h">
+      <Filter>Header Files\Game\Snapshot</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Snapshot\SnapshotBuffer.h">
+      <Filter>Header Files\Game\Snapshot</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Snapshot\SnapshotManager.h">
+      <Filter>Header Files\Game\Snapshot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,12 +95,6 @@
     <ClCompile Include="src\Utils\AckBuffer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Snapshot.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\SnapshotManager.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Packet\InPacket.cpp">
       <Filter>Source Files\Game\Packet</Filter>
     </ClCompile>
@@ -103,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="src\Game\Client.cpp">
       <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Snapshot\Snapshot.cpp">
+      <Filter>Source Files\Game\Snapshot</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Snapshot\SnapshotBuffer.cpp">
+      <Filter>Source Files\Game\Snapshot</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Snapshot\SnapshotManager.cpp">
+      <Filter>Source Files\Game\Snapshot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

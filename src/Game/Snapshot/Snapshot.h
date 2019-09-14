@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Packet/InPacket.h"
-#include "Client.h"
+#include "../Packet/InPacket.h"
 
 #include <stdint.h>
 #include <unordered_map>
@@ -34,7 +33,7 @@ union ModifiedFields {
 class Snapshot {
 public:
 	// Snapshot packet ID
-	unsigned int id;
+	unsigned short id;
 	// Map of player IDs/states
 	std::unordered_map<unsigned char, PlayerState*> player_states;
 private:

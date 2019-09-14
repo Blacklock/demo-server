@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Game/Packet/Packet.h"
 #include "GameServer.h"
-#include "Game/Snapshot.h"
+#include "Game/Snapshot/Snapshot.h"
 
 #include <iostream>
 #include <stdint.h>

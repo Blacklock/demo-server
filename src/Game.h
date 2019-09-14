@@ -3,7 +3,7 @@
 #include "Game/Packet/InPacket.h"
 #include "Game/Packet/OutPacket.h"
 #include "Game/Client.h"
-#include "Game/SnapshotManager.h"
+#include "Game/Snapshot/SnapshotManager.h"
 
 
 class GameServer;
@@ -14,7 +14,7 @@ private:
 
 	GameServer* server;
 	static Snapshot dummy_snapshot;
-	SnapshotManager snapshot_manager = SnapshotManager(&dummy_snapshot);
+	SnapshotManager snapshot_manager = SnapshotManager();
 	Client* clients[MAX_CONNECTIONS] = {};
 	unsigned char connections = 0;
 public:
