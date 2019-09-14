@@ -10,6 +10,6 @@ public:
 	bool empty = true;
 public:
 	AckBuffer();
-	void put(unsigned short sequence);
+	bool put(unsigned short sequence);
 	void reset();
 };

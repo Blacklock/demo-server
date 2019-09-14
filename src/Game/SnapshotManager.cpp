@@ -49,10 +49,19 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 				 "\nScore\t" << +master_snapshot.player_states[client.id]->score << "\n";
 }
 
+Snapshot* SnapshotManager::createSnapshot(Snapshot& origin_snapshot, Client& client) {
+	// Create a new snapshot object
+	Snapshot* new_snapshot = new Snapshot(client.server_sequence, &origin_snapshot);
+	client.snapshots.add(new_snapshot);
+
+	// TODO: We have to compare given origin_snapshot with master_snapshot, write the delta
+	return new_snapshot;
+}
+
 void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
-	client;
 	// This method isn't fully finished yet
 	// For now we are going to always send the full master gamestate every time
+	Snapshot* snapshot = createSnapshot(master_snapshot, client);
 
 	// Iterate over all entities (currently just players)
 	// PS: We are creating the it every single time ... we might not need to (same in game.cpp)
@@ -62,7 +71,8 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 		
 		// Write the snapshot fields (currently all fields)
 
-		// TODO: Delta compression!!! For now just create the ChangedFields struct manually
+		// For now just create the ChangedFields struct manually
+		// Later on it should become a member of Snapshot (and be set in the createSnapshot method)
 		ModifiedFields modified_fields = ModifiedFields();
 		modified_fields.fields.pos_x = true;
 		modified_fields.fields.pos_y = true;

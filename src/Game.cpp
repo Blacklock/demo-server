@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 
-Snapshot Game::dummy_snapshot = Snapshot();
+Snapshot Game::dummy_snapshot = Snapshot(0); // this has to be reworked
 
 Game::Game(GameServer* gameServer) :
 	server(gameServer) {}

@@ -9,9 +9,9 @@
 GameServer::GameServer(unsigned short port) {
 	socket.create(port);
 	std::thread t(&GameServer::startGameLoop, this);
-	createGame();
+	createGame(); // Create a single game instance
 
-	while (true) { // Remove this
+	while (true) { // Deal with this
 		std::cin;
 	}
 }

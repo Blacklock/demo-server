@@ -6,11 +6,12 @@
 
 AckBuffer::AckBuffer() {}
 
-void AckBuffer::put(unsigned short sequence) {
+// Returns true if new sequence is larger than previous
+bool AckBuffer::put(unsigned short sequence) {
 	if (empty) {
 		last_sequence = sequence;
 		empty = false;
-		return;
+		return true;
 	}
 
 	int difference;
@@ -38,7 +39,7 @@ void AckBuffer::put(unsigned short sequence) {
 			ack_bitfield = ack_bitfield | (uint32_t)pow(2, difference - 1);
 		}
 
-		return;
+		return false;
 	}
 
 	ack_bitfield = ack_bitfield << difference;
@@ -47,6 +48,7 @@ void AckBuffer::put(unsigned short sequence) {
 	// std::cout << "seq " << sequence << " last_seq " << last_sequence << " diff " << difference << " <> " << std::bitset<32>(ack_bitfield).to_string() << "\n\n";
 
 	last_sequence = sequence;
+	return true;
 }
 
 void AckBuffer::reset() {
