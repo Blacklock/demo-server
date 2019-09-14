@@ -19,6 +19,7 @@ public:
 	unsigned short server_sequence = 1; // Sequences start at 1
 	AckBuffer sequences = AckBuffer();
 	SnapshotBuffer snapshots;
+	unsigned short last_snapshot; // Last acked snapshot's ID
 private:
 	std::chrono::steady_clock::time_point last_received;
 public:

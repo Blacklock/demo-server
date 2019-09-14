@@ -12,5 +12,4 @@ public:
 	SnapshotBuffer(unsigned short size);
 	void add(Snapshot* snapshot);
 	Snapshot* get(unsigned short id);
-	Snapshot* get_last();
 };

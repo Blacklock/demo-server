@@ -6,14 +6,14 @@ SnapshotBuffer::SnapshotBuffer(unsigned short size) :
 	snapshots(new Snapshot*[size]()) {}
 
 void SnapshotBuffer::add(Snapshot* snapshot) { // todo: add const
-	last_snapshot = snapshot->id % size;
-	snapshots[last_snapshot] = snapshot;
+	snapshots[snapshot->id % size] = snapshot;
 }
 
 Snapshot* SnapshotBuffer::get(unsigned short id) {
-	return snapshots[id % size];
-}
+	Snapshot* snapshot = snapshots[id % size];
 
-Snapshot* SnapshotBuffer::get_last() {
-	return snapshots[last_snapshot];
+	if (snapshot != nullptr && snapshot->id == id) return snapshot;
+
+	// This snapshot doesn't exist or is too old; use the master gamestate instead
+	return nullptr;
 }

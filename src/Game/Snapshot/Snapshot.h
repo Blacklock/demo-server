@@ -33,12 +33,13 @@ union ModifiedFields {
 class Snapshot {
 public:
 	// Snapshot packet ID
-	unsigned short id;
+	const unsigned short id;
 	// Map of player IDs/states
 	std::unordered_map<unsigned char, PlayerState*> player_states;
 private:
 	// Source snapshot to be compared with (delta compression)
 	Snapshot* source_snapshot;
 public:
-	Snapshot(unsigned short id, Snapshot* source_snapshot = nullptr);
+	Snapshot(unsigned short id);
+	//add_player(PlayerState* player_state);
 };
