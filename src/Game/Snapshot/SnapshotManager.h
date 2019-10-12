@@ -12,6 +12,5 @@ private:
 public:
 	SnapshotManager();
 	void updatePlayerState(InPacket& packet, Client& client);
-	Snapshot* createSnapshot(Client& client);
 	void writeSnapshot(OutPacket& packet, Client& client);
 };

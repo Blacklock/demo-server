@@ -6,6 +6,8 @@ SnapshotBuffer::SnapshotBuffer(unsigned short size) :
 	snapshots(new Snapshot*[size]()) {}
 
 void SnapshotBuffer::add(Snapshot* snapshot) { // todo: add const
+	// Should we delete the previous snapshot that is being replaced?
+	// Perhaps use autopointers or whatever
 	snapshots[snapshot->id % size] = snapshot;
 }
 

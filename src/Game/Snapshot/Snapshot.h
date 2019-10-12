@@ -38,7 +38,8 @@ public:
 	std::unordered_map<unsigned char, PlayerState*> player_states;
 private:
 	// Source snapshot to be compared with (delta compression)
-	Snapshot* source_snapshot;
+	// V we may not need this at all! V
+	// Snapshot* source_snapshot;
 public:
 	Snapshot(unsigned short id);
 	//add_player(PlayerState* player_state);
