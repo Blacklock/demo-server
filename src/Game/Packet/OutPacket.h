@@ -9,6 +9,8 @@ class OutPacket : public Packet {
 public:
 	OutPacket(PacketType type, unsigned char buffer_in[]);
 
+	unsigned short getBufferIndex();
+	void setBufferIndex(unsigned short new_index);
 	void setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield);
 	void setPacketLength();
 

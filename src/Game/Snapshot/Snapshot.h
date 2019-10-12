@@ -19,8 +19,7 @@ struct PlayerState { // Player state fields
 	int32_t score;
 };
 
-// Shows which fields have been modified
-union ModifiedFields {
+union ModifiedFields { // Shows which fields have been modified
 	struct {
 		bool pos_x : 1;
 		bool pos_y : 1;

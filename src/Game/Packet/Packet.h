@@ -33,4 +33,5 @@ public:
 	unsigned char* buffer = nullptr;
 protected:
 	unsigned short buffer_index = 0;
+	// unsigned short real_buffer_index = 0; // saves the end of buffer, for later
 };

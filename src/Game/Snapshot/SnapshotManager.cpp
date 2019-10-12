@@ -70,43 +70,33 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 		// Write the player ID (we might not actually need to send it every single time, look into it later)
 		packet.write(entity->first); // const!
 
+		// Find the given entity in last_snapshot
+		PlayerState* last_entity = last_snapshot->player_states[entity->first];
+
 		// Compare snapshot values
-		// Whenever we add a new field, this has to be manually edited! Not the best solution?
+		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
+
 		ModifiedFields modified_fields = ModifiedFields();
-
-		// tuples????
-
-		/*ModifiedFields modified_fields = ModifiedFields();
-		modified_fields.fields.pos_x = true;
-		modified_fields.fields.pos_y = true;
-		modified_fields.fields.score = true;
+		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
-		packet.write(it->second->pos_x);
-		packet.write(it->second->pos_y);
-		packet.write(it->second->score);*/
+		if (entity->second->pos_x != last_entity->pos_x) {
+			modified_fields.fields.pos_x = true;
+			packet.write(entity->second->pos_x);
+		}
+		if (entity->second->pos_y != last_entity->pos_y) {
+			modified_fields.fields.pos_y = true;
+			packet.write(entity->second->pos_y);
+		}
+		if (entity->second->score != last_entity->score) {
+			modified_fields.fields.score = true;
+			packet.write(entity->second->score);
+		}
+
+		// Write the modified fields
+		unsigned short real_buffer_index = packet.getBufferIndex();
+		packet.setBufferIndex(modified_fields_bi);
+		packet.write(modified_fields.raw);
+		packet.setBufferIndex(real_buffer_index);
 	}
-
-
-
-
-	
-	/*for (std::unordered_map<unsigned char, PlayerState*>::iterator it; it != master_snapshot.player_states.end(); ++it) {
-		// Write the player ID (we might not actually need to send it every single time, look into it later)
-		packet.write(it->first); // const!
-		
-		// Write the snapshot fields (currently just write all the fields)
-
-		// For now just create the ChangedFields struct manually
-		// Later on it should become a member of Snapshot (and be set in the createSnapshot method)
-		ModifiedFields modified_fields = ModifiedFields();
-		modified_fields.fields.pos_x = true;
-		modified_fields.fields.pos_y = true;
-		modified_fields.fields.score = true;
-		packet.write(modified_fields.raw);
-
-		packet.write(it->second->pos_x);
-		packet.write(it->second->pos_y);
-		packet.write(it->second->score);
-	}*/
 }

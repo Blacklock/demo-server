@@ -14,6 +14,14 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[]) {
 	buffer_index += packet_type == PacketType::Unreliable ? (2 + 2 + 2 + 4) : 2;
 };
 
+unsigned short OutPacket::getBufferIndex() {
+	return buffer_index;
+}
+
+void OutPacket::setBufferIndex(unsigned short new_index) {
+	buffer_index = new_index;
+}
+
 void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type != PacketType::Unreliable) {
 		throw std::logic_error("Headers can be set only on unreliable packets.");
