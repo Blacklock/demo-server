@@ -12,5 +12,6 @@ private:
 public:
 	SnapshotManager();
 	void updatePlayerState(InPacket& packet, Client& client);
+	void writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot);
 	void writeSnapshot(OutPacket& packet, Client& client);
 };

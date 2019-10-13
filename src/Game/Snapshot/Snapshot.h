@@ -3,6 +3,7 @@
 #include "../Packet/InPacket.h"
 
 #include <stdint.h>
+#include <memory>
 #include <unordered_map>
 
 
@@ -34,12 +35,8 @@ public:
 	// Snapshot packet ID
 	const unsigned short id;
 	// Map of player IDs/states
-	std::unordered_map<unsigned char, PlayerState*> player_states;
-private:
-	// Source snapshot to be compared with (delta compression)
-	// V we may not need this at all! V
-	// Snapshot* source_snapshot;
+	//std::unordered_map<unsigned char, PlayerState*> player_states;
+	std::unordered_map<unsigned char, std::shared_ptr<PlayerState>> player_states;
 public:
 	Snapshot(unsigned short id);
-	//add_player(PlayerState* player_state);
 };

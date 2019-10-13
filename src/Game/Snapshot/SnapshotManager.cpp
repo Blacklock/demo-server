@@ -1,6 +1,7 @@
 #include "SnapshotManager.h"
 
 #include <iostream>
+#include <memory>
 #include <unordered_map>
 
 
@@ -8,11 +9,11 @@ SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	// Find the player state struct or create a new one
-	std::unordered_map<unsigned char, PlayerState*>::iterator player_state;
+	std::unordered_map<unsigned char, std::shared_ptr<PlayerState>>::iterator player_state;
 	player_state = master_snapshot.player_states.find(client.id);
 
 	if (player_state == master_snapshot.player_states.end()) { // Player state doesn't exist
-		master_snapshot.player_states[client.id] = new PlayerState();
+		master_snapshot.player_states[client.id] = std::make_shared<PlayerState>();
 		player_state = master_snapshot.player_states.find(client.id);
 	}
 
@@ -48,30 +49,16 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 				 "\nScore\t" << +master_snapshot.player_states[client.id]->score << "\n";
 }
 
-void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
-	// Create a new delta-compressed snapshot
-	Snapshot* new_snapshot = new Snapshot(client.server_sequence);
-
-	// Get the latest snapshot acked by the client (for delta compression)
-	Snapshot* last_snapshot = client.snapshots.get(client.last_snapshot);
-
-	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
-	if (last_snapshot == nullptr) last_snapshot = &master_snapshot;
-
-	// Add the new snapshot to the client's SnapshotBuffer
-	client.snapshots.add(new_snapshot);
-
+void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot) {
 	// Iterate over all entities (currently just players)
-	// PS: We are creating the iterator every single time ... we might not need to (same in game.cpp)?
-	
-	std::unordered_map<unsigned char, PlayerState*>::iterator entity;
-	//for (std::unordered_map<unsigned char, PlayerState*>::iterator it; it != new_snapshot->player_states.end(); ++it) {
+	std::unordered_map<unsigned char, std::shared_ptr<PlayerState>>::iterator entity;
+
 	for (entity = new_snapshot->player_states.begin(); entity != new_snapshot->player_states.end(); ++entity) {
 		// Write the player ID (we might not actually need to send it every single time, look into it later)
 		packet.write(entity->first); // const!
 
 		// Find the given entity in last_snapshot
-		PlayerState* last_entity = last_snapshot->player_states[entity->first];
+		std::shared_ptr<PlayerState> last_entity = last_snapshot->player_states[entity->first];
 
 		// Compare snapshot values
 		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
@@ -99,4 +86,23 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 		packet.write(modified_fields.raw);
 		packet.setBufferIndex(real_buffer_index);
 	}
+}
+
+void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
+	// All this smart pointer code looks ugly...
+	// Create a new delta-compressed snapshot
+	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
+
+	// Get the latest snapshot acked by the client (is this safe? can the original pointer get deleted?)
+	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
+
+	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
+	if (last_snapshot == nullptr) {
+		writeDelta(packet, new_snapshot.get(), last_snapshot.get());
+	} else {
+		writeDelta(packet, new_snapshot.get(), &master_snapshot);
+	}
+
+	// Add the new snapshot to the client's SnapshotBuffer
+	client.snapshots.add(new_snapshot);
 }
