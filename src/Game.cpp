@@ -12,18 +12,20 @@ Snapshot Game::dummy_snapshot = Snapshot(0); // this has to be reworked
 Game::Game(GameServer* gameServer) :
 	server(gameServer) {}
 
-Client* Game::connRequest(unsigned long ip, unsigned short port) {
+Client& Game::connRequest(unsigned long ip, unsigned short port) {
 	if (connections < MAX_CONNECTIONS) {
 		// Once we implement disconnection, the ID system will be improved
-		Client* client = new Client(this, connections, ip, port);
+		Client client = Client(this, connections, ip, port);
 
-		clients[connections] = client;
+		//clients[connections] = client;
+		clients.push_back(client);
+
 		connections++;
 
-		return client;
+		return clients.back();
+	} else {
+		throw std::exception("Connection limit reached.");
 	}
-
-	return nullptr;
 }
 
 void Game::receiveCommand(Client& client, InPacket& packet) {
@@ -65,8 +67,8 @@ void Game::sendSnapshots() {
 		OutPacket ss_packet = OutPacket(PacketType::Unreliable, server->buffer);
 		ss_packet.write(UnreliableCmd::Snapshot);
 
-		snapshot_manager.writeSnapshot(ss_packet, *clients[i]); // Write snapshot data
+		snapshot_manager.writeSnapshot(ss_packet, clients[i]); // Write snapshot data
 
-		sendCommand(*clients[i], ss_packet); // Send the packet
+		sendCommand(clients[i], ss_packet); // Send the packet
 	}
 }

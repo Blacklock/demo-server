@@ -11,7 +11,7 @@ GameServer::GameServer(unsigned short port) {
 	std::thread t(&GameServer::startGameLoop, this);
 	createGame(); // Create a single game instance
 
-	while (true) { // Deal with this
+	while (true) { // Deal with this!!
 		std::cin;
 	}
 }
@@ -19,8 +19,7 @@ GameServer::GameServer(unsigned short port) {
 GameServer::~GameServer() {}
 
 void GameServer::createGame() {
-	Game* game = new Game(this);
-	games.push_back(game);
+	games.push_back(std::make_unique<Game>(this));
 }
 
 void GameServer::send(OutPacket packet, unsigned long destIp, unsigned short port) {
@@ -88,15 +87,15 @@ void GameServer::tick() {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find game
 
-								Client* result;
-								for (Game* game : games) {
-								
-									result = game->connRequest(p_info.sender_address, p_info.sender_port);
-									if (result != nullptr) {
+								//for (Game* game : games) {
+								for (auto&& game : games) {
+									try {
+										Client result = game->connRequest(p_info.sender_address, p_info.sender_port);
+
 										game_found = true;
-										connections[connection] = result;
+										connections[connection] = &result;
 										break;
-									}
+									} catch (const std::exception& ex) { (void)ex; } // Game is full
 								}
 							} else {
 								// Connection already exists, send an accept packet again

@@ -7,6 +7,7 @@
 #include "Game/Snapshot/Snapshot.h"
 #include "Game.h"
 
+#include <memory>
 #include <vector>
 #include <condition_variable>
 #include <unordered_map>
@@ -24,7 +25,7 @@ private:
 	std::mutex mtx;
 	bool stopGameLoop = false;
 
-	std::vector<Game*> games;
+	std::vector<std::unique_ptr<Game>> games;
 	std::unordered_map<long long, Client*> connections;
 public:
 	GameServer(unsigned short port);

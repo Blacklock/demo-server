@@ -14,7 +14,7 @@ private:
 public:
 	CircularBuffer<T>(size_t size) :
 		buffer_size(size),
-		buffer(new T[size]) {}
+		buffer(new T[size]) {} // if we ever use this class, change this
 	
 	size_t get_buffer_size() {
 		return buffer_size;
