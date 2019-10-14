@@ -12,6 +12,11 @@ private:
 public:
 	SnapshotManager();
 	void updatePlayerState(InPacket& packet, Client& client);
-	void writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot);
 	void writeSnapshot(OutPacket& packet, Client& client);
+	void writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot);
+
+	bool writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field);
+	bool writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode = true);
+
+	int32_t vbyteEncode(int32_t num);
 };
