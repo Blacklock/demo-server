@@ -10,22 +10,17 @@ GameServer::GameServer(unsigned short port) {
 	socket.create(port);
 	createGame(); // Create a single game instance
 	startGameLoop();
-	//std::thread t(&GameServer::startGameLoop, this);
-	std::cout << "NEVER REACHED!!!!!!!!!!!!!\n";
-	/*while (true) { // get rid of this monstrosity
+
+	/*std::thread t(&GameServer::startGameLoop, this);
+	while (true) { // get rid of this monstrosity
 		std::cin;
 	}*/
 }
 
 void GameServer::createGame() {
-	//games.push_back(std::make_shared<Game>(&socket));
-	games.push_back(new Game(&socket));
+	games.emplace_back(std::make_unique<Game>(&socket));
+	//games.push_back(new Game(&socket));
 }
-
-/*void GameServer::send(OutPacket packet, unsigned long destIp, unsigned short port) {
-	packet.setPacketLength();
-	socket.sendPacket(buffer, packet.packet_length, destIp, port);
-}*/
 
 void GameServer::startGameLoop() {
 	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>;
@@ -34,7 +29,7 @@ void GameServer::startGameLoop() {
 	std::unique_lock<std::mutex> lock(mtx);
 
 	while (!stopGameLoop) {
-		mtx.unlock();
+		mtx.unlock(); // why unlock/lock every time? rework the game loop code later
 
 		tick();
 
@@ -48,10 +43,6 @@ void GameServer::startGameLoop() {
 void GameServer::tick() {
 	// TIMER START >>>
 	//auto t1 = std::chrono::high_resolution_clock::now();
-
-	//unsigned char buffer[MAX_PACKET_SIZE]; // Make it a member?
-
-	//games[0]->testCommand();
 
 	while (true) {
 		InPacketInfo p_info = socket.receivePacket(buffer);
@@ -68,18 +59,26 @@ void GameServer::tick() {
 			long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
 			std::cout << "Received a packet " << (unsigned char)in_packet.packet_type << "\n";
 
+			std::unordered_map<long long, Client*>::iterator client = connections.find(connection);
 			switch (in_packet.packet_type) {
-				case PacketType::Unreliable:			
-					if (connections.find(connection) == connections.end()) {
+				case PacketType::Unreliable:
+					if (client == connections.end()) {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
-						std::cout << "WATCH THIS\n";
-						std::cout << games.size() << "\n";
-						//games[0]->testCommand();
-						//connections[connection]->game->receiveCommand(*connections[connection], in_packet);
+						// Okay, so the line below doesn't work, as client->second->game is null or something.
+						//client->second->game->receiveCommand(*client->second, in_packet);
 						games[0]->receiveCommand(*connections[connection], in_packet);
 					}
+
+					/*if (connections.find(connection) == connections.end()) {
+						// Connection doesn't exist, simply ignore the packets (for now?)
+						std::cout << "Connection does not exist.\n";
+					} else {
+						connections[connection]->game->receiveCommand(*connections[connection], in_packet);
+						//connections.at(connection)->game->receiveCommand(*connections[connection], in_packet);
+						//games[0]->receiveCommand(*connections[connection], in_packet);
+					}*/
 					break;
 				case PacketType::Reliable:
 					break;

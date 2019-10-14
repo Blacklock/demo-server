@@ -20,7 +20,6 @@ private:
 	static const unsigned int MAX_CONNECTIONS = 4;
 	static const unsigned int MAX_PACKET_SIZE = 512;
 
-	//GameServer* server;
 	unsigned char buffer[MAX_PACKET_SIZE];
 
 	SnapshotManager snapshot_manager = SnapshotManager();
@@ -34,6 +33,4 @@ public:
 	void receiveCommand(Client& client, InPacket& packet);
 	void sendCommand(Client& client, OutPacket& packet);
 	void sendSnapshots();
-
-	void testCommand();
 };

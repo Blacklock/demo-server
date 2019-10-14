@@ -18,7 +18,7 @@ Client& Game::connRequest(unsigned long ip, unsigned short port) {
 		Client client = Client(this, connections, ip, port);
 
 		//clients[connections] = client;
-		clients.push_back(client);
+		clients.emplace_back(client);
 
 		connections++;
 
@@ -26,13 +26,6 @@ Client& Game::connRequest(unsigned long ip, unsigned short port) {
 	} else {
 		throw std::exception("Connection limit reached.");
 	}
-}
-
-void Game::testCommand() {
-	std::cout << "test command\n";
-	std::cout << "address of socket: " << &socket << "\n";
-	//connections++;
-	std::cout << "address of connections: " << (void*)&connections << "\n";
 }
 
 void Game::receiveCommand(Client& client, InPacket& packet) {
@@ -45,11 +38,6 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	switch (command) {
 		case UnreliableCmd::PlayerState: // rename to PlayerData or something like that
 			// Update master game state
-
-			// neither seem to exist
-			std::cout << "address of socket: " << &socket << "\n";
-			std::cout << "address of connections: " << (void*)&connections << "\n";
-
 			snapshot_manager.updatePlayerState(packet, client);
 			break;
 		default:
@@ -71,6 +59,7 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 	client.server_sequence++;
 
 	//server->send(packet, client.ip, client.port);
+	client.send(packet);
 }
 
 void Game::sendSnapshots() {

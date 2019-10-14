@@ -2,7 +2,7 @@
 #include "OutPacket.h"
 
 #include <iostream>
-#include <bitset>
+//#include <bitset>
 
 
 OutPacket::OutPacket(PacketType type, unsigned char buffer_in[]) {
@@ -47,11 +47,11 @@ void OutPacket::setPacketLength() {
 
 	buffer_index = packet_length;
 
-	std::cout << "PACKET SEND\n";
+	/*std::cout << "PACKET SEND\n";
 	for (int i = 0; i < packet_length; i++) {
 		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 }
 
 void OutPacket::write(ControlCmd value) {
