@@ -65,7 +65,7 @@ void InPacket::build(int buffer_size) {
 		ack_bitfield = read<uint32_t>();
 	}
 
-	std::cout << "BUILD\n";
+	std::cout << "PACKET RECEIVED\n";
 	for (int i = 0; i < buffer_size; i++) {
 		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
 	}

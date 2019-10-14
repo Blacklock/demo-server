@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Socket.h"
 #include "Game/Packet/InPacket.h"
 #include "Game/Packet/OutPacket.h"
 #include "Game/Client.h"
@@ -12,22 +13,27 @@
 class GameServer;
 
 class Game {
+public:
+	Socket* socket;
 private:
 	static const unsigned int MIN_CONNECTIONS = 4; // used for vector
 	static const unsigned int MAX_CONNECTIONS = 4;
+	static const unsigned int MAX_PACKET_SIZE = 512;
 
-	GameServer* server;
-	static Snapshot dummy_snapshot;
+	//GameServer* server;
+	unsigned char buffer[MAX_PACKET_SIZE];
+
 	SnapshotManager snapshot_manager = SnapshotManager();
-	//Client* clients[MAX_CONNECTIONS] = {};
-	//std::unique_ptr<Client> = ...
 	std::vector<Client> clients;
 	unsigned char connections = 0;
 public:
-	Game(GameServer* gameServer);
+	//Game(GameServer* gameServer);
+	Game(Socket* socket);
 
 	Client& connRequest(unsigned long ip, unsigned short port);
 	void receiveCommand(Client& client, InPacket& packet);
 	void sendCommand(Client& client, OutPacket& packet);
 	void sendSnapshots();
+
+	void testCommand();
 };

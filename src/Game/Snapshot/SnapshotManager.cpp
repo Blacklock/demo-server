@@ -10,7 +10,8 @@ SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	// Find the PlayerState struct or create a new one
-	std::cout << "UPDATEPLAYERSTATE/\n";
+	//Snapshot master_snapshot = Snapshot(0); // TEMPO
+
 	std::unordered_map<unsigned char, PlayerState>::iterator player_state;
 	player_state = master_snapshot.player_states.find(client.id);
 
@@ -46,9 +47,9 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 		field_flags >>= 1;
 	}
 
-	std::cout << "[Master Gamestate]\nPosX\t" << master_snapshot.player_states[client.id].pos_x <<
+	/*std::cout << "[Master Gamestate]\nPosX\t" << master_snapshot.player_states[client.id].pos_x <<
 				 "\nPosY\t" << master_snapshot.player_states[client.id].pos_y <<
-				 "\nScore\t" << /*+*/master_snapshot.player_states[client.id].score << "\n";
+				 "\nScore\t" << master_snapshot.player_states[client.id].score << "\n";*/
 }
 
 void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
@@ -63,15 +64,12 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 	if (last_snapshot == nullptr) {
 		writeDelta(packet, new_snapshot.get(), last_snapshot.get());
 	} else {
+		//Snapshot master_snapshot = Snapshot(0); // TEMPO
 		writeDelta(packet, new_snapshot.get(), &master_snapshot);
 	}
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);
-
-	//temp
-	vbyteEncode(12345);
-	vbyteEncode(-12345);
 }
 
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot) {

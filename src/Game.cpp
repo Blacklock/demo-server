@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 
-Snapshot Game::dummy_snapshot = Snapshot(0); // this has to be reworked
+/*Game::Game(GameServer* gameServer) :
+	server(gameServer) {}*/
 
-Game::Game(GameServer* gameServer) :
-	server(gameServer) {}
+Game::Game(Socket* socket) : socket(socket) {}
 
 Client& Game::connRequest(unsigned long ip, unsigned short port) {
 	if (connections < MAX_CONNECTIONS) {
@@ -28,6 +28,13 @@ Client& Game::connRequest(unsigned long ip, unsigned short port) {
 	}
 }
 
+void Game::testCommand() {
+	std::cout << "test command\n";
+	std::cout << "address of socket: " << &socket << "\n";
+	//connections++;
+	std::cout << "address of connections: " << (void*)&connections << "\n";
+}
+
 void Game::receiveCommand(Client& client, InPacket& packet) {
 	std::cout << "Sequence " << packet.packet_sequence << 
 	" Ack " << packet.packet_ack << " AckBitfield " << packet.ack_bitfield << "\n";
@@ -38,6 +45,11 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	switch (command) {
 		case UnreliableCmd::PlayerState: // rename to PlayerData or something like that
 			// Update master game state
+
+			// neither seem to exist
+			std::cout << "address of socket: " << &socket << "\n";
+			std::cout << "address of connections: " << (void*)&connections << "\n";
+
 			snapshot_manager.updatePlayerState(packet, client);
 			break;
 		default:
@@ -58,13 +70,13 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 	// Increase our sequence by one
 	client.server_sequence++;
 
-	server->send(packet, client.ip, client.port);
+	//server->send(packet, client.ip, client.port);
 }
 
 void Game::sendSnapshots() {
 	// Iterate over all clients
 	for (unsigned char i = 0; i < connections; ++i) {
-		OutPacket ss_packet = OutPacket(PacketType::Unreliable, server->buffer);
+		OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
 		ss_packet.write(UnreliableCmd::Snapshot);
 
 		snapshot_manager.writeSnapshot(ss_packet, clients[i]); // Write snapshot data

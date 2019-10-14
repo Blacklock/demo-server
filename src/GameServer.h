@@ -25,14 +25,14 @@ private:
 	std::mutex mtx;
 	bool stopGameLoop = false;
 
-	std::vector<std::unique_ptr<Game>> games;
+	//std::vector<std::shared_ptr<Game>> games;
+	std::vector<Game*> games;
 	std::unordered_map<long long, Client*> connections;
 public:
 	GameServer(unsigned short port);
-	~GameServer();
 
 	void createGame();
-	void send(OutPacket packet, unsigned long destIp, unsigned short port);
+	//void send(OutPacket packet, unsigned long destIp, unsigned short port);
 private:
 	void startGameLoop();
 	void tick();

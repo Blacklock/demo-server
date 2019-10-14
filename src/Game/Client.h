@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Utils/CircularBuffer.h"
+#include "Packet/OutPacket.h"
 #include "../Utils/AckBuffer.h"
 #include "Snapshot/SnapshotBuffer.h"
 
@@ -24,5 +25,7 @@ private:
 	std::chrono::steady_clock::time_point last_received;
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
+
+	void send(OutPacket& packet);
 	void bump();
 };
