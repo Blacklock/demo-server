@@ -87,8 +87,8 @@ void GameServer::tick() {
 
 					if (command == ControlCmd::ConnRequest) {
 						bool game_found = false;
-
 						uint32_t protocol = in_packet.read<uint32_t>();
+
 						if (protocol == GAME_PROTOCOL) {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find game

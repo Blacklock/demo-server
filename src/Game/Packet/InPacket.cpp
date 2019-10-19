@@ -52,14 +52,10 @@ template<> int32_t InPacket::read<int32_t>() {
 };
 
 void InPacket::build(int buffer_size) {
-	packet_type = static_cast<PacketType>(buffer[0]);
-	packet_length = (static_cast<unsigned short>(buffer[1]) << 8) | buffer[2]; // short => unsigned short
-
-	buffer_index += 3;
+	packet_type = static_cast<PacketType>(read<unsigned char>());
+	packet_length = read<unsigned short>();
 
 	if (packet_type == PacketType::Unreliable) {
-		//packet_sequence = (static_cast<unsigned short>(buffer[3]) << 8) | buffer[4];
-		// std::cout << "Sequence: " << packet_sequence << "\n";
 		packet_sequence = read<unsigned short>();
 		packet_ack = read<unsigned short>();
 		ack_bitfield = read<uint32_t>();

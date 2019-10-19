@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 
-enum class SnapshotFields : unsigned char { // Shows what fields have changed
+enum class PlayerFields : unsigned char { // Shows what fields have changed
 	PosX,
 	PosY,
 	Score,

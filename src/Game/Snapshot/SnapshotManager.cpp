@@ -25,21 +25,21 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 
 	// Iterate over field flags
 
-	for (int i = 0; i != (int)SnapshotFields::End; i++) {
+	for (int i = 0; i != (int)PlayerFields::End; i++) {
 		if (field_flags & 1) { // Field has been changed
 			// In the future we will have to check the validity of the given data
-			switch ((SnapshotFields)i) {
-				case SnapshotFields::PosX:
+			switch ((PlayerFields)i) {
+				case PlayerFields::PosX:
 					player_state->second.pos_x = packet.read<int32_t>();
 					break;
-				case SnapshotFields::PosY:
+				case PlayerFields::PosY:
 					player_state->second.pos_y = packet.read<int32_t>();
 					break;
-				case SnapshotFields::Score:
+				case PlayerFields::Score:
 					player_state->second.score = packet.read<uint8_t>();
 					break;
 				default:
-					throw std::invalid_argument("Unknown snapshot field.");
+					throw std::invalid_argument("Unknown PlayerState field.");
 			}
 		}
 
@@ -52,7 +52,6 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 }
 
 void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
-	// All this smart pointer code looks ugly...
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
 
@@ -60,6 +59,7 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
 	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
+	// Wait, shouldn't we be using a dummy snapshot instead of the master?!
 	if (last_snapshot == nullptr) {
 		writeDelta(packet, new_snapshot.get(), last_snapshot.get());
 	} else {
@@ -73,15 +73,6 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot) {
 	// Iterate over all entities (currently just players)
 	std::unordered_map<unsigned char, PlayerState>::iterator entity;
-
-	/*writeDeltaField(packet, (int32_t)500, 0);
-	writeDeltaField(packet, (int32_t)-500, 0);
-	writeDeltaField(packet, (int32_t)-8191, 0);
-	writeDeltaField(packet, (int32_t)-8192, 0);
-	writeDeltaField(packet, (int32_t)8191, 0);
-	writeDeltaField(packet, (int32_t)8192, 0);
-	writeDeltaField(packet, (int32_t)-1028576, 0);
-	writeDeltaField(packet, (int32_t)1050000, 0);*/
 
 	for (entity = new_snapshot->player_states.begin(); entity != new_snapshot->player_states.end(); ++entity) {
 		// Write the player ID (we might not actually need to send it every single time, look into it later)
@@ -129,11 +120,12 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 				uint8_t byte = new_field & 0b01111111; // get the 7 least significant bits
 				new_field >>= 7; // assumes arithmetic shift
 
-				// more =  !((value == 0 && sign bit of byte is clear) || (value == -1 && sign bit of byte is set))
 				if (new_field == sign && ((byte ^ sign) & 0b01000000) == 0) {
 					more = false;
 					byte |= 0b10000000; // set the most significant bit to mark end
 				}
+
+				packet.write(byte);
 			} while (more);
 			std::cout << "/\n";
 		}
@@ -142,24 +134,4 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 		return true;
 	}
 	return false;
-}
-
-int32_t SnapshotManager::vbyteEncode(int32_t num) { // LEB128
-	bool more = true;
-	int sign = num >> 31; // 0 = unsigned; -1 = signed
-
-	do {
-		uint8_t byte = num & 0b01111111; // get the 7 least significant bits
-		num >>= 7; // assumes arithmetic shift
-
-		// more =  !((value == 0 && sign bit of byte is clear) || (value == -1 && sign bit of byte is set))
-		// more = num != sign || ((byte ^ sign) & 0b1000000) != 0;
-		if (num == sign && ((byte ^ sign) & 0b01000000) == 0) {
-			more = false;
-			byte |= 0b10000000; // set the most significant bit to mark end
-		}
-	} while (more);
-
-
-	return 0; // temp
 }

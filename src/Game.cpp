@@ -36,7 +36,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 
 	switch (command) {
-		case UnreliableCmd::PlayerState: // rename to PlayerData or something like that
+		case UnreliableCmd::PlayerData: // rename to PlayerData or something like that
 			// Update master game state
 			snapshot_manager.updatePlayerState(packet, client);
 			break;
@@ -44,7 +44,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 			throw std::invalid_argument("Unknown command.");
 	}
 
-	client.sequences.put(packet.packet_sequence);
+	client.sequences.put(packet.packet_sequence); // Update ack
 }
 
 void Game::sendCommand(Client& client, OutPacket& packet) {

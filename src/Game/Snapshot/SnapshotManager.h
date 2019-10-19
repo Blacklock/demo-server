@@ -17,6 +17,4 @@ public:
 
 	bool writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field);
 	bool writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode = true);
-
-	int32_t vbyteEncode(int32_t num);
 };
