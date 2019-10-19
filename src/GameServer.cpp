@@ -67,18 +67,11 @@ void GameServer::tick() {
 						std::cout << "Connection does not exist.\n";
 					} else {
 						// Okay, so the line below doesn't work, as client->second->game is null or something.
+						// This HAS TO BE FIXED if we ever want multiple game instances to run at once!
 						//client->second->game->receiveCommand(*client->second, in_packet);
 						games[0]->receiveCommand(*connections[connection], in_packet);
 					}
 
-					/*if (connections.find(connection) == connections.end()) {
-						// Connection doesn't exist, simply ignore the packets (for now?)
-						std::cout << "Connection does not exist.\n";
-					} else {
-						connections[connection]->game->receiveCommand(*connections[connection], in_packet);
-						//connections.at(connection)->game->receiveCommand(*connections[connection], in_packet);
-						//games[0]->receiveCommand(*connections[connection], in_packet);
-					}*/
 					break;
 				case PacketType::Reliable:
 					break;

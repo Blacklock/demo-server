@@ -59,27 +59,46 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
 	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
-	// Wait, shouldn't we be using a dummy snapshot instead of the master?!
 	if (last_snapshot == nullptr) {
-		writeDelta(packet, new_snapshot.get(), last_snapshot.get());
+		writeDelta(packet, last_snapshot.get());
 	} else {
-		writeDelta(packet, new_snapshot.get(), &master_snapshot);
+		writeDelta(packet, nullptr); // Send a dummy snapshot
 	}
+
+	// Deep copy master player states into our new snapshot
+	new_snapshot->player_states = master_snapshot.player_states;
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);
 }
 
-void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* new_snapshot, Snapshot* last_snapshot) {
-	// Iterate over all entities (currently just players)
+// pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
+void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
+	// Iterate over all entities in the master snapshot (currently just players)
 	std::unordered_map<unsigned char, PlayerState>::iterator entity;
 
-	for (entity = new_snapshot->player_states.begin(); entity != new_snapshot->player_states.end(); ++entity) {
-		// Write the player ID (we might not actually need to send it every single time, look into it later)
+	//for (entity = new_snapshot->player_states.begin(); entity != new_snapshot->player_states.end(); ++entity) {
+	for (entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
+		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
 		packet.write(entity->first); // const!
 
-		// Find the given entity in last_snapshot
-		PlayerState last_entity = last_snapshot->player_states[entity->first];
+		PlayerState last_entity; // Find given entity in the last snapshot
+
+		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
+			last_entity = dummy_player; // If last_entity is nullptr, it's guaranteed to be sent again
+		} else {
+			// Find the given entity in last_snapshot
+			std::unordered_map<unsigned char, PlayerState>::iterator last_entity_it;
+			last_entity_it = last_snapshot->player_states.find(entity->first);
+
+			if (last_entity_it != last_snapshot->player_states.end()) {
+				last_entity = last_entity_it->second;
+			} else { // Entity not found
+				last_entity = dummy_player;
+			}
+		}
+
+		// PlayerState last_entity = last_snapshot->player_states[entity->first];
 
 		// Compare snapshot values
 		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
@@ -111,6 +130,8 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, uint8_t new_field, uint
 bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
 	std::cout << new_field << "\n";
 	if (new_field != old_field) {
+		encode = false; // TEMP; we haven't implemented client-side leb128 decoding yet
+
 		if (encode) { // (S)LEB128, vbyte encoding
 			bool more = true;
 			int sign = new_field >> 31; // 0 = unsigned; -1 = signed
@@ -128,6 +149,8 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 				packet.write(byte);
 			} while (more);
 			std::cout << "/\n";
+		} else {
+			packet.write(new_field);
 		}
 		
 		packet.write(new_field);
