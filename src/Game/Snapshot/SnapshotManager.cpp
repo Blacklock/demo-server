@@ -45,10 +45,6 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 
 		field_flags >>= 1;
 	}
-
-	/*std::cout << "[Master Gamestate]\nPosX\t" << master_snapshot.player_states[client.id].pos_x <<
-				 "\nPosY\t" << master_snapshot.player_states[client.id].pos_y <<
-				 "\nScore\t" << master_snapshot.player_states[client.id].score << "\n";*/
 }
 
 void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
@@ -128,7 +124,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, uint8_t new_field, uint
 }
 
 bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
-	std::cout << new_field << "\n";
 	if (new_field != old_field) {
 		encode = false; // TEMP; we haven't implemented client-side leb128 decoding yet
 
@@ -137,7 +132,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 			int sign = new_field >> 31; // 0 = unsigned; -1 = signed
 
 			do {
-				std::cout << "c";
 				uint8_t byte = new_field & 0b01111111; // get the 7 least significant bits
 				new_field >>= 7; // assumes arithmetic shift
 
@@ -148,7 +142,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 
 				packet.write(byte);
 			} while (more);
-			std::cout << "/\n";
 		} else {
 			packet.write(new_field);
 		}

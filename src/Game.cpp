@@ -12,20 +12,13 @@
 
 Game::Game(Socket* socket) : socket(socket) {}
 
-Client& Game::connRequest(unsigned long ip, unsigned short port) {
-	if (connections < MAX_CONNECTIONS) {
+int Game::connRequest() {
+	if (connections_num < MAX_CONNECTIONS) {
 		// Once we implement disconnection, the ID system will be improved
-		Client client = Client(this, connections, ip, port);
-
-		//clients[connections] = client;
-		clients.emplace_back(client);
-
-		connections++;
-
-		return clients.back();
-	} else {
-		throw std::exception("Connection limit reached.");
+		connections_num++;
+		return connections_num - 1;
 	}
+	return -1;
 }
 
 void Game::receiveCommand(Client& client, InPacket& packet) {
@@ -62,14 +55,11 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 	client.send(packet);
 }
 
-void Game::sendSnapshots() {
-	// Iterate over all clients
-	for (unsigned char i = 0; i < connections; ++i) {
-		OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
-		ss_packet.write(UnreliableCmd::Snapshot);
+void Game::sendSnapshot(Client& client) {
+	OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
+	ss_packet.write(UnreliableCmd::Snapshot);
 
-		snapshot_manager.writeSnapshot(ss_packet, clients[i]); // Write snapshot data
+	snapshot_manager.writeSnapshot(ss_packet, client); // Write snapshot data
 
-		sendCommand(clients[i], ss_packet); // Send the packet
-	}
+	sendCommand(client, ss_packet); // Send the packet
 }
