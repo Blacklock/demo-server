@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <vector>
+#include <stdint.h>
 
 
 class GameServer;
@@ -23,13 +24,13 @@ private:
 	unsigned char buffer[MAX_PACKET_SIZE];
 
 	SnapshotManager snapshot_manager = SnapshotManager();
-	std::vector<Client> clients;
-	unsigned char connections = 0;
+	std::vector<Client*> clients;
+	uint8_t connections_num = 0;
 public:
 	//Game(GameServer* gameServer);
 	Game(Socket* socket);
 
-	Client& connRequest(unsigned long ip, unsigned short port);
+	Client* connRequest(unsigned long ip, unsigned short port);
 	void receiveCommand(Client& client, InPacket& packet);
 	void sendCommand(Client& client, OutPacket& packet);
 	void sendSnapshots();

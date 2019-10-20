@@ -12,15 +12,18 @@
 
 Game::Game(Socket* socket) : socket(socket) {}
 
-Client& Game::connRequest(unsigned long ip, unsigned short port) {
-	if (connections < MAX_CONNECTIONS) {
+Client* Game::connRequest(unsigned long ip, unsigned short port) {
+	if (connections_num < MAX_CONNECTIONS) {
 		// Once we implement disconnection, the ID system will be improved
-		Client client = Client(this, connections, ip, port);
+		
+		Client* client = new Client(this, connections_num, ip, port);
+
+		std::cout << "Client id connRequest: " << static_cast<uint16_t>(client->id) << "\n";
 
 		//clients[connections] = client;
 		clients.emplace_back(client);
 
-		connections++;
+		connections_num++;
 
 		return clients.back();
 	} else {
@@ -31,6 +34,8 @@ Client& Game::connRequest(unsigned long ip, unsigned short port) {
 void Game::receiveCommand(Client& client, InPacket& packet) {
 	std::cout << "Sequence " << packet.packet_sequence << 
 	" Ack " << packet.packet_ack << " AckBitfield " << packet.ack_bitfield << "\n";
+
+	std::cout << "Client id recvCommand: " << static_cast<uint16_t>(client.id) << "\n";
 
 	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
@@ -64,12 +69,12 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 
 void Game::sendSnapshots() {
 	// Iterate over all clients
-	for (unsigned char i = 0; i < connections; ++i) {
+	for (unsigned char i = 0; i < connections_num; ++i) {
 		OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
 		ss_packet.write(UnreliableCmd::Snapshot);
 
-		snapshot_manager.writeSnapshot(ss_packet, clients[i]); // Write snapshot data
+		snapshot_manager.writeSnapshot(ss_packet, *clients[i]); // Write snapshot data
 
-		sendCommand(clients[i], ss_packet); // Send the packet
+		sendCommand(*clients[i], ss_packet); // Send the packet
 	}
 }

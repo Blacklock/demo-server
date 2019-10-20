@@ -25,8 +25,8 @@ private:
 	std::mutex mtx;
 	bool stopGameLoop = false;
 
-	std::vector<std::unique_ptr<Game>> games;
-	//std::vector<Game*> games;
+	//std::vector<std::unique_ptr<Game>> games;
+	std::vector<Game*> games;
 	std::unordered_map<long long, Client*> connections;
 public:
 	GameServer(unsigned short port);

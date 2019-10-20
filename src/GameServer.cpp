@@ -18,8 +18,8 @@ GameServer::GameServer(unsigned short port) {
 }
 
 void GameServer::createGame() {
-	games.emplace_back(std::make_unique<Game>(&socket));
-	//games.push_back(new Game(&socket));
+	//games.emplace_back(std::make_unique<Game>(&socket));
+	games.emplace_back(new Game(&socket));
 }
 
 void GameServer::startGameLoop() {
@@ -57,19 +57,24 @@ void GameServer::tick() {
 			InPacket in_packet = InPacket(buffer, p_info.buffer_size);
 
 			long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
-			std::cout << "Received a packet " << (unsigned char)in_packet.packet_type << "\n";
 
-			std::unordered_map<long long, Client*>::iterator client = connections.find(connection);
+			std::unordered_map<long long, Client*>::iterator conn = connections.find(connection);
 			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:
-					if (client == connections.end()) {
+					if (conn == connections.end()) {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
+						std::cout << "Client id conn->second: " << static_cast<uint16_t>(conn->second->id) << "\n";
+						std::cout << "Client id connections[connection]: " << static_cast<uint16_t>(connections[connection]->id) << "\n";
 						// Okay, so the line below doesn't work, as client->second->game is null or something.
 						// This HAS TO BE FIXED if we ever want multiple game instances to run at once!
-						//client->second->game->receiveCommand(*client->second, in_packet);
-						games[0]->receiveCommand(*connections[connection], in_packet);
+						conn->second->game->receiveCommand(*conn->second, in_packet);
+						//games[connection]->receiveCommand(*connections[connection], in_packet);
+						/*std::cout << connections[connection] << "\n";
+						std::cout << connections[connection]->game << "\n";*/
+						//connections[connection]->game->receiveCommand(*connections[connection], in_packet);
+						//games[0]->receiveCommand(*connections[connection], in_packet);
 					}
 
 					break;
@@ -89,10 +94,10 @@ void GameServer::tick() {
 								//for (Game* game : games) {
 								for (auto&& game : games) {
 									try {
-										Client new_client = game->connRequest(p_info.sender_address, p_info.sender_port);
+										Client* new_client = game->connRequest(p_info.sender_address, p_info.sender_port);
 
 										game_found = true;
-										connections[connection] = &new_client;
+										connections[connection] = new_client;
 										std::cout << "Found an open game for new connection\n";
 										break;
 									} catch (const std::exception& ex) { (void)ex; } // Game is full
@@ -110,6 +115,7 @@ void GameServer::tick() {
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
 							//send(out_packet, p_info.sender_address, p_info.sender_port);
+							std::cout << "Client id conns[conn]->send: " << static_cast<uint16_t>(connections[connection]->id) << "\n";
 							connections[connection]->send(out_packet);
 						} else {
 							throw std::invalid_argument("Unknown protocol.");
