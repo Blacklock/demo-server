@@ -65,16 +65,7 @@ void GameServer::tick() {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
-						std::cout << "Client id conn->second: " << static_cast<uint16_t>(conn->second->id) << "\n";
-						std::cout << "Client id connections[connection]: " << static_cast<uint16_t>(connections[connection]->id) << "\n";
-						// Okay, so the line below doesn't work, as client->second->game is null or something.
-						// This HAS TO BE FIXED if we ever want multiple game instances to run at once!
 						conn->second->game->receiveCommand(*conn->second, in_packet);
-						//games[connection]->receiveCommand(*connections[connection], in_packet);
-						/*std::cout << connections[connection] << "\n";
-						std::cout << connections[connection]->game << "\n";*/
-						//connections[connection]->game->receiveCommand(*connections[connection], in_packet);
-						//games[0]->receiveCommand(*connections[connection], in_packet);
 					}
 
 					break;
@@ -93,14 +84,15 @@ void GameServer::tick() {
 
 								//for (Game* game : games) {
 								for (auto&& game : games) {
-									try {
-										Client* new_client = game->connRequest(p_info.sender_address, p_info.sender_port);
+									int client_id = game->connRequest();
+									if (client_id != -1) { // Game isn't full
+										Client* client = new Client(game, (unsigned char)client_id, p_info.sender_address, p_info.sender_port);
+										connections[connection] = client; // Insert new connection into map
 
 										game_found = true;
-										connections[connection] = new_client;
 										std::cout << "Found an open game for new connection\n";
 										break;
-									} catch (const std::exception& ex) { (void)ex; } // Game is full
+									}
 								}
 							} else {
 								// Connection already exists, send an accept packet again
@@ -114,8 +106,7 @@ void GameServer::tick() {
 
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
-							//send(out_packet, p_info.sender_address, p_info.sender_port);
-							std::cout << "Client id conns[conn]->send: " << static_cast<uint16_t>(connections[connection]->id) << "\n";
+
 							connections[connection]->send(out_packet);
 						} else {
 							throw std::invalid_argument("Unknown protocol.");
@@ -131,8 +122,14 @@ void GameServer::tick() {
 		}
 
 		// Loop over all games and send snapshots to all clients
-		for (size_t i = 0; i < games.size(); ++i) {
+		/*for (size_t i = 0; i < games.size(); ++i) {
 			games[i]->sendSnapshots();
+		}*/
+
+		// Loop over all clients and send them snapshots
+		std::unordered_map<long long, Client*>::iterator conn;
+		for (conn = connections.begin(); conn != connections.end(); ++conn) {
+			conn->second->game->sendSnapshot(*conn->second);
 		}
 
 		std::cout << "\n";
