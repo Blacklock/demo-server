@@ -18,8 +18,8 @@ GameServer::GameServer(unsigned short port) {
 }
 
 void GameServer::createGame() {
-	//games.emplace_back(std::make_unique<Game>(&socket));
-	games.emplace_back(new Game(&socket));
+	games.emplace_back(std::make_unique<Game>(&socket));
+	//games.emplace_back(new Game(&socket));
 }
 
 void GameServer::startGameLoop() {
@@ -58,7 +58,7 @@ void GameServer::tick() {
 
 			long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
 
-			std::unordered_map<long long, Client*>::iterator conn = connections.find(connection);
+			std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn = connections.find(connection);
 			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:
 					if (conn == connections.end()) {
@@ -86,8 +86,10 @@ void GameServer::tick() {
 								for (auto&& game : games) {
 									int client_id = game->connRequest();
 									if (client_id != -1) { // Game isn't full
-										Client* client = new Client(game, (unsigned char)client_id, p_info.sender_address, p_info.sender_port);
-										connections[connection] = client; // Insert new connection into map
+										//Client* client = new Client(game.get(), (unsigned char)client_id, p_info.sender_address, p_info.sender_port);
+										connections[connection] = std::make_unique<Client>(
+											game.get(), (unsigned char)client_id, p_info.sender_address, p_info.sender_port
+										);
 
 										game_found = true;
 										std::cout << "Found an open game for new connection\n";
@@ -127,7 +129,8 @@ void GameServer::tick() {
 		}*/
 
 		// Loop over all clients and send them snapshots
-		std::unordered_map<long long, Client*>::iterator conn;
+		// Currently we only send snapshots if we received any packets
+		std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn;
 		for (conn = connections.begin(); conn != connections.end(); ++conn) {
 			conn->second->game->sendSnapshot(*conn->second);
 		}
