@@ -18,12 +18,12 @@ bool AckBuffer::put(unsigned short sequence) {
 	bool overflow;
 
 	// Check for overflow
-	if (sequence - last_sequence <= 32768) {
-		overflow = false;
-	} else if (last_sequence - sequence > 32768) {
+	if (last_sequence - sequence > 32768) {
 		overflow = true;
+	} else if (sequence - last_sequence <= 32768) {
+		overflow = false;
 	} else {
-		throw std::exception();
+		throw std::exception("Overflow check failed.");
 	}
 
 	// Check if new sequence is larger than the previous & get difference
@@ -38,14 +38,14 @@ bool AckBuffer::put(unsigned short sequence) {
 		if (difference > 0 && difference <= 32) {
 			ack_bitfield = ack_bitfield | (uint32_t)pow(2, difference - 1);
 		}
-
+		
 		return false;
 	}
 
 	ack_bitfield = ack_bitfield << difference;
 	ack_bitfield = ack_bitfield + (uint32_t)pow(2, difference - 1);
 
-	// std::cout << "seq " << sequence << " last_seq " << last_sequence << " diff " << difference << " <> " << std::bitset<32>(ack_bitfield).to_string() << "\n\n";
+	//std::cout << "seq " << sequence << " last_seq " << last_sequence << " diff " << difference << " <> " << std::bitset<32>(ack_bitfield).to_string() << "\n\n";
 
 	last_sequence = sequence;
 	return true;
