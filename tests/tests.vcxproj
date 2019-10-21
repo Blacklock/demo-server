@@ -54,7 +54,7 @@
     <IntDir>$(SolutionDir)obj\tests\</IntDir>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -63,6 +63,9 @@
     <ProjectReference Include="..\DemoServer.vcxproj">
       <Project>{0e2b45d3-7afb-467f-bc49-eafeaa95545a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AckBufferTest.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
