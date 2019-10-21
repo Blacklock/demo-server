@@ -3,12 +3,12 @@
 #include "gtest/gtest.h"
 #include <stdint.h>
 
-#include "../src/Utils/AckBuffer.cpp"
+#include "../../../src/Utils/AckBuffer.cpp"
 
 
 class AckBufferTest : public ::testing::Test {
 protected:
-	void SetUp() override {
+	AckBufferTest() {
 		ackBuffer = AckBuffer();
 	}
 
