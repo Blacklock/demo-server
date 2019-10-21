@@ -2,6 +2,7 @@
 // to DLL. We should probably look into another solution later.
 #include "gtest/gtest.h"
 
+#include "Tests/SocketTest.h"
 #include "Tests/Utils/AckBufferTest.h"
 #include "Tests/Game/Packet/OutPacketTest.h"
 
