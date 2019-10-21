@@ -30,5 +30,8 @@
     <ClInclude Include="Tests\SocketTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Tests\Game\Packet\InPacketTest.h">
+      <Filter>Tests\Game\Packet</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
