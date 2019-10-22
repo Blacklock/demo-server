@@ -38,7 +38,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	}
 
 	// Update ack
-	client.sequences.put(packet.packet_sequence);
+	client.sequences.put(packet.packet_ack);
 	// If newly received ack is larger than previous, update last received snapshot
 	client.last_snapshot = client.sequences.last_sequence;
 }

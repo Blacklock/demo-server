@@ -12,6 +12,7 @@ const bool DEBUG = true; // Debug mode (global variable; temp)
 SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
+	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
 	// Find the PlayerState struct or create a new one
 
 	std::unordered_map<unsigned char, PlayerState>::iterator player_state;
@@ -57,21 +58,11 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 	// Get the latest snapshot acked by the client (is this safe? can the original pointer get deleted?)
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
-	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
-	if (last_snapshot == nullptr) {
-		std::cout << "LAST SNAPSHOT NOT FOUND\n";
-		writeDelta(packet, nullptr);
+	if (last_snapshot == nullptr) { // Latest snapshot wasn't found in the buffer
+		writeDelta(packet, nullptr); // ...so send a dummy snapshot
 	} else {
-		writeDelta(packet, last_snapshot.get()); // Send a dummy snapshot
-	}
-	
-	/*// If the latest snapshot isn't found in the buffer, use the master snapshot instead
-	if (last_snapshot == nullptr) {
-		std::cout << "LAST SNAPSHOT NOT FOUND\n";
 		writeDelta(packet, last_snapshot.get());
-	} else {
-		writeDelta(packet, nullptr); // Send a dummy snapshot
-	}*/
+	}
 
 	// Deep copy master player states into our new snapshot
 	new_snapshot->player_states = master_snapshot.player_states;
@@ -103,18 +94,8 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 
 			if (last_entity_it != last_snapshot->player_states.end()) {
 				last_entity = last_entity_it->second;
-
-				std::cout << "Last PlayerState Data for entity 0 or whatever:\n";
-				std::cout << "PosX " << last_entity.pos_x << "\n";
-				std::cout << "PosY " << last_entity.pos_y << "\n";
-				std::cout << "SCRE " << static_cast<int>(last_entity.score) << "\n";
 			} else { // Entity not found
-
 				last_entity = dummy_player;
-				std::cout << "Last PlayerState Data (MISSING!!!!) for entity 0 or whatever:\n";
-				std::cout << "PosX " << last_entity.pos_x << "\n";
-				std::cout << "PosY " << last_entity.pos_y << "\n";
-				std::cout << "SCRE " << static_cast<int>(last_entity.score) << "\n";
 			}
 		}
 
