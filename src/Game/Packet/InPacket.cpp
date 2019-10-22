@@ -68,6 +68,7 @@ void InPacket::build(int buffer_size) {
 	std::cout << "\n";
 
 	if (packet_length != buffer_size) {
-		std::cout << "Packet length not equal to import size.\n";
+		throw std::exception("Packet length not equal to import size.");
+		//std::cout << "Packet length not equal to import size.\n";
 	}
 }
