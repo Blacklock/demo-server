@@ -82,7 +82,6 @@ void GameServer::tick() {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find game
 
-								//for (Game* game : games) {
 								for (auto&& game : games) {
 									int client_id = game->connRequest();
 									if (client_id != -1) { // Game isn't full
