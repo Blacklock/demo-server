@@ -4,7 +4,10 @@
 #include <memory>
 #include <unordered_map>
 #include <bitset>
+#include <string>
 
+
+const bool DEBUG = true; // Debug mode (global variable; temp)
 
 SnapshotManager::SnapshotManager() {}
 
@@ -56,10 +59,19 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 
 	// If the latest snapshot isn't found in the buffer, use the master snapshot instead
 	if (last_snapshot == nullptr) {
+		std::cout << "LAST SNAPSHOT NOT FOUND\n";
+		writeDelta(packet, nullptr);
+	} else {
+		writeDelta(packet, last_snapshot.get()); // Send a dummy snapshot
+	}
+	
+	/*// If the latest snapshot isn't found in the buffer, use the master snapshot instead
+	if (last_snapshot == nullptr) {
+		std::cout << "LAST SNAPSHOT NOT FOUND\n";
 		writeDelta(packet, last_snapshot.get());
 	} else {
 		writeDelta(packet, nullptr); // Send a dummy snapshot
-	}
+	}*/
 
 	// Deep copy master player states into our new snapshot
 	new_snapshot->player_states = master_snapshot.player_states;
@@ -70,6 +82,8 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 
 // pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
+	if (DEBUG) std::cout << "[Snapshot Info]\n";
+
 	// Iterate over all entities in the master snapshot (currently just players)
 	std::unordered_map<unsigned char, PlayerState>::iterator entity;
 
@@ -89,8 +103,18 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 
 			if (last_entity_it != last_snapshot->player_states.end()) {
 				last_entity = last_entity_it->second;
+
+				std::cout << "Last PlayerState Data for entity 0 or whatever:\n";
+				std::cout << "PosX " << last_entity.pos_x << "\n";
+				std::cout << "PosY " << last_entity.pos_y << "\n";
+				std::cout << "SCRE " << static_cast<int>(last_entity.score) << "\n";
 			} else { // Entity not found
+
 				last_entity = dummy_player;
+				std::cout << "Last PlayerState Data (MISSING!!!!) for entity 0 or whatever:\n";
+				std::cout << "PosX " << last_entity.pos_x << "\n";
+				std::cout << "PosY " << last_entity.pos_y << "\n";
+				std::cout << "SCRE " << static_cast<int>(last_entity.score) << "\n";
 			}
 		}
 
@@ -103,8 +127,13 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
+		if (DEBUG) std::cout << "\t[EID]\t" << static_cast<int>(entity->first) << "\n";
+
+		if (DEBUG) std::cout << "\t[PosX]\t";
 		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.pos_x, last_entity.pos_x);
+		if (DEBUG) std::cout << "\t[PosY]\t";
 		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.pos_y, last_entity.pos_y);
+		if (DEBUG) std::cout << "\t[Score]\t";
 		modified_fields.fields.score = writeDeltaField(packet, entity->second.score, last_entity.score);
 
 		// Write the modified fields
@@ -117,14 +146,17 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 
 bool SnapshotManager::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
 	if (new_field != old_field) {
+		if (DEBUG) std::cout << static_cast<int>(new_field) << "\n";
 		packet.write(new_field);
 		return true;
 	}
+	if (DEBUG) std::cout << "Unchanged\n";
 	return false;
 }
 
 bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
 	if (new_field != old_field) {
+		if (DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
 		encode = false; // TEMP; we haven't implemented client-side leb128 decoding yet
 
 		if (encode) { // (S)LEB128, vbyte encoding
@@ -149,5 +181,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 		packet.write(new_field);
 		return true;
 	}
+	if (DEBUG) std::cout << "Unchanged\n";
 	return false;
 }
