@@ -42,12 +42,6 @@ template<> uint32_t InPacket::read<uint32_t>() {
 };
 
 template<> int32_t InPacket::read<int32_t>() {
-	// no need to rewrite all of this
-	/*buffer_index += 4;
-	return (int32_t)buffer[buffer_index - 4] << 24 |
-		(int32_t)buffer[buffer_index - 3] << 16 |
-		(int32_t)buffer[buffer_index - 2] << 8 |
-		(int32_t)buffer[buffer_index - 1];*/
 	return (int32_t)read<uint32_t>();
 };
 

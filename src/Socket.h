@@ -39,7 +39,7 @@ public:
 	Socket(unsigned int max_packet_size);
 	~Socket();
 
-	void sendPacket(unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port);
+	void sendPacket(const unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port);
 	InPacketInfo receivePacket(unsigned char* outBuffer);
 	void create(unsigned short port);
 };

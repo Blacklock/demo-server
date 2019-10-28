@@ -38,7 +38,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	switch (command) {
 		case UnreliableCmd::PlayerData: // rename to PlayerData or something like that
 			// Update master game state
-			snapshot_manager.updatePlayerState(packet, client);
+			snapshot_manager.updatePlayerState(client, packet);
 			break;
 		default:
 			throw std::invalid_argument("Unknown command.");
@@ -51,7 +51,6 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 }
 
 void Game::sendCommand(Client& client, OutPacket& packet) {
-	// Set the headers
 	packet.setHeaders(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
@@ -60,14 +59,14 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 
 	client.server_sequence++; // Increase our sequence by one
 
-	client.send(packet); // Send the packet
+	client.send(packet);
 }
 
 void Game::sendSnapshot(Client& client) {
 	OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
 	ss_packet.write(UnreliableCmd::Snapshot);
 
-	snapshot_manager.writeSnapshot(ss_packet, client); // Write snapshot data
+	snapshot_manager.writeSnapshot(client, ss_packet); // Write snapshot data
 
 	sendCommand(client, ss_packet); // Send the packet
 }

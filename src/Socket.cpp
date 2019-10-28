@@ -27,19 +27,15 @@ Socket::~Socket() {
 	#endif
 }
 
-void Socket::sendPacket(unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port) { // was: const char destIp[46]
+// was: const char destIp[46]
+void Socket::sendPacket(const unsigned char packet[], unsigned short packet_size, unsigned long destIp, unsigned short port) {
 	sockaddr_in address;
-
-	/*if (inet_pton(AF_INET, destIp, &(address.sin_addr)) != 1) { // perhaps sin_addr.s_addr ?????
-		throw std::exception("IP address conversion failed.");
-	}*/
 
 	address.sin_addr.s_addr = htonl(destIp);
 	address.sin_family = AF_INET;
 	address.sin_port = htons(port);
 
 	// unsigned int packet_size = (unsigned int)strlen((char*)packet);
-
 	int sent_bytes = sendto(handle, (const char*)packet, packet_size, 0, (sockaddr*)&address, sizeof(address));
 
 	if (sent_bytes != packet_size) {

@@ -7,7 +7,7 @@
 #include <string>
 
 
-const bool DEBUG = true; // Debug mode (global variable; temp)
+const bool DEBUG = false; // Debug mode (global variable; temp)
 
 SnapshotManager::SnapshotManager() {}
 
@@ -16,19 +16,18 @@ void SnapshotManager::addPlayer(Client& client) { // this method might actually 
 }
 
 void SnapshotManager::removePlayer(Client& client) {
-	std::unordered_map<unsigned char, PlayerState>::iterator player_state = master_snapshot.player_states.find(client.id);
+	auto player_state = master_snapshot.player_states.find(client.id);
 	if (player_state != master_snapshot.player_states.end()) {
 		master_snapshot.player_states.erase(player_state->first);
 		std::cout << "erased playerstate\n";
 	}
 }
 
-void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
+void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
 	// Find the PlayerState struct or create a new one
 
-	std::unordered_map<unsigned char, PlayerState>::iterator player_state;
-	player_state = master_snapshot.player_states.find(client.id);
+	auto player_state = master_snapshot.player_states.find(client.id);
 
 	if (player_state == master_snapshot.player_states.end()) { // Player state doesn't exist
 		std::cout << "Player state wasn't found! Creating a new one.\n";
@@ -64,7 +63,7 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	}
 }
 
-void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
+void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	if (DEBUG) std::cout << "[Snapshot Info]\n";
 	if (DEBUG) std::cout << "[SID]\t" << static_cast<int>(client.server_sequence) << "\n";
 
@@ -91,8 +90,7 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 	// Iterate over all entities in the master snapshot (currently just players)
 
-	std::unordered_map<unsigned char, PlayerState>::iterator entity;
-	for (entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
+	for (auto entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
 		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
 		packet.write(entity->first); // const!
 
@@ -102,8 +100,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 			last_entity = dummy_player; // If last_entity is nullptr, it's guaranteed to be sent again
 		} else {
 			// Find the given entity in last_snapshot
-			std::unordered_map<unsigned char, PlayerState>::iterator last_entity_it;
-			last_entity_it = last_snapshot->player_states.find(entity->first);
+			auto last_entity_it = last_snapshot->player_states.find(entity->first);
 
 			if (last_entity_it != last_snapshot->player_states.end()) {
 				last_entity = last_entity_it->second;
@@ -111,8 +108,6 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 				last_entity = dummy_player;
 			}
 		}
-
-		// PlayerState last_entity = last_snapshot->player_states[entity->first];
 
 		// Compare snapshot values
 		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
