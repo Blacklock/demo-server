@@ -26,10 +26,11 @@ private:
 	SnapshotManager snapshot_manager = SnapshotManager();
 	uint8_t connections_num = 0;
 public:
-	//Game(GameServer* gameServer);
 	Game(Socket* socket);
 
 	int connRequest();
+	void disconnectClient(Client& client);
+
 	void receiveCommand(Client& client, InPacket& packet);
 	void sendCommand(Client& client, OutPacket& packet);
 	void sendSnapshot(Client& client);

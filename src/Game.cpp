@@ -21,13 +21,16 @@ int Game::connRequest() {
 	return -1;
 }
 
+void Game::disconnectClient(Client& client) {
+	// Send a PlayerLeave packet
+	std::cout << "PlayerLeave\n";
+}
+
 void Game::receiveCommand(Client& client, InPacket& packet) {
-	std::cout << "Sequence " << packet.packet_sequence << 
-	" Ack " << packet.packet_ack << " AckBitfield " << packet.ack_bitfield << "\n";
+	client.bump(); // Bump the client's last_received timer
 
 	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
-
 	switch (command) {
 		case UnreliableCmd::PlayerData: // rename to PlayerData or something like that
 			// Update master game state
@@ -37,8 +40,8 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 			throw std::invalid_argument("Unknown command.");
 	}
 
-	// Update ack
-	client.sequences.put(packet.packet_ack);
+	client.sequences.put(packet.packet_ack); // Update ack
+
 	// If newly received ack is larger than previous, update last received snapshot
 	client.last_snapshot = client.sequences.last_sequence;
 }
@@ -51,11 +54,9 @@ void Game::sendCommand(Client& client, OutPacket& packet) {
 		client.sequences.ack_bitfield
 	);
 
-	// Increase our sequence by one
-	client.server_sequence++;
+	client.server_sequence++; // Increase our sequence by one
 
-	//server->send(packet, client.ip, client.port);
-	client.send(packet);
+	client.send(packet); // Send the packet
 }
 
 void Game::sendSnapshot(Client& client) {

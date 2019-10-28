@@ -121,20 +121,18 @@ void GameServer::tick() {
 		} catch (const std::invalid_argument ex) {
 			std::cerr << ex.what();
 		}
+	}
 
-		// Loop over all games and send snapshots to all clients
-		/*for (size_t i = 0; i < games.size(); ++i) {
-			games[i]->sendSnapshots();
-		}*/
-
-		// Loop over all clients and send them snapshots
-		// Currently we only send snapshots if we received any packets
-		std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn;
-		for (conn = connections.begin(); conn != connections.end(); ++conn) {
+	// Loop over all clients, check if they have timed out, and send them snapshots
+	std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn;
+	for (conn = connections.begin(); conn != connections.end(); ) {
+		if (conn->second->hasTimedOut()) {
+			conn->second->game->disconnectClient(*conn->second); // Disconnect the client
+			conn = connections.erase(conn); // Delete the client instance
+		} else {
 			conn->second->game->sendSnapshot(*conn->second);
+			++conn;
 		}
-
-		std::cout << "\n";
 	}
 
 	// TIMER END >>>

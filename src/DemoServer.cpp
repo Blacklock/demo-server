@@ -9,9 +9,6 @@
 int main()
 {
     std::cout << "Starting...\n";
-
 	unsigned short serverPort = 12345;
-
 	GameServer server(serverPort);
-	//server.createGame();
 }

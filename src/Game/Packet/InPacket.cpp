@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <stdint.h>
-#include <bitset>
+//#include <bitset>
 
 
 InPacket::InPacket(unsigned char buffer_in[], int import_size) {
@@ -61,11 +61,11 @@ void InPacket::build(int buffer_size) {
 		ack_bitfield = read<uint32_t>();
 	}
 
-	std::cout << "PACKET RECEIVED\n";
+	/*std::cout << "PACKET RECEIVED\n";
 	for (int i = 0; i < buffer_size; i++) {
 		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 
 	if (packet_length != buffer_size) {
 		throw std::exception("Packet length not equal to import size.");

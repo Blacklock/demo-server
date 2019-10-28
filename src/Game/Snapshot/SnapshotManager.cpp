@@ -7,7 +7,7 @@
 #include <string>
 
 
-const bool DEBUG = true; // Debug mode (global variable; temp)
+const bool DEBUG = false; // Debug mode (global variable; temp)
 
 SnapshotManager::SnapshotManager() {}
 
@@ -108,7 +108,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
-		if (DEBUG) std::cout << "\t[EID]\t" << static_cast<int>(entity->first) << "\n";
+		if (DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
 
 		if (DEBUG) std::cout << "\t[PosX]\t";
 		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.pos_x, last_entity.pos_x);
@@ -159,7 +159,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 			packet.write(new_field);
 		}
 		
-		packet.write(new_field);
 		return true;
 	}
 	if (DEBUG) std::cout << "Unchanged\n";

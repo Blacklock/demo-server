@@ -20,3 +20,10 @@ void Client::send(OutPacket& packet) {
 void Client::bump() { // bump time since last packet received (temp)
 	last_received = std::chrono::steady_clock::now();
 }
+
+bool Client::hasTimedOut() {
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	long long ms_since = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_received).count();
+
+	return ms_since > TIMEOUT_MS;
+}
