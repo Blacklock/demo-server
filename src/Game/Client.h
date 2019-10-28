@@ -22,7 +22,7 @@ public:
 	SnapshotBuffer snapshots;
 	unsigned short last_snapshot = 0; // Last acked snapshot's ID
 private:
-	static const unsigned int TIMEOUT_MS = 5000;
+	static const unsigned int TIMEOUT_MS = 10000; // 0 = never timeout
 
 	std::chrono::steady_clock::time_point last_received;
 public:

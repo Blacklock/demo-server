@@ -19,25 +19,22 @@ GameServer::GameServer(unsigned short port) {
 
 void GameServer::createGame() {
 	games.emplace_back(std::make_unique<Game>(&socket));
-	//games.emplace_back(new Game(&socket));
 }
 
 void GameServer::startGameLoop() {
-	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>;
+	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>; // Tickrate
 	auto nextTick = std::chrono::steady_clock::now() + delta(1);
 
 	std::unique_lock<std::mutex> lock(mtx);
+	//mtx.lock();
 
 	while (!stopGameLoop) {
-		mtx.unlock(); // why unlock/lock every time? rework the game loop code later
-
 		tick();
-
-		mtx.lock();
 
 		control.wait_until(lock, nextTick, []{ return false; });
 		nextTick += delta(1);
 	}
+	//mtx.unlock();
 }
 
 void GameServer::tick() {
@@ -51,7 +48,7 @@ void GameServer::tick() {
 			break;
 		}
 
-		// Do something with the received datagram
+		// Process the received datagram
 
 		try {
 			InPacket in_packet = InPacket(buffer, p_info.buffer_size);
@@ -80,17 +77,18 @@ void GameServer::tick() {
 
 						if (protocol == GAME_PROTOCOL) {
 							if (connections.find(connection) == connections.end()) {
-								// New connection, find game
+								// New connection, find a game
 
 								for (auto&& game : games) {
 									int client_id = game->connRequest();
 									if (client_id != -1) { // Game isn't full
-										//Client* client = new Client(game.get(), (unsigned char)client_id, p_info.sender_address, p_info.sender_port);
 										connections[connection] = std::make_unique<Client>(
 											game.get(), (unsigned char)client_id, p_info.sender_address, p_info.sender_port
 										);
 
+										game->connectClient(*connections[connection]);
 										game_found = true;
+
 										std::cout << "Found an open game for new connection\n";
 										break;
 									}

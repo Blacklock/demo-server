@@ -22,6 +22,8 @@ void Client::bump() { // bump time since last packet received (temp)
 }
 
 bool Client::hasTimedOut() {
+	if (TIMEOUT_MS == 0) return false; // Timeouts disabled
+
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	long long ms_since = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_received).count();
 

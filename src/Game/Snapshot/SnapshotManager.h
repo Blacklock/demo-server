@@ -12,6 +12,8 @@ private:
 	PlayerState dummy_player = PlayerState();
 public:
 	SnapshotManager();
+	void addPlayer(Client& client);
+	void removePlayer(Client& client);
 	void updatePlayerState(InPacket& packet, Client& client);
 	void writeSnapshot(OutPacket& packet, Client& client);
 	void writeDelta(OutPacket& packet, Snapshot* last_snapshot);

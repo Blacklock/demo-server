@@ -14,16 +14,20 @@ Game::Game(Socket* socket) : socket(socket) {}
 
 int Game::connRequest() {
 	if (connections_num < MAX_CONNECTIONS) {
-		// Once we implement disconnection, the ID system will be improved
 		connections_num++;
 		return connections_num - 1;
 	}
 	return -1;
 }
 
+void Game::connectClient(Client& client) {
+	snapshot_manager.addPlayer(client); // Create a PlayerState for the new client
+}
+
 void Game::disconnectClient(Client& client) {
-	// Send a PlayerLeave packet
-	std::cout << "PlayerLeave\n";
+	// TODO(?): Send a PlayerLeave packet
+	std::cout << "PlayerLeave: " << static_cast<int>(client.id) << "\n";
+	snapshot_manager.removePlayer(client);
 }
 
 void Game::receiveCommand(Client& client, InPacket& packet) {

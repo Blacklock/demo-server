@@ -29,6 +29,7 @@ public:
 	Game(Socket* socket);
 
 	int connRequest();
+	void connectClient(Client& client);
 	void disconnectClient(Client& client);
 
 	void receiveCommand(Client& client, InPacket& packet);

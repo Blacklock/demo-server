@@ -7,9 +7,21 @@
 #include <string>
 
 
-const bool DEBUG = false; // Debug mode (global variable; temp)
+const bool DEBUG = true; // Debug mode (global variable; temp)
 
 SnapshotManager::SnapshotManager() {}
+
+void SnapshotManager::addPlayer(Client& client) { // this method might actually be unnecessary
+	master_snapshot.player_states[client.id] = PlayerState();
+}
+
+void SnapshotManager::removePlayer(Client& client) {
+	std::unordered_map<unsigned char, PlayerState>::iterator player_state = master_snapshot.player_states.find(client.id);
+	if (player_state != master_snapshot.player_states.end()) {
+		master_snapshot.player_states.erase(player_state->first);
+		std::cout << "erased playerstate\n";
+	}
+}
 
 void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
@@ -19,6 +31,7 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 	player_state = master_snapshot.player_states.find(client.id);
 
 	if (player_state == master_snapshot.player_states.end()) { // Player state doesn't exist
+		std::cout << "Player state wasn't found! Creating a new one.\n";
 		master_snapshot.player_states[client.id] = PlayerState();
 		player_state = master_snapshot.player_states.find(client.id);
 	}
@@ -52,6 +65,9 @@ void SnapshotManager::updatePlayerState(InPacket& packet, Client& client) {
 }
 
 void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
+	if (DEBUG) std::cout << "[Snapshot Info]\n";
+	if (DEBUG) std::cout << "[SID]\t" << static_cast<int>(client.server_sequence) << "\n";
+
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
 
@@ -73,12 +89,9 @@ void SnapshotManager::writeSnapshot(OutPacket& packet, Client& client) {
 
 // pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
-	if (DEBUG) std::cout << "[Snapshot Info]\n";
-
 	// Iterate over all entities in the master snapshot (currently just players)
-	std::unordered_map<unsigned char, PlayerState>::iterator entity;
 
-	//for (entity = new_snapshot->player_states.begin(); entity != new_snapshot->player_states.end(); ++entity) {
+	std::unordered_map<unsigned char, PlayerState>::iterator entity;
 	for (entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
 		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
 		packet.write(entity->first); // const!
