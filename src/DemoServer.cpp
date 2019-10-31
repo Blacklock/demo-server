@@ -10,6 +10,5 @@
 int main()
 {
 	config::load_config("settings.xml");
-	unsigned short serverPort = 12345;
-	GameServer server(serverPort);
+	GameServer server(config::GAME_PORT);
 }

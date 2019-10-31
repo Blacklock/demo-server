@@ -1,4 +1,5 @@
 #include "SnapshotManager.h"
+#include "../../Config.h"
 
 #include <iostream>
 #include <memory>
@@ -6,8 +7,6 @@
 #include <bitset>
 #include <string>
 
-
-const bool DEBUG = false; // Debug mode (global variable; temp)
 
 SnapshotManager::SnapshotManager() {}
 
@@ -19,7 +18,6 @@ void SnapshotManager::removePlayer(Client& client) {
 	auto player_state = master_snapshot.player_states.find(client.id);
 	if (player_state != master_snapshot.player_states.end()) {
 		master_snapshot.player_states.erase(player_state->first);
-		std::cout << "erased playerstate\n";
 	}
 }
 
@@ -64,8 +62,8 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 }
 
 void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
-	if (DEBUG) std::cout << "[Snapshot Info]\n";
-	if (DEBUG) std::cout << "[SID]\t" << static_cast<int>(client.server_sequence) << "\n";
+	if (config::DEBUG) std::cout << "[Snapshot Info]\n";
+	if (config::DEBUG) std::cout << "[SID]\t" << static_cast<int>(client.server_sequence) << "\n";
 
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
@@ -116,13 +114,13 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
-		if (DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
+		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
 
-		if (DEBUG) std::cout << "\t[PosX]\t";
+		if (config::DEBUG) std::cout << "\t[PosX]\t";
 		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.pos_x, last_entity.pos_x);
-		if (DEBUG) std::cout << "\t[PosY]\t";
+		if (config::DEBUG) std::cout << "\t[PosY]\t";
 		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.pos_y, last_entity.pos_y);
-		if (DEBUG) std::cout << "\t[Score]\t";
+		if (config::DEBUG) std::cout << "\t[Score]\t";
 		modified_fields.fields.score = writeDeltaField(packet, entity->second.score, last_entity.score);
 
 		// Write the modified fields
@@ -135,18 +133,17 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 
 bool SnapshotManager::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
 	if (new_field != old_field) {
-		if (DEBUG) std::cout << static_cast<int>(new_field) << "\n";
+		if (config::DEBUG) std::cout << static_cast<int>(new_field) << "\n";
 		packet.write(new_field);
 		return true;
 	}
-	if (DEBUG) std::cout << "Unchanged\n";
+	if (config::DEBUG) std::cout << "Unchanged\n";
 	return false;
 }
 
 bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
 	if (new_field != old_field) {
-		if (DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
-		encode = false; // TEMP; we haven't implemented client-side leb128 decoding yet
+		if (config::DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
 
 		if (encode) { // (S)LEB128, vbyte encoding
 			bool more = true;
@@ -169,6 +166,6 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 		
 		return true;
 	}
-	if (DEBUG) std::cout << "Unchanged\n";
+	if (config::DEBUG) std::cout << "Unchanged\n";
 	return false;
 }

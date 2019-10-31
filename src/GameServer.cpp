@@ -11,6 +11,7 @@ GameServer::GameServer(unsigned short port) {
 	createGame(); // Create a single game instance
 
 	std::cout << "Starting DemoServer...\n";
+	std::cout << "DEBUG: " << (config::DEBUG ? "On" : "Off") << "\n";
 
 	startGameLoop();
 
@@ -75,7 +76,7 @@ void GameServer::tick() {
 						bool game_found = false;
 						uint32_t protocol = in_packet.read<uint32_t>();
 
-						if (protocol == GAME_PROTOCOL) {
+						if (protocol == config::GAME_PROTOCOL) {
 							if (connections.find(connection) == connections.end()) {
 								// New connection, find a game
 

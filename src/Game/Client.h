@@ -22,9 +22,6 @@ public:
 	SnapshotBuffer snapshots;
 	unsigned short last_snapshot = 0; // Last acked snapshot's ID
 private:
-	static const bool TIMEOUT_ENABLED = false;
-	static const unsigned int TIMEOUT_MS = 10000;
-
 	std::chrono::steady_clock::time_point last_received;
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);

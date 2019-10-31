@@ -2,6 +2,7 @@
 #include "Game/Packet/Packet.h"
 #include "GameServer.h"
 #include "Game/Snapshot/Snapshot.h"
+#include "Config.h"
 
 #include <iostream>
 #include <stdint.h>
@@ -13,7 +14,7 @@
 Game::Game(Socket* socket) : socket(socket) {}
 
 int Game::connRequest() {
-	if (connections_num < MAX_CONNECTIONS) {
+	if (connections_num < config::MAX_CONNECTIONS) {
 		connections_num++;
 		return connections_num - 1;
 	}
@@ -26,7 +27,6 @@ void Game::connectClient(Client& client) {
 
 void Game::disconnectClient(Client& client) {
 	// TODO(?): Send a PlayerLeave packet
-	std::cout << "PlayerLeave: " << static_cast<int>(client.id) << "\n";
 	snapshot_manager.removePlayer(client);
 }
 

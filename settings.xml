@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Settings>
   <GameServer>
-    <Debug>on</Debug>
     <Port>12345</Port>
     <Protocol>100100</Protocol>
-    <MaxPacketSize>512</MaxPacketSize>
   </GameServer>
   <Game>
-    <MinConnections>4</MinConnections>
+    <Debug>on</Debug>
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>

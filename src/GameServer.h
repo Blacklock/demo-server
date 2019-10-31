@@ -6,6 +6,7 @@
 #include "Game/Client.h"
 #include "Game/Snapshot/Snapshot.h"
 #include "Game.h"
+#include "Config.h"
 
 #include <memory>
 #include <vector>
@@ -15,10 +16,8 @@
 
 class GameServer {
 public:
-	static const unsigned int GAME_PROTOCOL = 100100;
 	static const unsigned int MAX_PACKET_SIZE = 512;
-
-	unsigned char buffer[MAX_PACKET_SIZE]; // A member for now
+	unsigned char buffer[MAX_PACKET_SIZE]; // use pointers
 private:
 	Socket socket = Socket(MAX_PACKET_SIZE);
 	std::condition_variable control;

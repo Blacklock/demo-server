@@ -17,10 +17,7 @@ class Game {
 public:
 	Socket* socket;
 private:
-	static const unsigned int MIN_CONNECTIONS = 4; // used for vector
-	static const unsigned int MAX_CONNECTIONS = 4;
 	static const unsigned int MAX_PACKET_SIZE = 512;
-
 	unsigned char buffer[MAX_PACKET_SIZE];
 
 	SnapshotManager snapshot_manager = SnapshotManager();

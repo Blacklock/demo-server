@@ -1,5 +1,6 @@
 #include "Client.h"
 #include "../Game.h" // ...works?
+#include "../Config.h"
 
 
 Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
@@ -22,10 +23,10 @@ void Client::bump() { // bump time since last packet received (temp)
 }
 
 bool Client::hasTimedOut() {
-	if (!TIMEOUT_ENABLED) return false; // c++17: if constexpr
+	if (config::TIMEOUT_MS <= 0) return false;
 
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	long long ms_since = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_received).count();
 
-	return ms_since > TIMEOUT_MS;
+	return ms_since > config::TIMEOUT_MS;
 }

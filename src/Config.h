@@ -6,17 +6,14 @@
 
 namespace config {
 	// GameServer
-	extern bool DEBUG;
 	extern unsigned short GAME_PORT;
 	extern unsigned int GAME_PROTOCOL;
-	extern unsigned int MAX_PACKET_SIZE;
 
 	// Game
-	extern unsigned int MIN_CONNECTIONS;
+	extern bool DEBUG;
 	extern unsigned int MAX_CONNECTIONS;
 
 	// Client
-	extern bool TIMEOUT_ENABLED;
 	extern unsigned int TIMEOUT_MS;
 
 	void load_config(const char* filename);
