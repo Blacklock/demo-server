@@ -9,6 +9,9 @@
 GameServer::GameServer(unsigned short port) {
 	socket.create(port);
 	createGame(); // Create a single game instance
+
+	std::cout << "Starting DemoServer...\n";
+
 	startGameLoop();
 
 	/*std::thread t(&GameServer::startGameLoop, this);

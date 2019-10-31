@@ -75,6 +75,9 @@
     <ClInclude Include="src\Game\Snapshot\SnapshotManager.h">
       <Filter>Header Files\Game\Snapshot</Filter>
     </ClInclude>
+    <ClInclude Include="src\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/DemoServer.cpp">
@@ -116,5 +119,14 @@
     <ClCompile Include="src\Game\Snapshot\SnapshotManager.cpp">
       <Filter>Source Files\Game\Snapshot</Filter>
     </ClCompile>
+    <ClCompile Include="src\Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="settings.xml" />
   </ItemGroup>
 </Project>

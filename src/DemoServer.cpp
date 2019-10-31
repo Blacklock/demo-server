@@ -2,13 +2,14 @@
 //
 
 #include "GameServer.h"
+#include "Config.h"
 
 #include <iostream>
 
 
 int main()
 {
-    std::cout << "Starting...\n";
+	config::load_config("settings.xml");
 	unsigned short serverPort = 12345;
 	GameServer server(serverPort);
 }

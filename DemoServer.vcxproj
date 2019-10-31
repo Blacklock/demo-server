@@ -306,6 +306,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\Game\Client.h" />
     <ClInclude Include="src/Game.h" />
     <ClInclude Include="src/GameServer.h" />
@@ -320,6 +321,7 @@
     <ClInclude Include="src\Utils\AckBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\Game\Client.cpp" />
     <ClCompile Include="src/DemoServer.cpp" />
     <ClCompile Include="src/Game.cpp" />
@@ -334,7 +336,22 @@
     <ClCompile Include="src\Utils\CircularBuffer.cpp" />
     <ClCompile Include="src\Utils\AckBuffer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="settings.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\pugixml.1.10.0\build\native\pugixml.targets" Condition="Exists('packages\pugixml.1.10.0\build\native\pugixml.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\pugixml.1.10.0\build\native\pugixml.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\pugixml.1.10.0\build\native\pugixml.targets'))" />
+  </Target>
 </Project>
