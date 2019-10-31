@@ -155,7 +155,7 @@ bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int3
 
 				if (new_field == sign && ((byte ^ sign) & 0b01000000) == 0) {
 					more = false;
-					byte |= 0b10000000; // set the most significant bit to mark end
+					byte |= 0b10000000; // set the most significant bit to mark the end
 				}
 
 				packet.write(byte);

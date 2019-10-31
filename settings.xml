@@ -9,6 +9,6 @@
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
-    <Timeout>5000</Timeout>
+    <Timeout>20000</Timeout>
   </Client>
 </Settings>

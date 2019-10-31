@@ -11,6 +11,18 @@ Demo Server is a multiplayer game server written in C++. The server uses a custo
 3. Run the Google Test unit tests with `Test -> Run -> All Tests`
 4. Build & run `DemoServer.exe` to launch the server. A custom Unity game client is being used to interact with the server.
 
+## Config
+
+Located in [settings.xml](settings.xml).
+
+| Variable            | Description                                                           |
+|---------------------|-----------------------------------------------------------------------|
+| GameServer/Port     | Specifies the port that the server will be listening on.              |
+| GameServer/Protocol | The game's protocol ID that clients use to connect.                   |
+| Game/Debug          | Set to on/off. Enabling will print logs in the console.               |
+| Game/MaxConnections | Maximum amount of connections per game instance.                      |
+| Client/Timeout      | Time (ms) to wait before timeing out the client. Set to 0 to disable. |
+
 ## Roadmap
 
 Check the [project board](https://github.com/Blacklock/demo-server/projects/1) for the features roadmap.
