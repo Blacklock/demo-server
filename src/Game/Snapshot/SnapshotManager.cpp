@@ -25,40 +25,15 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
 	// Find the PlayerState struct or create a new one
 
-	auto player_state = master_snapshot.player_states.find(client.id);
+	auto player_entity = master_snapshot.player_states.find(client.id);
 
-	if (player_state == master_snapshot.player_states.end()) { // Player state doesn't exist
-		std::cout << "Player state wasn't found! Creating a new one.\n";
+	if (player_entity == master_snapshot.player_states.end()) { // Player state doesn't exist
+		std::cout << "PlayerEntity wasn't found! Creating a new one.\n";
 		master_snapshot.player_states[client.id] = PlayerEntity();
-		player_state = master_snapshot.player_states.find(client.id);
+		player_entity = master_snapshot.player_states.find(client.id);
 	}
 
-	// Update the player state
-
-	unsigned char field_flags = packet.read<unsigned char>();
-
-	// Iterate over field flags
-
-	for (int i = 0; i != (int)PlayerEntity::PlayerFields::End; i++) {
-		if (field_flags & 1) { // Field has been changed
-			// In the future we will have to check the validity of the given data
-			switch ((PlayerEntity::PlayerFields)i) {
-				case PlayerEntity::PlayerFields::PosX:
-					player_state->second.player_state.pos_x = packet.read<int32_t>();
-					break;
-				case PlayerEntity::PlayerFields::PosY:
-					player_state->second.player_state.pos_y = packet.read<int32_t>();
-					break;
-				case PlayerEntity::PlayerFields::Score:
-					player_state->second.player_state.score = packet.read<uint8_t>();
-					break;
-				default:
-					throw std::invalid_argument("Unknown PlayerState field.");
-			}
-		}
-
-		field_flags >>= 1;
-	}
+	player_entity->second.read(packet); // Update the player state
 }
 
 void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
@@ -110,7 +85,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		// Compare snapshot values
 		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
 
-		PlayerEntity::ModifiedFields modified_fields = PlayerEntity::ModifiedFields();
+		PlayerEntity::ModFields modified_fields = PlayerEntity::ModFields();
 		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
