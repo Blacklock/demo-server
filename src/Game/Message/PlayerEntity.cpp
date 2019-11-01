@@ -3,7 +3,9 @@
 #include <iostream>
 
 
-PlayerEntity::PlayerEntity() : player_state() {}
+const PlayerEntity::State PlayerEntity::dummy_state = PlayerEntity::State();
+
+PlayerEntity::PlayerEntity() : entity_state() {}
 
 void PlayerEntity::read(InPacket& packet) {
 	// Update the player state
@@ -17,13 +19,13 @@ void PlayerEntity::read(InPacket& packet) {
 			// In the future we will have to check the validity of the given data (anticheat)
 			switch ((PlayerEntity::Fields)i) {
 				case PlayerEntity::Fields::PosX:
-					player_state.pos_x = packet.read<int32_t>();
+					entity_state.pos_x = packet.read<int32_t>();
 					break;
 				case PlayerEntity::Fields::PosY:
-					player_state.pos_y = packet.read<int32_t>();
+					entity_state.pos_y = packet.read<int32_t>();
 					break;
 				case PlayerEntity::Fields::Score:
-					player_state.score = packet.read<uint8_t>();
+					entity_state.score = packet.read<uint8_t>();
 					break;
 				default:
 					throw std::invalid_argument("Unknown PlayerState field.");

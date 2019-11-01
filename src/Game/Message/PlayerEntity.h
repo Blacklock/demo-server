@@ -34,5 +34,7 @@ public:
 	void read(InPacket& packet);
 	void serialize(OutPacket& packet);
 
-	State player_state; // inline later?
+	State entity_state; // inline later?
+
+	static const State dummy_state;
 };

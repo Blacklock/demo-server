@@ -10,7 +10,6 @@
 class SnapshotManager {
 private:
 	Snapshot master_snapshot = Snapshot(0); // id is 0?
-	const PlayerEntity dummy_player = PlayerEntity();
 public:
 	SnapshotManager();
 	void addPlayer(Client& client);

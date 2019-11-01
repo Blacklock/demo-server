@@ -67,18 +67,18 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
 		packet.write(entity->first); // const!
 
-		PlayerEntity last_entity; // Find given entity in the last snapshot
+		PlayerEntity::State last_entity; // Find given entity in the last snapshot
 
 		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
-			last_entity = dummy_player; // If last_entity is nullptr, it's guaranteed to be sent again
+			last_entity = PlayerEntity::dummy_state; // If last_entity is nullptr, it's guaranteed to be sent again
 		} else {
 			// Find the given entity in last_snapshot
 			auto last_entity_it = last_snapshot->player_states.find(entity->first);
 
 			if (last_entity_it != last_snapshot->player_states.end()) {
-				last_entity = last_entity_it->second;
+				last_entity = last_entity_it->second.entity_state;
 			} else { // Entity not found
-				last_entity = dummy_player;
+				last_entity = PlayerEntity::dummy_state;
 			}
 		}
 
@@ -92,11 +92,11 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
 
 		if (config::DEBUG) std::cout << "\t[PosX]\t";
-		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.player_state.pos_x, last_entity.player_state.pos_x);
+		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.entity_state.pos_x, last_entity.pos_x);
 		if (config::DEBUG) std::cout << "\t[PosY]\t";
-		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.player_state.pos_y, last_entity.player_state.pos_y);
+		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.entity_state.pos_y, last_entity.pos_y);
 		if (config::DEBUG) std::cout << "\t[Score]\t";
-		modified_fields.fields.score = writeDeltaField(packet, entity->second.player_state.score, last_entity.player_state.score);
+		modified_fields.fields.score = writeDeltaField(packet, entity->second.entity_state.score, last_entity.score);
 
 		// Write the modified fields
 		unsigned short real_buffer_index = packet.getBufferIndex();
