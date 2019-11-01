@@ -4,12 +4,13 @@
 #include "../Packet/OutPacket.h"
 #include "../Client.h"
 #include "Snapshot.h"
+#include "../Message/PlayerEntity.h"
 
 
 class SnapshotManager {
 private:
 	Snapshot master_snapshot = Snapshot(0); // id is 0?
-	const PlayerState dummy_player = PlayerState();
+	const PlayerEntity dummy_player = PlayerEntity();
 public:
 	SnapshotManager();
 	void addPlayer(Client& client);

@@ -310,6 +310,8 @@
     <ClInclude Include="src\Game\Client.h" />
     <ClInclude Include="src/Game.h" />
     <ClInclude Include="src/GameServer.h" />
+    <ClInclude Include="src\Game\Message\Entity.h" />
+    <ClInclude Include="src\Game\Message\PlayerEntity.h" />
     <ClInclude Include="src\Game\Packet\Packet.h" />
     <ClInclude Include="src/Socket.h" />
     <ClInclude Include="src\Game\Packet\OutPacket.h" />
@@ -326,6 +328,8 @@
     <ClCompile Include="src/DemoServer.cpp" />
     <ClCompile Include="src/Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
+    <ClCompile Include="src\Game\Message\Entity.cpp" />
+    <ClCompile Include="src\Game\Message\PlayerEntity.cpp" />
     <ClCompile Include="src\Game\Packet\Packet.cpp" />
     <ClCompile Include="src/Socket.cpp" />
     <ClCompile Include="src\Game\Packet\InPacket.cpp" />

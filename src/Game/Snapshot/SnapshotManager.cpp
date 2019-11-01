@@ -11,7 +11,7 @@
 SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::addPlayer(Client& client) { // this method might actually be unnecessary
-	master_snapshot.player_states[client.id] = PlayerState();
+	master_snapshot.player_states[client.id] = PlayerEntity();
 }
 
 void SnapshotManager::removePlayer(Client& client) {
@@ -29,7 +29,7 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 
 	if (player_state == master_snapshot.player_states.end()) { // Player state doesn't exist
 		std::cout << "Player state wasn't found! Creating a new one.\n";
-		master_snapshot.player_states[client.id] = PlayerState();
+		master_snapshot.player_states[client.id] = PlayerEntity();
 		player_state = master_snapshot.player_states.find(client.id);
 	}
 
@@ -39,18 +39,18 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 
 	// Iterate over field flags
 
-	for (int i = 0; i != (int)PlayerFields::End; i++) {
+	for (int i = 0; i != (int)PlayerEntity::PlayerFields::End; i++) {
 		if (field_flags & 1) { // Field has been changed
 			// In the future we will have to check the validity of the given data
-			switch ((PlayerFields)i) {
-				case PlayerFields::PosX:
-					player_state->second.pos_x = packet.read<int32_t>();
+			switch ((PlayerEntity::PlayerFields)i) {
+				case PlayerEntity::PlayerFields::PosX:
+					player_state->second.player_state.pos_x = packet.read<int32_t>();
 					break;
-				case PlayerFields::PosY:
-					player_state->second.pos_y = packet.read<int32_t>();
+				case PlayerEntity::PlayerFields::PosY:
+					player_state->second.player_state.pos_y = packet.read<int32_t>();
 					break;
-				case PlayerFields::Score:
-					player_state->second.score = packet.read<uint8_t>();
+				case PlayerEntity::PlayerFields::Score:
+					player_state->second.player_state.score = packet.read<uint8_t>();
 					break;
 				default:
 					throw std::invalid_argument("Unknown PlayerState field.");
@@ -68,7 +68,7 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
 
-	// Get the latest snapshot acked by the client (is this safe? can the original pointer get deleted?)
+	// Get the latest snapshot acked by the client
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
 	if (last_snapshot == nullptr) { // Latest snapshot wasn't found in the buffer
@@ -92,7 +92,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
 		packet.write(entity->first); // const!
 
-		PlayerState last_entity; // Find given entity in the last snapshot
+		PlayerEntity last_entity; // Find given entity in the last snapshot
 
 		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
 			last_entity = dummy_player; // If last_entity is nullptr, it's guaranteed to be sent again
@@ -110,18 +110,18 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 		// Compare snapshot values
 		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
 
-		ModifiedFields modified_fields = ModifiedFields();
+		PlayerEntity::ModifiedFields modified_fields = PlayerEntity::ModifiedFields();
 		unsigned short modified_fields_bi = packet.getBufferIndex();
 		packet.write(modified_fields.raw);
 
 		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
 
 		if (config::DEBUG) std::cout << "\t[PosX]\t";
-		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.pos_x, last_entity.pos_x);
+		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.player_state.pos_x, last_entity.player_state.pos_x);
 		if (config::DEBUG) std::cout << "\t[PosY]\t";
-		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.pos_y, last_entity.pos_y);
+		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.player_state.pos_y, last_entity.player_state.pos_y);
 		if (config::DEBUG) std::cout << "\t[Score]\t";
-		modified_fields.fields.score = writeDeltaField(packet, entity->second.score, last_entity.score);
+		modified_fields.fields.score = writeDeltaField(packet, entity->second.player_state.score, last_entity.player_state.score);
 
 		// Write the modified fields
 		unsigned short real_buffer_index = packet.getBufferIndex();
