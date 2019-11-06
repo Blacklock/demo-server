@@ -310,6 +310,8 @@
     <ClInclude Include="src\Game\Client.h" />
     <ClInclude Include="src/Game.h" />
     <ClInclude Include="src/GameServer.h" />
+    <ClInclude Include="src\Game\Message\Entity.h" />
+    <ClInclude Include="src\Game\Message\PlayerEntity.h" />
     <ClInclude Include="src\Game\Packet\Packet.h" />
     <ClInclude Include="src/Socket.h" />
     <ClInclude Include="src\Game\Packet\OutPacket.h" />
@@ -319,6 +321,7 @@
     <ClInclude Include="src\Game\Snapshot\SnapshotManager.h" />
     <ClInclude Include="src\Utils\CircularBuffer.h" />
     <ClInclude Include="src\Utils\AckBuffer.h" />
+    <ClInclude Include="src\Utils\MessageQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Config.cpp" />
@@ -326,6 +329,8 @@
     <ClCompile Include="src/DemoServer.cpp" />
     <ClCompile Include="src/Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
+    <ClCompile Include="src\Game\Message\Entity.cpp" />
+    <ClCompile Include="src\Game\Message\PlayerEntity.cpp" />
     <ClCompile Include="src\Game\Packet\Packet.cpp" />
     <ClCompile Include="src/Socket.cpp" />
     <ClCompile Include="src\Game\Packet\InPacket.cpp" />
@@ -335,6 +340,7 @@
     <ClCompile Include="src\Game\Snapshot\SnapshotManager.cpp" />
     <ClCompile Include="src\Utils\CircularBuffer.cpp" />
     <ClCompile Include="src\Utils\AckBuffer.cpp" />
+    <ClCompile Include="src\Utils\MessageQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -7,8 +7,6 @@
 
 
 class SnapshotBuffer {
-public:
-	unsigned short last_snapshot; // We may not need this member, use client.last_snapshot instead?
 private:
 	const unsigned short size;
 	std::vector<std::shared_ptr<Snapshot>> snapshots;

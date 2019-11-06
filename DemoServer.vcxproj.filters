@@ -37,6 +37,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Game\Message">
+      <UniqueIdentifier>{9e8bc795-dca7-4a97-8739-55daa1825027}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Message">
+      <UniqueIdentifier>{5e2389f9-51a0-4459-8b4f-5fea4cd11d7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/Game.h">
@@ -77,6 +83,15 @@
     </ClInclude>
     <ClInclude Include="src\Config.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Message\Entity.h">
+      <Filter>Header Files\Game\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Message\PlayerEntity.h">
+      <Filter>Header Files\Game\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\MessageQueue.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +136,15 @@
     </ClCompile>
     <ClCompile Include="src\Config.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Message\Entity.cpp">
+      <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
+      <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\MessageQueue.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
