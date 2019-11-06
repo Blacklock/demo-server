@@ -15,7 +15,7 @@ protected:
 	AckBuffer ackBuffer;
 };
 
-TEST_F(AckBufferTest, bufferEmptyOnCreation) {
+TEST_F(AckBufferTest, emptyOnCreation) {
 	ASSERT_TRUE(ackBuffer.empty);
 }
 
