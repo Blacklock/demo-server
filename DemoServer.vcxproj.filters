@@ -40,6 +40,9 @@
     <Filter Include="Header Files\Game\Message">
       <UniqueIdentifier>{9e8bc795-dca7-4a97-8739-55daa1825027}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Message">
+      <UniqueIdentifier>{5e2389f9-51a0-4459-8b4f-5fea4cd11d7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/Game.h">
@@ -82,10 +85,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Message\Entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Message\PlayerEntity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -131,11 +134,11 @@
     <ClCompile Include="src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Message\Entity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
+      <Filter>Source Files\Game\Message</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

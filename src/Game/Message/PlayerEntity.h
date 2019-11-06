@@ -4,6 +4,8 @@
 #include "../Packet/OutPacket.h"
 #include "Entity.h"
 
+#include <memory>
+
 
 class PlayerEntity : public Entity {
 public:
@@ -29,12 +31,13 @@ public:
 		} fields;
 		unsigned char raw;
 	};
+
+	State entity_state; // inline later?
+	static const State dummy_state;
+	//std::unique_ptr<State> entity_state;
+	//static const std::unique_ptr<State> dummy_state;
 public:
 	PlayerEntity();
 	void read(InPacket& packet);
-	void serialize(OutPacket& packet);
-
-	State entity_state; // inline later?
-
-	static const State dummy_state;
+	void serialize(OutPacket& packet, State& last_state);
 };

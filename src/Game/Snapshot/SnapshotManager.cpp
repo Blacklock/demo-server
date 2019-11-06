@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <bitset>
 #include <string>
+//#include <stdint.h>
 
 
 SnapshotManager::SnapshotManager() {}
@@ -61,11 +62,10 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 
 // pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
 void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
-	// Iterate over all entities in the master snapshot (currently just players)
+	// Iterate over all entities in the master snapshot
 
 	for (auto entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
-		// Write the player ID (if we add more entity types, this should become a combo of entity type + entity id)
-		packet.write(entity->first); // const!
+		packet.write(entity->first); // Write the entity ID
 
 		PlayerEntity::State last_entity; // Find given entity in the last snapshot
 
@@ -82,65 +82,9 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
 			}
 		}
 
-		// Compare snapshot values
-		// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
-
-		PlayerEntity::ModFields modified_fields = PlayerEntity::ModFields();
-		unsigned short modified_fields_bi = packet.getBufferIndex();
-		packet.write(modified_fields.raw);
-
 		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
 
-		if (config::DEBUG) std::cout << "\t[PosX]\t";
-		modified_fields.fields.pos_x = writeDeltaField(packet, entity->second.entity_state.pos_x, last_entity.pos_x);
-		if (config::DEBUG) std::cout << "\t[PosY]\t";
-		modified_fields.fields.pos_y = writeDeltaField(packet, entity->second.entity_state.pos_y, last_entity.pos_y);
-		if (config::DEBUG) std::cout << "\t[Score]\t";
-		modified_fields.fields.score = writeDeltaField(packet, entity->second.entity_state.score, last_entity.score);
-
-		// Write the modified fields
-		unsigned short real_buffer_index = packet.getBufferIndex();
-		packet.setBufferIndex(modified_fields_bi);
-		packet.write(modified_fields.raw);
-		packet.setBufferIndex(real_buffer_index);
+		// Write entity's delta fields into the packet
+		entity->second.serialize(packet, last_entity);
 	}
-}
-
-bool SnapshotManager::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
-	if (new_field != old_field) {
-		if (config::DEBUG) std::cout << static_cast<int>(new_field) << "\n";
-		packet.write(new_field);
-		return true;
-	}
-	if (config::DEBUG) std::cout << "Unchanged\n";
-	return false;
-}
-
-bool SnapshotManager::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
-	if (new_field != old_field) {
-		if (config::DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
-
-		if (encode) { // (S)LEB128, vbyte encoding
-			bool more = true;
-			int sign = new_field >> 31; // 0 = unsigned; -1 = signed
-
-			do {
-				uint8_t byte = new_field & 0b01111111; // get the 7 least significant bits
-				new_field >>= 7; // assumes arithmetic shift
-
-				if (new_field == sign && ((byte ^ sign) & 0b01000000) == 0) {
-					more = false;
-					byte |= 0b10000000; // set the most significant bit to mark the end
-				}
-
-				packet.write(byte);
-			} while (more);
-		} else {
-			packet.write(new_field);
-		}
-		
-		return true;
-	}
-	if (config::DEBUG) std::cout << "Unchanged\n";
-	return false;
 }
