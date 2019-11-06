@@ -90,6 +90,9 @@
     <ClInclude Include="src\Game\Message\PlayerEntity.h">
       <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\MessageQueue.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/DemoServer.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
       <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\MessageQueue.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

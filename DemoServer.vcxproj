@@ -321,6 +321,7 @@
     <ClInclude Include="src\Game\Snapshot\SnapshotManager.h" />
     <ClInclude Include="src\Utils\CircularBuffer.h" />
     <ClInclude Include="src\Utils\AckBuffer.h" />
+    <ClInclude Include="src\Utils\MessageQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Config.cpp" />
@@ -339,6 +340,7 @@
     <ClCompile Include="src\Game\Snapshot\SnapshotManager.cpp" />
     <ClCompile Include="src\Utils\CircularBuffer.cpp" />
     <ClCompile Include="src\Utils\AckBuffer.cpp" />
+    <ClCompile Include="src\Utils\MessageQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
