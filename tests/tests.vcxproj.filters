@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="tests.cpp" />
-    <ClCompile Include="Tests\Utils\MessageQueueTest.h">
-      <Filter>Tests\Utils</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Tests">
@@ -32,6 +29,9 @@
     </ClInclude>
     <ClInclude Include="Tests\Game\Packet\InPacketTest.h">
       <Filter>Tests\Game\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\Utils\MessageQueueTest.h">
+      <Filter>Tests\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

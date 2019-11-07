@@ -55,7 +55,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="tests.cpp" />
-    <ClCompile Include="Tests\Utils\MessageQueueTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DemoServer.vcxproj">
@@ -67,6 +66,7 @@
     <ClInclude Include="Tests\Game\Packet\OutPacketTest.h" />
     <ClInclude Include="Tests\SocketTest.h" />
     <ClInclude Include="Tests\Utils\AckBufferTest.h" />
+    <ClInclude Include="Tests\Utils\MessageQueueTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

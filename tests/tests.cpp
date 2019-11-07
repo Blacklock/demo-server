@@ -4,7 +4,7 @@
 
 #include "Tests/SocketTest.h"
 #include "Tests/Utils/AckBufferTest.h"
-//#include "Tests/Utils/MessageQueueTest.h"
+#include "Tests/Utils/MessageQueueTest.h"
 #include "Tests/Game/Packet/InPacketTest.h"
 #include "Tests/Game/Packet/OutPacketTest.h"
 
