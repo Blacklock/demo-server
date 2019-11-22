@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 #include <condition_variable>
-#include <unordered_map>
 
 
 class GameServer {
@@ -25,7 +24,7 @@ private:
 	bool stopGameLoop = false;
 
 	std::vector<std::unique_ptr<Game>> games;
-	std::unordered_map<long long, std::unique_ptr<Client>> connections;
+	//std::unordered_map<long long, std::unique_ptr<Client>> connections;
 public:
 	GameServer(unsigned short port);
 

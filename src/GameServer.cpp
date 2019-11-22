@@ -1,9 +1,10 @@
 #include "GameServer.h"
 
 #include <iostream>
-#include <stdint.h>
 #include <thread>
 #include <chrono>
+#include <unordered_map>
+#include <stdint.h>
 
 
 GameServer::GameServer(unsigned short port) {
@@ -57,10 +58,19 @@ void GameServer::tick() {
 
 			long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
 
-			auto conn = connections.find(connection);
+			// Find the connection
+			bool connection_exists = false;
+			std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn;
+			for (auto&& game : games) {
+				conn = game->connections.find(connection);
+				connection_exists = conn != game->connections.end();
+				if (connection_exists) break;
+			}
+			//auto conn = connections.find(connection);
+
 			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:
-					if (conn == connections.end()) {
+					if (!connection_exists) {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
@@ -77,22 +87,12 @@ void GameServer::tick() {
 						uint32_t protocol = in_packet.read<uint32_t>();
 
 						if (protocol == config::GAME_PROTOCOL) {
-							if (connections.find(connection) == connections.end()) {
+							if (!connection_exists) {
 								// New connection, find a game
 
 								for (auto&& game : games) {
-									int client_id = game->connRequest();
-									if (client_id != -1) { // Game isn't full
-										connections[connection] = std::make_unique<Client>(
-											game.get(), (unsigned char)client_id, p_info.sender_address, p_info.sender_port
-										);
-
-										game->connectClient(*connections[connection]);
-										game_found = true;
-
-										std::cout << "Accepted new connection\n";
-										break;
-									}
+									game_found = game->connectClient(connection, p_info);
+									if (game_found) break;
 								}
 							} else {
 								// Connection already exists, send an accept packet again
@@ -103,8 +103,12 @@ void GameServer::tick() {
 							// Send conn response packet
 							OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 							out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
+							out_packet.setPacketLength();
 
-							connections[connection]->send(out_packet);
+							socket.sendPacket(
+								out_packet.buffer, out_packet.packet_length, 
+								p_info.sender_address, p_info.sender_port
+							);
 						} else {
 							throw std::invalid_argument("Unknown protocol.");
 						}
@@ -119,15 +123,18 @@ void GameServer::tick() {
 	}
 
 	// Loop over all clients, check if they have timed out, and send them snapshots
-	for (auto conn = connections.begin(); conn != connections.end(); ) {
-		if (conn->second->hasTimedOut()) {
-			conn->second->game->disconnectClient(*conn->second); // Disconnect the client
-			conn = connections.erase(conn); // Delete the client instance
-		} else {
-			conn->second->game->sendSnapshot(*conn->second);
-			++conn;
+	for (auto&& game : games) {
+		for (auto conn = game->connections.begin(); conn != game->connections.end(); ) {
+			if (conn->second->hasTimedOut()) {
+				conn->second->game->disconnectClient(*conn->second); // Disconnect the client
+				conn = game->connections.erase(conn); // Delete the client instance
+			} else {
+				conn->second->game->sendSnapshot(*conn->second);
+				++conn;
+			}
 		}
 	}
+	
 
 	// TIMER END >>>
 	/*auto t2 = std::chrono::high_resolution_clock::now();

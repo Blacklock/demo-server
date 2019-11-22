@@ -14,16 +14,25 @@
 
 Game::Game(Socket* socket) : socket(socket) {}
 
-int Game::connRequest() {
+/*int Game::connRequest() {
 	if (connections_num < config::MAX_CONNECTIONS) {
 		connections_num++;
 		return connections_num - 1;
 	}
 	return -1;
-}
+}*/
 
-void Game::connectClient(Client& client) {
-	snapshot_manager.addPlayer(client); // Create a PlayerState for the new client
+bool Game::connectClient(long long connection, InPacketInfo p_info) {
+	if (connections_num >= config::MAX_CONNECTIONS) return false;
+
+	connections[connection] = std::make_unique<Client>(
+		this, connections_num, p_info.sender_address, p_info.sender_port
+	);
+
+	snapshot_manager.addPlayer(*connections[connection]); // Create a PlayerState for the new client
+
+	connections_num++;
+	return true;
 }
 
 void Game::disconnectClient(Client& client) {
@@ -85,5 +94,5 @@ void Game::sendSnapshot(Client& client) {
 }
 
 void sendReliable(Client& client) {
-
+	client;
 }
