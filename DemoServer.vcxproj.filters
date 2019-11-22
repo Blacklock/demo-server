@@ -84,14 +84,14 @@
     <ClInclude Include="src\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Message\Entity.h">
-      <Filter>Header Files\Game\Message</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Message\PlayerEntity.h">
       <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MessageQueue.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Message\EntityMessage.h">
+      <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,14 +137,14 @@
     <ClCompile Include="src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Message\Entity.cpp">
-      <Filter>Source Files\Game\Message</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
       <Filter>Source Files\Game\Message</Filter>
     </ClCompile>
     <ClCompile Include="src\Utils\MessageQueue.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Message\EntityMessage.cpp">
+      <Filter>Source Files\Game\Message</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

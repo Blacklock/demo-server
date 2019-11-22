@@ -14,9 +14,8 @@ enum class UnreliableCmd : unsigned char {
 };
 
 enum class ReliableCmd : unsigned char {
-	PlayerJoin,
-	PlayerChange,
-	PlayerLeave
+	PlayerDisconnect,
+	ChatMessage
 };
 
 enum class ControlCmd : unsigned char {

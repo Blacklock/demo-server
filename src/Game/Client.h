@@ -17,9 +17,10 @@ public:
 	const unsigned short port;
 
 	Game* game;
-	unsigned short server_sequence = 1; // Sequences start at 1
-	AckBuffer sequences = AckBuffer();
 	SnapshotBuffer snapshots;
+
+	AckBuffer sequences = AckBuffer();
+	unsigned short server_sequence = 1; // Sequences start at 1
 	unsigned short last_snapshot = 0; // Last acked snapshot's ID
 private:
 	std::chrono::steady_clock::time_point last_received;

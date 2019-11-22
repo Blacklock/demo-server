@@ -2,12 +2,12 @@
 
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
-#include "Entity.h"
+#include "EntityMessage.h"
 
 #include <memory>
 
 
-class PlayerEntity : public Entity {
+class PlayerEntity : public EntityMessage {
 public:
 	struct State { // Player state fields & default dummy values
 		int32_t pos_x = 0;
