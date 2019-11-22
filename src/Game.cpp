@@ -70,3 +70,7 @@ void Game::sendSnapshot(Client& client) {
 
 	sendCommand(client, ss_packet); // Send the packet
 }
+
+void sendReliable(Client& client) {
+
+}

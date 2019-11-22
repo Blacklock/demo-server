@@ -12,7 +12,16 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[]) {
 	write(static_cast<unsigned char>(packet_type));
 
 	// Reserve space for the header(s)
-	buffer_index += packet_type == PacketType::Unreliable ? (2 + 2 + 2 + 4) : 2;
+	switch (packet_type) {
+		case PacketType::Control:
+			buffer_index += 2;
+			break;
+		case PacketType::Unreliable:
+		case PacketType::Reliable:
+			buffer_index += (2 + 2 + 2 + 4);
+			break;
+	}
+	//buffer_index += packet_type == PacketType::Unreliable ? (2 + 2 + 2 + 4) : 2;
 };
 
 unsigned short OutPacket::getBufferIndex() {
