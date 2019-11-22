@@ -29,7 +29,7 @@ public:
 	void connectClient(Client& client);
 	void disconnectClient(Client& client);
 
-	void receiveCommand(Client& client, InPacket& packet);
-	void sendCommand(Client& client, OutPacket& packet);
+	void receiveMessage(Client& client, InPacket& packet);
+	void sendMessage(Client& client, OutPacket& packet);
 	void sendSnapshot(Client& client);
 };

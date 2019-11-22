@@ -64,7 +64,7 @@ void GameServer::tick() {
 						// Connection doesn't exist, simply ignore the packets (for now?)
 						std::cout << "Connection does not exist.\n";
 					} else {
-						conn->second->game->receiveCommand(*conn->second, in_packet);
+						conn->second->game->receiveMessage(*conn->second, in_packet);
 					}
 					break;
 				case PacketType::Reliable:

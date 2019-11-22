@@ -16,6 +16,8 @@ void SnapshotManager::addPlayer(Client& client) { // this method might actually 
 }
 
 void SnapshotManager::removePlayer(Client& client) {
+	std::cout << "Client " << static_cast<int>(client.id) << " has timed out.\n";
+
 	auto player_state = master_snapshot.player_states.find(client.id);
 	if (player_state != master_snapshot.player_states.end()) {
 		master_snapshot.player_states.erase(player_state->first);

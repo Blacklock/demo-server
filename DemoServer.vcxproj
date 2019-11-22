@@ -311,7 +311,9 @@
     <ClInclude Include="src/Game.h" />
     <ClInclude Include="src/GameServer.h" />
     <ClInclude Include="src\Game\Message\EntityMessage.h" />
+    <ClInclude Include="src\Game\Message\PlayerDisconnect.h" />
     <ClInclude Include="src\Game\Message\PlayerEntity.h" />
+    <ClInclude Include="src\Game\Message\ReliableMessage.h" />
     <ClInclude Include="src\Game\Packet\Packet.h" />
     <ClInclude Include="src/Socket.h" />
     <ClInclude Include="src\Game\Packet\OutPacket.h" />
@@ -330,7 +332,9 @@
     <ClCompile Include="src/Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
     <ClCompile Include="src\Game\Message\EntityMessage.cpp" />
+    <ClCompile Include="src\Game\Message\PlayerDisconnect.cpp" />
     <ClCompile Include="src\Game\Message\PlayerEntity.cpp" />
+    <ClCompile Include="src\Game\Message\ReliableMessage.cpp" />
     <ClCompile Include="src\Game\Packet\Packet.cpp" />
     <ClCompile Include="src/Socket.cpp" />
     <ClCompile Include="src\Game\Packet\InPacket.cpp" />

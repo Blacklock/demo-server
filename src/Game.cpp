@@ -38,12 +38,12 @@ void Game::disconnectClient(Client& client) {
 	PlayerDisconnect::Fields pdc_fields{ client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 
-	// send pdc_message to all clients...
+	// TODO: send pdc_message to all clients...
 
 	snapshot_manager.removePlayer(client);
 }
 
-void Game::receiveCommand(Client& client, InPacket& packet) {
+void Game::receiveMessage(Client& client, InPacket& packet) {
 	client.bump(); // Bump the client's last_received timer
 
 	// Receive an unreliable command
@@ -63,7 +63,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	client.last_snapshot = client.sequences.last_sequence;
 }
 
-void Game::sendCommand(Client& client, OutPacket& packet) { // rename to sendMessage
+void Game::sendMessage(Client& client, OutPacket& packet) {
 	packet.setHeaders(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
@@ -81,7 +81,7 @@ void Game::sendSnapshot(Client& client) {
 
 	snapshot_manager.writeSnapshot(client, ss_packet); // Write snapshot data
 
-	sendCommand(client, ss_packet); // Send the packet
+	sendMessage(client, ss_packet); // Send the packet
 }
 
 void sendReliable(Client& client) {
