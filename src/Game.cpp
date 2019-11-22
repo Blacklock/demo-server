@@ -2,6 +2,7 @@
 #include "Game/Packet/Packet.h"
 #include "GameServer.h"
 #include "Game/Snapshot/Snapshot.h"
+#include "Game/Message/PlayerDisconnect.h"
 #include "Config.h"
 
 #include <iostream>
@@ -26,7 +27,19 @@ void Game::connectClient(Client& client) {
 }
 
 void Game::disconnectClient(Client& client) {
-	// TODO(?): Send a PlayerLeave packet
+	// TODO: Send a PlayerDisconnect packet
+	// all_clients => client.reliable_queue.add(playerdisconnect,id);
+	OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer);
+
+	// sendSnapshot snippet
+	pdc_packet.write(UnreliableCmd::Snapshot);
+	snapshot_manager.writeSnapshot(client, pdc_packet); // Write snapshot data
+
+	PlayerDisconnect::Fields pdc_fields{ client.id };
+	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
+
+	// send pdc_message to all clients...
+
 	snapshot_manager.removePlayer(client);
 }
 
@@ -50,7 +63,7 @@ void Game::receiveCommand(Client& client, InPacket& packet) {
 	client.last_snapshot = client.sequences.last_sequence;
 }
 
-void Game::sendCommand(Client& client, OutPacket& packet) {
+void Game::sendCommand(Client& client, OutPacket& packet) { // rename to sendMessage
 	packet.setHeaders(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
