@@ -9,18 +9,7 @@
 #include <stdint.h>
 
 
-/*Game::Game(GameServer* gameServer) :
-	server(gameServer) {}*/
-
 Game::Game(Socket* socket) : socket(socket) {}
-
-/*int Game::connRequest() {
-	if (connections_num < config::MAX_CONNECTIONS) {
-		connections_num++;
-		return connections_num - 1;
-	}
-	return -1;
-}*/
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
@@ -84,13 +73,21 @@ void Game::sendMessage(Client& client, OutPacket& packet) {
 	client.send(packet);
 }
 
-void Game::sendSnapshot(Client& client) {
-	OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
-	ss_packet.write(UnreliableCmd::Snapshot);
+void Game::sendTickMessages() {
+	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
+		if (conn->second->hasTimedOut()) {
+			disconnectClient(*conn->second); // Disconnect the client
+			conn = connections.erase(conn); // Delete the client instance
+		} else {
+			OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
+			ss_packet.write(UnreliableCmd::Snapshot);
 
-	snapshot_manager.writeSnapshot(client, ss_packet); // Write snapshot data
+			snapshot_manager.writeSnapshot(*conn->second, ss_packet); // Write snapshot data
+			sendMessage(*conn->second, ss_packet); // Send the packet
 
-	sendMessage(client, ss_packet); // Send the packet
+			++conn;
+		}
+	}
 }
 
 void sendReliable(Client& client) {

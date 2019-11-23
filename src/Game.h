@@ -27,11 +27,10 @@ private:
 public:
 	Game(Socket* socket);
 
-	//int connRequest();
 	bool connectClient(long long connection, InPacketInfo p_info);
 	void disconnectClient(Client& client);
 
 	void receiveMessage(Client& client, InPacket& packet);
 	void sendMessage(Client& client, OutPacket& packet);
-	void sendSnapshot(Client& client);
+	void sendTickMessages();
 };

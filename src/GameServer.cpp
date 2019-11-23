@@ -52,7 +52,6 @@ void GameServer::tick() {
 		}
 
 		// Process the received datagram
-
 		try {
 			InPacket in_packet = InPacket(buffer, p_info.buffer_size);
 
@@ -66,7 +65,6 @@ void GameServer::tick() {
 				connection_exists = conn != game->connections.end();
 				if (connection_exists) break;
 			}
-			//auto conn = connections.find(connection);
 
 			switch (in_packet.packet_type) {
 				case PacketType::Unreliable:
@@ -89,7 +87,6 @@ void GameServer::tick() {
 						if (protocol == config::GAME_PROTOCOL) {
 							if (!connection_exists) {
 								// New connection, find a game
-
 								for (auto&& game : games) {
 									game_found = game->connectClient(connection, p_info);
 									if (game_found) break;
@@ -123,18 +120,10 @@ void GameServer::tick() {
 	}
 
 	// Loop over all clients, check if they have timed out, and send them snapshots
+	// TODO: Multithreading
 	for (auto&& game : games) {
-		for (auto conn = game->connections.begin(); conn != game->connections.end(); ) {
-			if (conn->second->hasTimedOut()) {
-				conn->second->game->disconnectClient(*conn->second); // Disconnect the client
-				conn = game->connections.erase(conn); // Delete the client instance
-			} else {
-				conn->second->game->sendSnapshot(*conn->second);
-				++conn;
-			}
-		}
+		game->sendTickMessages();
 	}
-	
 
 	// TIMER END >>>
 	/*auto t2 = std::chrono::high_resolution_clock::now();
