@@ -18,7 +18,15 @@ void Client::send(OutPacket& packet) {
 	game->socket->sendPacket(packet.buffer, packet.packet_length, ip, port);
 }
 
-void Client::bump() { // bump time since last packet received (temp)
+ReliableMessage* Client::getReliable() {
+	return reliable_queue.empty() ? nullptr : reliable_queue[0].get();
+}
+
+void Client::addReliable(ReliableMessage* message) {
+	reliable_queue.emplace_back(message);
+}
+
+void Client::bump() {
 	last_received = std::chrono::steady_clock::now();
 }
 

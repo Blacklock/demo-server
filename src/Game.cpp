@@ -36,7 +36,7 @@ void Game::disconnectClient(Client& client) {
 	PlayerDisconnect::Fields pdc_fields{ client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 
-	// TODO: send pdc_message to all clients...
+	client.addReliable(&pdc_message);
 
 	snapshot_manager.removePlayer(client);
 }
@@ -79,17 +79,20 @@ void Game::sendTickMessages() {
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			OutPacket ss_packet = OutPacket(PacketType::Unreliable, buffer);
-			ss_packet.write(UnreliableCmd::Snapshot);
+			ReliableMessage* rm = conn->second->getReliable();
 
-			snapshot_manager.writeSnapshot(*conn->second, ss_packet); // Write snapshot data
-			sendMessage(*conn->second, ss_packet); // Send the packet
+			OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
+				rm == nullptr ? PacketType::Unreliable : PacketType::Reliable, buffer
+			);
 
+			tick_packet.write(UnreliableCmd::Snapshot);
+			snapshot_manager.writeSnapshot(*conn->second, tick_packet); // Write snapshot message
+
+			if (rm != nullptr) rm->serialize(tick_packet); // Append reliable message if there is one
+
+			sendMessage(*conn->second, tick_packet); // Send the packet
 			++conn;
 		}
 	}
 }
 
-void sendReliable(Client& client) {
-	client;
-}

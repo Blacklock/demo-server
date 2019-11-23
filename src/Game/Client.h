@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../Utils/CircularBuffer.h"
 #include "Packet/OutPacket.h"
 #include "../Utils/AckBuffer.h"
 #include "Snapshot/SnapshotBuffer.h"
+#include "Message/ReliableMessage.h"
 
 #include <chrono>
+#include <vector>
 
 
 class Game;
@@ -18,6 +19,7 @@ public:
 
 	Game* game;
 	SnapshotBuffer snapshots;
+	std::vector<std::shared_ptr<ReliableMessage>> reliable_queue;
 
 	AckBuffer sequences = AckBuffer();
 	unsigned short server_sequence = 1; // Sequences start at 1
@@ -27,7 +29,9 @@ private:
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
 
-	void send(OutPacket& packet);
+	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
+	ReliableMessage* getReliable();
+	void addReliable(ReliableMessage* message);
 	void bump();
 	bool hasTimedOut();
 };

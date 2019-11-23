@@ -7,7 +7,7 @@
 #include <memory>
 
 
-class PlayerDisconnect : ReliableMessage {
+class PlayerDisconnect : public ReliableMessage {
 public:
 	struct Fields { // Player state fields & default dummy values
 		uint8_t entity_id;

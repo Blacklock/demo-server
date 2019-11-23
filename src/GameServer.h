@@ -24,7 +24,6 @@ private:
 	bool stopGameLoop = false;
 
 	std::vector<std::unique_ptr<Game>> games;
-	//std::unordered_map<long long, std::unique_ptr<Client>> connections;
 public:
 	GameServer(unsigned short port);
 
