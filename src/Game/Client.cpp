@@ -18,12 +18,33 @@ void Client::send(OutPacket& packet) {
 	game->socket->sendPacket(packet.buffer, packet.packet_length, ip, port);
 }
 
-ReliableMessage* Client::getReliable() {
-	return reliable_queue.empty() ? nullptr : reliable_queue[0].get();
+void Client::ack(unsigned short id) {
+	sequences.put(id); // Update ack
+
+	// If newly received ack is larger than previous, update last received snapshot
+	last_snapshot = sequences.last_sequence;
+
+	if (reliable_ids.find(id)) { // Reliable message acked
+		reliable_ids.reset();
+		reliable_queue.pop();
+	}
+}
+
+/*ReliableMessage* Client::getReliable() {
+	return reliable_queue.empty() ? nullptr : reliable_queue.front().get();
+}*/
+
+bool Client::reliableQueueEmpty() {
+	return reliable_queue.empty();
 }
 
 void Client::addReliable(ReliableMessage* message) {
-	reliable_queue.emplace_back(message);
+	reliable_queue.push(std::make_shared<ReliableMessage>(message));
+}
+
+void Client::appendReliable(OutPacket& packet) {
+	if (reliableQueueEmpty()) throw std::exception("Cannot append reliable message, queue is empty.");
+	reliable_queue.front()->serialize(packet);
 }
 
 void Client::bump() {

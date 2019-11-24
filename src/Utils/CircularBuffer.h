@@ -33,13 +33,30 @@ public:
 		full = head == tail;
 	};
 
-	/*template<class T> void get_buffer(T buffer_out[]) {
+	template<class T> void get_buffer(T buffer_out[]) {
 		// Returns the whole buffer, from tail to head
 
 		for (int i = 0; i < buffer_size; i++) {
 			buffer_out[i] = buffer[(i + tail) % buffer_size];
 		}
-	}*/
+	}
+
+	template<class T> bool find(T value) {
+		// Returns the whole buffer, from tail to head
+
+		for (int i = 0; i < buffer_size; i++) {
+			if (buffer[(i + tail) % buffer_size] == value) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void reset() {
+		head = 0;
+		tail = 0;
+		full = false;
+	}
 
 	/*template<class T> T get_item(int index) {
 		// Returns item at an index (starting from tail)

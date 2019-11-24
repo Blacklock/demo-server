@@ -55,10 +55,10 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 			throw std::invalid_argument("Unknown command.");
 	}
 
-	client.sequences.put(packet.packet_ack); // Update ack
-
+	client.ack(packet.packet_ack);
+	//client.sequences.put(packet.packet_ack); // Update ack
 	// If newly received ack is larger than previous, update last received snapshot
-	client.last_snapshot = client.sequences.last_sequence;
+	//client.last_snapshot = client.sequences.last_sequence;
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
@@ -79,16 +79,17 @@ void Game::sendTickMessages() {
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			ReliableMessage* rm = conn->second->getReliable();
+			bool is_reliable = !(conn->second->reliableQueueEmpty());
 
 			OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
-				rm == nullptr ? PacketType::Unreliable : PacketType::Reliable, buffer
+				is_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
 			);
 
+			// Write snapshot message
 			tick_packet.write(UnreliableCmd::Snapshot);
-			snapshot_manager.writeSnapshot(*conn->second, tick_packet); // Write snapshot message
+			snapshot_manager.writeSnapshot(*conn->second, tick_packet);
 
-			if (rm != nullptr) rm->serialize(tick_packet); // Append reliable message if there is one
+			if (is_reliable) conn->second->appendReliable(tick_packet);
 
 			sendMessage(*conn->second, tick_packet); // Send the packet
 			++conn;
