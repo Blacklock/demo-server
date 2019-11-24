@@ -21,24 +21,32 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	snapshot_manager.addPlayer(*connections[connection]); // Create a PlayerState for the new client
 
 	connections_num++;
+
+	// temp v
+	/*PlayerDisconnect::Fields pdc_fields{ 15 };
+	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
+	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
+	connections[connection]->reliable_queue.push(message);*/
+	// temp ^
+
 	return true;
 }
 
-void Game::disconnectClient(Client& client) {
+void Game::disconnectClient(Client& dc_client) {
 	// TODO: Send a PlayerDisconnect packet
 	// all_clients => client.reliable_queue.add(playerdisconnect,id);
 	OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer);
 
-	// sendSnapshot snippet
-	pdc_packet.write(UnreliableCmd::Snapshot);
-	snapshot_manager.writeSnapshot(client, pdc_packet); // Write snapshot data
-
-	PlayerDisconnect::Fields pdc_fields{ client.id };
+	PlayerDisconnect::Fields pdc_fields{ dc_client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 
-	client.reliable_queue.push(std::make_shared<PlayerDisconnect>(pdc_message));
+	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
+	for (auto& client : connections) {
+		if (client.second.get() == &dc_client) continue;
+		client.second->reliable_queue.push(message);
+	}
 
-	snapshot_manager.removePlayer(client);
+	snapshot_manager.removePlayer(dc_client);
 }
 
 void Game::receiveMessage(Client& client, InPacket& packet) {

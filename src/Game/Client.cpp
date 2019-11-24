@@ -34,10 +34,6 @@ void Client::ack(unsigned short packet_id) {
 	}
 }
 
-bool Client::reliableQueueEmpty() {
-	return reliable_queue.empty();
-}
-
 void Client::appendReliable(OutPacket& packet) {
 	if (reliable_queue.empty()) throw std::exception("Cannot append reliable message, queue is empty.");
 	reliable_queue.front()->serialize(packet);

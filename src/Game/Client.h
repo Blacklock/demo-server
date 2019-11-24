@@ -36,8 +36,6 @@ public:
 
 	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
 	void ack(unsigned short id);
-	bool reliableQueueEmpty();
-	void addReliable(ReliableMessage& message);
 	void appendReliable(OutPacket& packet);
 	void bump();
 	bool hasTimedOut();
