@@ -28,6 +28,7 @@ class Packet {
 public:
 	PacketType packet_type;
 	unsigned short packet_length;
+	unsigned short packet_sequence;
 
 	unsigned char* buffer = nullptr;
 protected:

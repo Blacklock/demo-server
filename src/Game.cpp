@@ -36,7 +36,7 @@ void Game::disconnectClient(Client& client) {
 	PlayerDisconnect::Fields pdc_fields{ client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 
-	client.addReliable(&pdc_message);
+	client.reliable_queue.push(std::make_shared<PlayerDisconnect>(pdc_message));
 
 	snapshot_manager.removePlayer(client);
 }
@@ -56,9 +56,6 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 	}
 
 	client.ack(packet.packet_ack);
-	//client.sequences.put(packet.packet_ack); // Update ack
-	// If newly received ack is larger than previous, update last received snapshot
-	//client.last_snapshot = client.sequences.last_sequence;
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
@@ -79,7 +76,7 @@ void Game::sendTickMessages() {
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			bool is_reliable = !(conn->second->reliableQueueEmpty());
+			bool is_reliable = !(conn->second->reliable_queue.empty());
 
 			OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
 				is_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer

@@ -44,7 +44,7 @@ public:
 	template<class T> bool find(T value) {
 		// Returns the whole buffer, from tail to head
 
-		for (int i = 0; i < buffer_size; i++) {
+		for (size_t i = 0; i < buffer_size; i++) {
 			if (buffer[(i + tail) % buffer_size] == value) {
 				return true;
 			}

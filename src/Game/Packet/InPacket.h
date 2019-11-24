@@ -7,7 +7,6 @@
 
 class InPacket : public Packet {
 public:
-	unsigned short packet_sequence;
 	unsigned short packet_ack;
 	uint32_t ack_bitfield;
 

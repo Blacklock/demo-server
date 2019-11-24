@@ -33,9 +33,11 @@ void OutPacket::setBufferIndex(unsigned short new_index) {
 }
 
 void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
-	if (packet_type != PacketType::Unreliable) {
-		throw std::logic_error("Headers can be set only on unreliable packets.");
+	if (packet_type == PacketType::Control) {
+		throw std::logic_error("Headers cannot be sent on contorl packets.");
 	}
+
+	packet_sequence = sequence;
 
 	unsigned short real_buffer_index = buffer_index;
 	buffer_index = 3;

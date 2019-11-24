@@ -7,7 +7,9 @@ PlayerDisconnect::PlayerDisconnect(InPacket& packet) {
 
 PlayerDisconnect::PlayerDisconnect(Fields& data) : message_fields(data) {}
 
-void PlayerDisconnect::read(InPacket& packet) {}
+void PlayerDisconnect::read(InPacket& packet) {
+	packet;
+}
 
 void PlayerDisconnect::serialize(OutPacket& packet) {
 	packet.write(static_cast<unsigned char>(ReliableCmd::PlayerDisconnect));

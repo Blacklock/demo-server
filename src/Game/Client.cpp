@@ -14,36 +14,32 @@ Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned s
 }
 
 void Client::send(OutPacket& packet) {
+	if (packet.packet_type == PacketType::Reliable) {
+		reliable_ids.put(packet.packet_sequence);
+	}
+
 	packet.setPacketLength();
 	game->socket->sendPacket(packet.buffer, packet.packet_length, ip, port);
 }
 
-void Client::ack(unsigned short id) {
-	sequences.put(id); // Update ack
+void Client::ack(unsigned short packet_id) {
+	sequences.put(packet_id); // Update ack
 
 	// If newly received ack is larger than previous, update last received snapshot
 	last_snapshot = sequences.last_sequence;
 
-	if (reliable_ids.find(id)) { // Reliable message acked
+	if (reliable_ids.find(packet_id)) { // Reliable message acked
 		reliable_ids.reset();
 		reliable_queue.pop();
 	}
 }
 
-/*ReliableMessage* Client::getReliable() {
-	return reliable_queue.empty() ? nullptr : reliable_queue.front().get();
-}*/
-
 bool Client::reliableQueueEmpty() {
 	return reliable_queue.empty();
 }
 
-void Client::addReliable(ReliableMessage* message) {
-	reliable_queue.push(std::make_shared<ReliableMessage>(message));
-}
-
 void Client::appendReliable(OutPacket& packet) {
-	if (reliableQueueEmpty()) throw std::exception("Cannot append reliable message, queue is empty.");
+	if (reliable_queue.empty()) throw std::exception("Cannot append reliable message, queue is empty.");
 	reliable_queue.front()->serialize(packet);
 }
 
