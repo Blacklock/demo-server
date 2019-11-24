@@ -12,6 +12,7 @@ namespace config {
 
 	// Client
 	unsigned int TIMEOUT_MS;
+	unsigned int RELIABLE_RESEND_MS;
 }
 
 std::string as_utf8(const char* str) {
@@ -36,4 +37,5 @@ void config::load_config(const char* filename) {
 	auto client = doc.select_node("/Settings/Client").node();
 
 	TIMEOUT_MS = std::atoi(client.child_value("Timeout"));
+	RELIABLE_RESEND_MS = std::atoi(client.child_value("ReliableResend"));
 }

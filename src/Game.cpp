@@ -23,7 +23,8 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	connections_num++;
 
 	// temp v
-	/*PlayerDisconnect::Fields pdc_fields{ 15 };
+	/*std::cout << "pushing reliable queue message playerdisconnect\n";
+	PlayerDisconnect::Fields pdc_fields{ 15 };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
 	connections[connection]->reliable_queue.push(message);*/
@@ -84,17 +85,17 @@ void Game::sendTickMessages() {
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			bool is_reliable = !(conn->second->reliable_queue.empty());
+			bool send_reliable = conn->second->shouldSendReliable();
 
 			OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
-				is_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
+				send_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
 			);
 
 			// Write snapshot message
 			tick_packet.write(UnreliableCmd::Snapshot);
 			snapshot_manager.writeSnapshot(*conn->second, tick_packet);
 
-			if (is_reliable) conn->second->appendReliable(tick_packet);
+			if (send_reliable) conn->second->appendReliable(tick_packet);
 
 			sendMessage(*conn->second, tick_packet); // Send the packet
 			++conn;

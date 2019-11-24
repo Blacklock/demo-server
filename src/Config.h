@@ -15,6 +15,7 @@ namespace config {
 
 	// Client
 	extern unsigned int TIMEOUT_MS;
+	extern unsigned int RELIABLE_RESEND_MS;
 
 	void load_config(const char* filename);
 }

@@ -15,13 +15,14 @@ Demo Server is a multiplayer game server written in C++. The server uses a custo
 
 Located in [settings.xml](settings.xml).
 
-| Variable            | Description                                                           |
-|---------------------|-----------------------------------------------------------------------|
-| GameServer/Port     | Specifies the port that the server will be listening on.              |
-| GameServer/Protocol | The game's protocol ID that clients use to connect.                   |
-| Game/Debug          | Set to on/off. Enabling will print logs in the console.               |
-| Game/MaxConnections | Maximum amount of connections per game instance.                      |
-| Client/Timeout      | Time (ms) to wait before timeing out the client. Set to 0 to disable. |
+| Variable               | Description                                                           |
+|------------------------|-----------------------------------------------------------------------|
+| GameServer/Port        | Specifies the port that the server will be listening on.              |
+| GameServer/Protocol    | The game's protocol ID that clients use to connect.                   |
+| Game/Debug             | Set to on/off. Enabling will print logs in the console.               |
+| Game/MaxConnections    | Maximum amount of connections per game instance.                      |
+| Client/Timeout         | Time (ms) to wait before timing out the client. Set to 0 to disable.  |
+| Client/ReliableResend  | Time (ms) to wait before resending a reliable message.                |
 
 ## Roadmap
 

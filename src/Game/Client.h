@@ -27,7 +27,7 @@ public:
 	unsigned short last_snapshot = 0; // Last acked snapshot's ID
 private:
 	std::chrono::steady_clock::time_point last_received;
-
+	std::chrono::steady_clock::time_point last_reliable_sent;
 	
 	// Wait for any of the packets where we sent the reliable message to get acked
 	CircularBuffer<unsigned short> reliable_ids = CircularBuffer<unsigned short>(8);
@@ -36,6 +36,7 @@ public:
 
 	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
 	void ack(unsigned short id);
+	bool shouldSendReliable();
 	void appendReliable(OutPacket& packet);
 	void bump();
 	bool hasTimedOut();
