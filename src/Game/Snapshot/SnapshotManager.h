@@ -17,5 +17,5 @@ public:
 	void updatePlayerState(Client& client, InPacket& packet);
 	void writeSnapshot(Client& client, OutPacket& packet);
 //private:
-	void writeDelta(OutPacket& packet, Snapshot* last_snapshot);
+	void writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char client_id);
 };

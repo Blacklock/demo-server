@@ -13,6 +13,7 @@ Game::Game(Socket* socket) : socket(socket) {}
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
+	std::cout << "Accepted connection " << static_cast<int>(connections_num) << "\n";
 
 	connections[connection] = std::make_unique<Client>(
 		this, connections_num, p_info.sender_address, p_info.sender_port
@@ -91,11 +92,12 @@ void Game::sendTickMessages() {
 				send_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
 			);
 
+			// Write optional reliable message
+			if (send_reliable) conn->second->appendReliable(tick_packet);
+
 			// Write snapshot message
 			tick_packet.write(UnreliableCmd::Snapshot);
 			snapshot_manager.writeSnapshot(*conn->second, tick_packet);
-
-			if (send_reliable) conn->second->appendReliable(tick_packet);
 
 			sendMessage(*conn->second, tick_packet); // Send the packet
 			++conn;

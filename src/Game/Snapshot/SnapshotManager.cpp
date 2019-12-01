@@ -50,9 +50,9 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
 	if (last_snapshot == nullptr) { // Latest snapshot wasn't found in the buffer
-		writeDelta(packet, nullptr); // ...so send a dummy snapshot
+		writeDelta(packet, nullptr, client.id); // ...so send a dummy snapshot
 	} else {
-		writeDelta(packet, last_snapshot.get());
+		writeDelta(packet, last_snapshot.get(), client.id);
 	}
 
 	// Deep copy master player states into our new snapshot
@@ -63,10 +63,15 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 }
 
 // pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
-void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot) {
+void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char client_id) {
 	// Iterate over all entities in the master snapshot
 
 	for (auto entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
+		if (entity->first == client_id) {
+			// Don't send the client information about itself
+			continue;
+		}
+
 		packet.write(entity->first); // Write the entity ID
 
 		PlayerEntity::State last_entity; // Find given entity in the last snapshot
