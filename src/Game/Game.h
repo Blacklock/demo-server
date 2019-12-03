@@ -33,4 +33,5 @@ public:
 	void receiveMessage(Client& client, InPacket& packet);
 	void sendMessage(Client& client, OutPacket& packet);
 	void sendTickMessages();
+	void sendClientTick(Client& client);
 };

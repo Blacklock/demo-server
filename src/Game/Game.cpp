@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <stdint.h>
+#include <thread>
 
 
 Game::Game(Socket* socket) : socket(socket) {}
@@ -80,28 +81,41 @@ void Game::sendMessage(Client& client, OutPacket& packet) {
 	client.send(packet);
 }
 
-void Game::sendTickMessages() {
+void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
+	std::vector<std::thread> threads;
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			bool send_reliable = conn->second->shouldSendReliable();
-
-			OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
-				send_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
+			std::cout << "starting client " << static_cast<int>(conn->second->id) << "\n";
+			threads.emplace_back(
+				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()))
 			);
-
-			// Write optional reliable message
-			if (send_reliable) conn->second->appendReliable(tick_packet);
-
-			// Write snapshot message
-			tick_packet.write(UnreliableCmd::Snapshot);
-			snapshot_manager.writeSnapshot(*conn->second, tick_packet);
-
-			sendMessage(*conn->second, tick_packet); // Send the packet
 			++conn;
 		}
 	}
+
+	for (auto& th : threads) { // Wait for all tick threads to finish
+		th.join();
+	}
+}
+
+void Game::sendClientTick(Client& client) {
+	bool send_reliable = client.shouldSendReliable();
+
+	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
+		send_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
+	);
+
+	// Write optional reliable message
+	if (send_reliable) client.appendReliable(tick_packet);
+
+	// Write snapshot message
+	tick_packet.write(UnreliableCmd::Snapshot);
+	snapshot_manager.writeSnapshot(client, tick_packet);
+
+	sendMessage(client, tick_packet); // Send the packet
+	std::cout << "send client tick to id " << static_cast<int>(client.id) << "\n";
 }
 
