@@ -5,7 +5,7 @@
 #include "Game/Packet/OutPacket.h"
 #include "Game/Client.h"
 #include "Game/Snapshot/Snapshot.h"
-#include "Game.h"
+#include "Game/Game.h"
 #include "Config.h"
 
 #include <memory>
@@ -31,4 +31,5 @@ public:
 private:
 	void startGameLoop();
 	void tick();
+	bool processPacket();
 };

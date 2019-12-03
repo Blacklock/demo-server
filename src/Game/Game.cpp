@@ -1,9 +1,9 @@
 #include "Game.h"
-#include "Game/Packet/Packet.h"
-#include "GameServer.h"
-#include "Game/Snapshot/Snapshot.h"
-#include "Game/Message/PlayerDisconnect.h"
-#include "Config.h"
+#include "Packet/Packet.h"
+#include "../GameServer.h"
+#include "Snapshot/Snapshot.h"
+#include "Message/PlayerDisconnect.h"
+#include "../Config.h"
 
 #include <iostream>
 #include <stdint.h>

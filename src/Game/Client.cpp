@@ -1,5 +1,5 @@
 #include "Client.h"
-#include "../Game.h" // ...works?
+#include "Game.h" // ...works?
 #include "../Config.h"
 
 

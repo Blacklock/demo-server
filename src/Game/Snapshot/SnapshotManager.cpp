@@ -16,7 +16,7 @@ void SnapshotManager::addPlayer(Client& client) { // this method might actually 
 }
 
 void SnapshotManager::removePlayer(Client& client) {
-	std::cout << "Client " << static_cast<int>(client.id) << " has timed out.\n";
+	std::cout << "Connection " << static_cast<int>(client.id) << " has timed out.\n";
 
 	auto player_state = master_snapshot.player_states.find(client.id);
 	if (player_state != master_snapshot.player_states.end()) {
@@ -49,11 +49,8 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	// Get the latest snapshot acked by the client
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
 
-	if (last_snapshot == nullptr) { // Latest snapshot wasn't found in the buffer
-		writeDelta(packet, nullptr, client.id); // ...so send a dummy snapshot
-	} else {
-		writeDelta(packet, last_snapshot.get(), client.id);
-	}
+	// Send a dummy snapshot if needed
+	writeDelta(packet, last_snapshot == nullptr ? nullptr : last_snapshot.get(), client.id);
 
 	// Deep copy master player states into our new snapshot
 	new_snapshot->player_states = master_snapshot.player_states;
@@ -68,8 +65,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 
 	for (auto entity = master_snapshot.player_states.begin(); entity != master_snapshot.player_states.end(); ++entity) {
 		if (entity->first == client_id) {
-			// Don't send the client information about itself
-			continue;
+			continue; // Don't send the client information about itself
 		}
 
 		packet.write(entity->first); // Write the entity ID

@@ -6,9 +6,11 @@
 bool EntityMessage::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
 	if (new_field != old_field) {
 		if (config::DEBUG) std::cout << static_cast<int>(new_field) << "\n";
+
 		packet.write(new_field);
 		return true;
 	}
+
 	if (config::DEBUG) std::cout << "Unchanged\n";
 	return false;
 }
@@ -17,7 +19,7 @@ bool EntityMessage::writeDeltaField(OutPacket& packet, int32_t new_field, int32_
 	if (new_field != old_field) {
 		if (config::DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
 
-		if (encode) { // (S)LEB128, vbyte encoding
+		if (encode) { // (S)LEB128 / vbyte encoding
 			bool more = true;
 			int sign = new_field >> 31; // 0 = unsigned; -1 = signed
 
@@ -38,6 +40,7 @@ bool EntityMessage::writeDeltaField(OutPacket& packet, int32_t new_field, int32_
 
 		return true;
 	}
+
 	if (config::DEBUG) std::cout << "Unchanged\n";
 	return false;
 }

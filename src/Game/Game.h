@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Socket.h"
-#include "Game/Packet/InPacket.h"
-#include "Game/Packet/OutPacket.h"
-#include "Game/Client.h"
-#include "Game/Snapshot/SnapshotManager.h"
+#include "../Socket.h"
+#include "Packet/InPacket.h"
+#include "Packet/OutPacket.h"
+#include "Client.h"
+#include "Snapshot/SnapshotManager.h"
 
 #include <memory>
 #include <vector>
