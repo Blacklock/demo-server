@@ -5,7 +5,7 @@
 //#include <bitset>
 
 
-InPacket::InPacket(unsigned char buffer_in[], int import_size) {
+InPacket::InPacket(unsigned char buffer_in[], unsigned short import_size) {
 	buffer = buffer_in;
 
 	if (import_size > 0) {
@@ -45,11 +45,11 @@ template<> int32_t InPacket::read<int32_t>() {
 	return (int32_t)read<uint32_t>();
 };
 
-void InPacket::build(int buffer_size) {
+void InPacket::build(unsigned short buffer_size) {
 	packet_length = buffer_size;
 
 	packet_type = static_cast<PacketType>(read<unsigned char>());
-	packet_length_header = read<unsigned short>(); // todo: get rid of this header
+	unsigned short packet_length_header = read<unsigned short>(); // todo: get rid of this header
 
 	if (packet_length != packet_length_header) {
 		throw std::exception("Packet length not equal to import size.");
@@ -68,9 +68,9 @@ void InPacket::build(int buffer_size) {
 	std::cout << "\n";*/
 }
 
-void InPacket::increase_buffer_index(int amount) {
+void InPacket::increase_buffer_index(unsigned short amount) {
 	buffer_index += amount;
-	if (buffer_index  >= packet_length) {
+	if (buffer_index > packet_length) {
 		throw std::exception("Buffer index exceeds packet size.");
 	}
 }

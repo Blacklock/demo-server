@@ -59,8 +59,7 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 	switch (command) {
 		case UnreliableCmd::PlayerData: // rename to PlayerData or something like that
-			// Update master game state
-			snapshot_manager.updatePlayerState(client, packet);
+			snapshot_manager.updatePlayerState(client, packet); // Update master game state
 			break;
 		default:
 			throw std::invalid_argument("Unknown command.");
@@ -88,7 +87,6 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 			disconnectClient(*conn->second); // Disconnect the client
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
-			std::cout << "starting client " << static_cast<int>(conn->second->id) << "\n";
 			threads.emplace_back(
 				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()))
 			);
@@ -105,7 +103,7 @@ void Game::sendClientTick(Client& client) {
 	bool send_reliable = client.shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
-		send_reliable ? PacketType::Reliable : PacketType::Unreliable, buffer
+		send_reliable ? PacketType::Reliable : PacketType::Unreliable, client.buffer
 	);
 
 	// Write optional reliable message
@@ -116,6 +114,5 @@ void Game::sendClientTick(Client& client) {
 	snapshot_manager.writeSnapshot(client, tick_packet);
 
 	sendMessage(client, tick_packet); // Send the packet
-	std::cout << "send client tick to id " << static_cast<int>(client.id) << "\n";
 }
 

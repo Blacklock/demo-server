@@ -22,10 +22,13 @@ public:
 	SnapshotBuffer snapshots;
 	std::queue<std::shared_ptr<ReliableMessage>> reliable_queue;
 
+	unsigned char buffer[512]; // MAX_PACKET_SIZE (!)
+
 	AckBuffer sequences = AckBuffer();
 	unsigned short server_sequence = 1; // Sequences start at 1
 	unsigned short last_snapshot = 0; // Last acked snapshot's ID
 private:
+
 	std::chrono::steady_clock::time_point last_received;
 	std::chrono::steady_clock::time_point last_reliable_sent;
 	

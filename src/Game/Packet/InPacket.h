@@ -10,10 +10,10 @@ public:
 	unsigned short packet_ack;
 	uint32_t ack_bitfield;
 
-	InPacket(unsigned char buffer_in[], int import_size);
+	InPacket(unsigned char buffer_in[], unsigned short import_size);
 
 	template<typename T> T read();
 private:
-	void build(int buffer_size);
-	void increase_buffer_index(int amount);
+	void build(unsigned short buffer_size);
+	void increase_buffer_index(unsigned short amount);
 };

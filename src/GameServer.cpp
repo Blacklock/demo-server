@@ -44,7 +44,7 @@ void GameServer::tick() { // TODO: Multithreading
 	// TIMER START >>>
 	//auto t1 = std::chrono::high_resolution_clock::now();
 
-	while (true) { // Process any received datagrams
+	while (true) { // Process any received datagrams (make it async)
 		if (!processPacket()) break;
 	}
 
