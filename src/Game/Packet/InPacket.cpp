@@ -78,6 +78,6 @@ void InPacket::build(unsigned short buffer_size) {
 void InPacket::increase_buffer_index(unsigned short amount) {
 	buffer_index += amount;
 	if (buffer_index > packet_length) {
-		throw std::exception("Buffer index exceeds packet size.");
+		throw std::out_of_range("Buffer index exceeds packet size.");
 	}
 }

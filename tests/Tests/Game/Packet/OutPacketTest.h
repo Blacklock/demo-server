@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gtest/gtest.h"
+#include <string>
 #include <stdint.h>
 
 #include "../../../../src/Game/Packet/OutPacket.cpp"
@@ -62,4 +63,18 @@ TEST_F(OutPacketTest, writesSignedInts) {
 	packet.write(static_cast<int32_t>(-65532));
 	ASSERT_EQ(packet.buffer[5], 0x00);
 	ASSERT_EQ(packet.buffer[6], 0x04);
+}
+
+TEST_F(OutPacketTest, writesStrings) {
+	OutPacket packet = OutPacket(PacketType::Control, buffer);
+	packet.write("Hi");
+	packet.write(" ");
+	packet.write("world!");
+	packet.setPacketLength();
+
+	ASSERT_EQ(packet.packet_length, 12);
+	ASSERT_EQ(packet.buffer[3], 'H');
+	ASSERT_EQ(packet.buffer[4], 'i');
+	ASSERT_EQ(packet.buffer[5], ' ');
+	ASSERT_EQ(packet.buffer[6], 'w');
 }

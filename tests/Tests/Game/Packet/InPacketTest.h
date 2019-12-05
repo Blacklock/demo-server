@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gtest/gtest.h"
+#include <string>
 #include <stdint.h>
 
 #include "../../../../src/Game/Packet/InPacket.cpp"
@@ -40,4 +41,39 @@ TEST(InPacketTest, handlesUnreliablePackets) {
 	EXPECT_EQ(packet.read<UnreliableCmd>(), UnreliableCmd::PlayerData);
 	EXPECT_EQ(packet.read<unsigned char>(), 0b10000000);
 	EXPECT_EQ(packet.read<int32_t>(), -65535);
+}
+
+TEST(InPacketTest, handlesStrings) {
+	unsigned char buffer[10] = {
+		static_cast<unsigned char>(PacketType::Control),
+		0x00, 0x0a, // packet length
+		'H', 'e', 'l', 'l', 'o', '!', '!' // string
+	};
+	InPacket packet = InPacket(buffer, 10);
+
+	EXPECT_EQ(packet.read_string(4), "Hell");
+	EXPECT_EQ(packet.read_string(1), "o");
+	EXPECT_EQ(packet.read_string(2), "!!");
+}
+
+TEST(InPacketTest, handlesFakeLengths) {
+	unsigned char buffer[11] = {
+		static_cast<unsigned char>(PacketType::Control),
+		0x00, 0x05, // fake packet length
+		'O', 'v', 'e', 'r', 'f', 'l', 'o', 'w'
+	};
+	ASSERT_THROW(InPacket(buffer, 11), std::exception);
+}
+
+TEST(InPacketTest, handlesReadOverflow) {
+	unsigned char buffer[11] = {
+		static_cast<unsigned char>(PacketType::Control),
+		0x00, 0x0b,
+		'O', 'v', 'e', 'r', 'f', 'l', 'o', 'w'
+	};
+	InPacket packet = InPacket(buffer, 11);
+
+	EXPECT_EQ(packet.read_string(7), "Overflo");
+	EXPECT_EQ(packet.read_string(1), "w");
+	ASSERT_THROW(packet.read_string(1), std::out_of_range);
 }
