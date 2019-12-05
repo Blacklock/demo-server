@@ -8,7 +8,7 @@ PlayerDisconnect::PlayerDisconnect(InPacket& packet) {
 PlayerDisconnect::PlayerDisconnect(Fields& data) : message_fields(data) {}
 
 void PlayerDisconnect::read(InPacket& packet) {
-	packet;
+	throw std::exception("Client packets can't contain PlayerDisconnect messages.");
 }
 
 void PlayerDisconnect::serialize(OutPacket& packet) {

@@ -45,6 +45,13 @@ template<> int32_t InPacket::read<int32_t>() {
 	return (int32_t)read<uint32_t>();
 };
 
+std::string InPacket::read_string(unsigned short size, bool encode) {
+	if (encode) throw std::exception("String encoding not implemented!");
+
+	increase_buffer_index(size);
+	return std::string(&buffer[buffer_index - size], &buffer[buffer_index]);
+}
+
 void InPacket::build(unsigned short buffer_size) {
 	packet_length = buffer_size;
 

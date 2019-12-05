@@ -2,6 +2,7 @@
 
 #include "Packet.h"
 
+#include <string>
 #include <stdint.h>
 
 
@@ -20,4 +21,5 @@ public:
 	void write(unsigned short value);
 	void write(uint32_t value);
 	void write(int32_t value);
+	void write(std::string value);
 };

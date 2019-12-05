@@ -65,7 +65,9 @@ bool GameServer::processPacket() {
 	if (p_info.buffer_size <= 0) return false; // No more packets to receive
 
 	try {
-		InPacket in_packet = InPacket(buffer, p_info.buffer_size);
+		if (p_info.buffer_size > MAX_PACKET_SIZE) throw std::exception("Packet too large.");
+
+		InPacket in_packet = InPacket(buffer, static_cast<unsigned short>(p_info.buffer_size));
 
 		// Find the connection
 		long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
