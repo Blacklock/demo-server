@@ -14,27 +14,27 @@ InPacket::InPacket(unsigned char buffer_in[], int import_size) {
 };
 
 template<> UnreliableCmd InPacket::read<UnreliableCmd>() {
-	buffer_index += 1;
+	increase_buffer_index(1);
 	return static_cast<UnreliableCmd>(buffer[buffer_index - 1]);
 };
 
 template<> ControlCmd InPacket::read<ControlCmd>() {
-	buffer_index += 1;
+	increase_buffer_index(1);
 	return static_cast<ControlCmd>(buffer[buffer_index - 1]);
 };
 
 template<> unsigned char InPacket::read<unsigned char>() {
-	buffer_index += 1;
+	increase_buffer_index(1);
 	return buffer[buffer_index - 1];
 };
 
 template<> unsigned short InPacket::read<unsigned short>() {
-	buffer_index += 2;
+	increase_buffer_index(2);
 	return (static_cast<unsigned short>(buffer[buffer_index - 2]) << 8) | buffer[buffer_index - 1];
 };
 
 template<> uint32_t InPacket::read<uint32_t>() {
-	buffer_index += 4;
+	increase_buffer_index(4);
 	return (uint32_t)buffer[buffer_index - 4] << 24 |
 		(uint32_t)buffer[buffer_index - 3] << 16 |
 		(uint32_t)buffer[buffer_index - 2] << 8 |
@@ -46,8 +46,14 @@ template<> int32_t InPacket::read<int32_t>() {
 };
 
 void InPacket::build(int buffer_size) {
+	packet_length = buffer_size;
+
 	packet_type = static_cast<PacketType>(read<unsigned char>());
-	packet_length = read<unsigned short>();
+	packet_length_header = read<unsigned short>(); // todo: get rid of this header
+
+	if (packet_length != packet_length_header) {
+		throw std::exception("Packet length not equal to import size.");
+	}
 
 	if (packet_type == PacketType::Unreliable) {
 		packet_sequence = read<unsigned short>();
@@ -60,8 +66,11 @@ void InPacket::build(int buffer_size) {
 		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
 	}
 	std::cout << "\n";*/
+}
 
-	if (packet_length != buffer_size) {
-		throw std::exception("Packet length not equal to import size.");
+void InPacket::increase_buffer_index(int amount) {
+	buffer_index += amount;
+	if (buffer_index  >= packet_length) {
+		throw std::exception("Buffer index exceeds packet size.");
 	}
 }

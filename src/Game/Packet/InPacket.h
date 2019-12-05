@@ -15,4 +15,5 @@ public:
 	template<typename T> T read();
 private:
 	void build(int buffer_size);
+	void increase_buffer_index(int amount);
 };
