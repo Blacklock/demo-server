@@ -83,9 +83,13 @@ bool GameServer::processPacket() {
 		// Process the received packet
 		switch (in_packet.packet_type) {
 			case PacketType::Unreliable:
-			case PacketType::Reliable:
 				if (connection_exists) {
 					conn->second->game->receiveMessage(*conn->second, in_packet);
+				}
+				break;
+			case PacketType::Reliable:
+				if (connection_exists) {
+					conn->second->game->receiveReliableMessage(*conn->second, in_packet);
 				}
 				break;
 			case PacketType::Control:

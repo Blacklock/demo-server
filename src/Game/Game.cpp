@@ -62,10 +62,24 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 			snapshot_manager.updatePlayerState(client, packet); // Update master game state
 			break;
 		default:
-			throw std::invalid_argument("Unknown command.");
+			throw std::invalid_argument("Unknown unreliable command.");
 	}
 
 	client.ack(packet.packet_ack);
+}
+
+void Game::receiveReliableMessage(Client& client, InPacket& packet) {
+	// Receive an unreliable command
+	ReliableCmd command = packet.read<ReliableCmd>();
+	switch (command) {
+		case ReliableCmd::PlayerChat: // rename to PlayerData or something like that
+			
+			break;
+		default:
+			throw std::invalid_argument("Unknown reliable command.");
+	}
+
+	receiveMessage(client, packet);
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
@@ -78,6 +92,13 @@ void Game::sendMessage(Client& client, OutPacket& packet) {
 	client.server_sequence++; // Increase our sequence by one
 
 	client.send(packet);
+}
+
+void Game::broadcastMessage(OutPacket& packet) {
+	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
+		sendMessage(*conn->second, packet);
+		++conn;
+	}
 }
 
 void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
@@ -115,4 +136,3 @@ void Game::sendClientTick(Client& client) {
 
 	sendMessage(client, tick_packet); // Send the packet
 }
-
