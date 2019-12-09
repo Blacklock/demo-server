@@ -11,9 +11,7 @@ class PlayerDisconnect : public ReliableMessage {
 public:
 	struct Fields { // Player state fields & default dummy values
 		uint8_t entity_id;
-	};
-private:
-	Fields message_fields;
+	} fields;
 public:
 	PlayerDisconnect(InPacket& packet);
 	PlayerDisconnect(Fields& data);

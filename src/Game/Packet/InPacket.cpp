@@ -18,6 +18,11 @@ template<> UnreliableCmd InPacket::read<UnreliableCmd>() {
 	return static_cast<UnreliableCmd>(buffer[buffer_index - 1]);
 };
 
+template<> ReliableCmd InPacket::read<ReliableCmd>() {
+	increase_buffer_index(1);
+	return static_cast<ReliableCmd>(buffer[buffer_index - 1]);
+};
+
 template<> ControlCmd InPacket::read<ControlCmd>() {
 	increase_buffer_index(1);
 	return static_cast<ControlCmd>(buffer[buffer_index - 1]);
@@ -62,7 +67,7 @@ void InPacket::build(unsigned short buffer_size) {
 		throw std::exception("Packet length not equal to import size.");
 	}
 
-	if (packet_type == PacketType::Unreliable) {
+	if (packet_type != PacketType::Control) {
 		packet_sequence = read<unsigned short>();
 		packet_ack = read<unsigned short>();
 		ack_bitfield = read<uint32_t>();

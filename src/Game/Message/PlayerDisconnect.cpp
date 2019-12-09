@@ -5,13 +5,14 @@ PlayerDisconnect::PlayerDisconnect(InPacket& packet) {
 	read(packet);
 };
 
-PlayerDisconnect::PlayerDisconnect(Fields& data) : message_fields(data) {}
+PlayerDisconnect::PlayerDisconnect(Fields& data) : fields(data) {}
 
 void PlayerDisconnect::read(InPacket& packet) {
+	packet;
 	throw std::exception("Client packets can't contain PlayerDisconnect messages.");
 }
 
 void PlayerDisconnect::serialize(OutPacket& packet) {
 	packet.write(static_cast<unsigned char>(ReliableCmd::PlayerDisconnect));
-	packet.write(message_fields.entity_id);
+	packet.write(fields.entity_id);
 }

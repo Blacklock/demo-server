@@ -2,6 +2,7 @@
 
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
+#include "../Client.h"
 #include "ReliableMessage.h"
 
 #include <memory>
@@ -14,9 +15,7 @@ public:
 		uint8_t entity_id;
         uint8_t message_length;
         std::string chat_message;
-	};
-private:
-	Fields message_fields;
+	} fields;
 public:
 	PlayerChat(InPacket& packet);
 	PlayerChat(Fields& data);

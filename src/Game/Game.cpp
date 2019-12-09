@@ -3,6 +3,7 @@
 #include "../GameServer.h"
 #include "Snapshot/Snapshot.h"
 #include "Message/PlayerDisconnect.h"
+#include "Message/PlayerChat.h"
 #include "../Config.h"
 
 #include <iostream>
@@ -73,13 +74,22 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	ReliableCmd command = packet.read<ReliableCmd>();
 	switch (command) {
 		case ReliableCmd::PlayerChat: // rename to PlayerData or something like that
-			
+		{
+			PlayerChat chat_message = PlayerChat(packet);
+			chat_message.fields.entity_id = client.id;
+
+			auto message = std::make_shared<PlayerChat>(chat_message);
+			for (auto& i_client : connections) {
+				i_client.second->reliable_queue.push(message);
+			}
 			break;
+		}
 		default:
 			throw std::invalid_argument("Unknown reliable command.");
 	}
-
-	receiveMessage(client, packet);
+	client.bump();
+	client.ack(packet.packet_ack);
+	//receiveMessage(client, packet);
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
@@ -92,13 +102,6 @@ void Game::sendMessage(Client& client, OutPacket& packet) {
 	client.server_sequence++; // Increase our sequence by one
 
 	client.send(packet);
-}
-
-void Game::broadcastMessage(OutPacket& packet) {
-	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
-		sendMessage(*conn->second, packet);
-		++conn;
-	}
 }
 
 void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
