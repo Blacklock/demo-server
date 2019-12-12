@@ -23,16 +23,18 @@ void Client::send(OutPacket& packet) {
 	game->socket->sendPacket(packet.buffer, packet.packet_length, ip, port);
 }
 
-void Client::ack(unsigned short packet_id) {
-	sequences.put(packet_id); // Update ack
+void Client::ack(InPacket& packet) {
+	sequences.put(packet.packet_sequence); // Update ack (!!!)
 
 	// If newly received ack is larger than previous, update last received snapshot
 	last_snapshot = sequences.last_sequence;
 
-	if (reliable_ids.find(packet_id)) { // Reliable message acked
+	// TODO: We forgot about the ack bitfields!!!
+	if (reliable_ids.find(packet.packet_ack)) { // Reliable message acked
 		reliable_ids.reset();
-		last_reliable_sent = std::chrono::steady_clock::now();
 		reliable_queue.pop();
+		// v we probably don't need that line, but just in case v
+		// last_reliable_sent = std::chrono::steady_clock::now();
 	}
 }
 

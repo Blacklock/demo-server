@@ -38,7 +38,7 @@ public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
 
 	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
-	void ack(unsigned short id);
+	void ack(InPacket& packet);
 	bool shouldSendReliable();
 	void appendReliable(OutPacket& packet);
 	void bump();

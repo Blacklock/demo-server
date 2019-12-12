@@ -1,6 +1,5 @@
 #include "PlayerChat.h"
 #include "../Game.h"
-#include <iostream> //temp
 
 
 PlayerChat::PlayerChat(InPacket& packet) {
@@ -10,10 +9,8 @@ PlayerChat::PlayerChat(InPacket& packet) {
 PlayerChat::PlayerChat(Fields& data) : fields(data) {}
 
 void PlayerChat::read(InPacket& packet) {
-	//message_fields.entity_id = packet.read<unsigned char>();
     fields.message_length = packet.read<unsigned char>();
     fields.chat_message = packet.read_string(fields.message_length);
-	std::cout << "Chat message: " << fields.chat_message << "\n";
 }
 
 void PlayerChat::serialize(OutPacket& packet) {

@@ -51,6 +51,9 @@ void Game::disconnectClient(Client& dc_client) {
 	}
 
 	snapshot_manager.removePlayer(dc_client);
+	
+	// TODO: Something like connection slots
+	//connections_num--;
 }
 
 void Game::receiveMessage(Client& client, InPacket& packet) {
@@ -66,7 +69,7 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 			throw std::invalid_argument("Unknown unreliable command.");
 	}
 
-	client.ack(packet.packet_ack);
+	client.ack(packet);
 }
 
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {
@@ -87,9 +90,8 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 		default:
 			throw std::invalid_argument("Unknown reliable command.");
 	}
-	client.bump();
-	client.ack(packet.packet_ack);
-	//receiveMessage(client, packet);
+
+	receiveMessage(client, packet);
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {

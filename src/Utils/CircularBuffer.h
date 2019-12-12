@@ -10,6 +10,7 @@ private:
 	size_t buffer_size;
 	int head = 0;
 	int tail = 0;
+	int size = 0;
 	bool full;
 public:
 	CircularBuffer<T>(size_t size) :
@@ -29,6 +30,7 @@ public:
 			tail = (tail + 1) % buffer_size;
 		}
 
+		if (!full) size++;
 		head = (head + 1) % buffer_size;
 		full = head == tail;
 	};
@@ -36,7 +38,7 @@ public:
 	template<class T> void get_buffer(T buffer_out[]) {
 		// Returns the whole buffer, from tail to head
 
-		for (int i = 0; i < buffer_size; i++) {
+		for (int i = 0; i < size; i++) {
 			buffer_out[i] = buffer[(i + tail) % buffer_size];
 		}
 	}
@@ -44,7 +46,7 @@ public:
 	template<class T> bool find(T value) {
 		// Returns the whole buffer, from tail to head
 
-		for (size_t i = 0; i < buffer_size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			if (buffer[(i + tail) % buffer_size] == value) {
 				return true;
 			}
@@ -55,6 +57,7 @@ public:
 	void reset() {
 		head = 0;
 		tail = 0;
+		size = 0;
 		full = false;
 	}
 
