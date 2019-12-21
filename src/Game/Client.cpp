@@ -33,8 +33,7 @@ void Client::ack(InPacket& packet) {
 	if (reliable_ids.find(packet.packet_ack)) { // Reliable message acked
 		reliable_ids.reset();
 		reliable_queue.pop();
-		// v we probably don't need that line, but just in case v
-		// last_reliable_sent = std::chrono::steady_clock::now();
+		server_rel_switch = !server_rel_switch; // Flip the reliable sequence
 	}
 }
 

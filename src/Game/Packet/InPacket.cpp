@@ -60,7 +60,11 @@ std::string InPacket::read_string(unsigned short size, bool encode) {
 void InPacket::build(unsigned short buffer_size) {
 	packet_length = buffer_size;
 
-	packet_type = static_cast<PacketType>(read<unsigned char>());
+	BasePacketHeader header;
+	header.raw = read<unsigned char>();
+	packet_type = header.fields.packet_type;
+	reliable_switch = header.fields.reliable_switch;
+
 	unsigned short packet_length_header = read<unsigned short>(); // todo: get rid of this header
 
 	if (packet_length != packet_length_header) {

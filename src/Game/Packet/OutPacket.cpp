@@ -5,11 +5,14 @@
 //#include <bitset>
 
 
-OutPacket::OutPacket(PacketType type, unsigned char buffer_in[]) {
+OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch) {
 	buffer = buffer_in;
 	packet_type = type;
 
-	write(static_cast<unsigned char>(packet_type));
+	BasePacketHeader header;
+	header.fields.packet_type = packet_type;
+	header.fields.reliable_switch = rel_switch;
+	//write(static_cast<unsigned char>(packet_type));
 
 	// Reserve space for the header(s)
 	switch (packet_type) {
@@ -34,7 +37,7 @@ void OutPacket::setBufferIndex(unsigned short new_index) {
 
 void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type == PacketType::Control) {
-		throw std::logic_error("Headers cannot be sent on contorl packets.");
+		throw std::logic_error("Headers cannot be sent on control packets.");
 	}
 
 	packet_sequence = sequence;

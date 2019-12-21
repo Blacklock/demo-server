@@ -62,7 +62,9 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
 	switch (command) {
-		case UnreliableCmd::PlayerData: // rename to PlayerData or something like that
+		case UnreliableCmd::Ping:
+			break;
+		case UnreliableCmd::PlayerData:
 			snapshot_manager.updatePlayerState(client, packet); // Update master game state
 			break;
 		default:
@@ -76,7 +78,7 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	// Receive an unreliable command
 	ReliableCmd command = packet.read<ReliableCmd>();
 	switch (command) {
-		case ReliableCmd::PlayerChat: // rename to PlayerData or something like that
+		case ReliableCmd::PlayerChat:
 		{
 			PlayerChat chat_message = PlayerChat(packet);
 			chat_message.fields.entity_id = client.id;

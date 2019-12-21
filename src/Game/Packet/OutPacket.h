@@ -8,7 +8,7 @@
 
 class OutPacket : public Packet {
 public:
-	OutPacket(PacketType type, unsigned char buffer_in[]);
+	OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch = 0);
 
 	unsigned short getBufferIndex();
 	void setBufferIndex(unsigned short new_index);
