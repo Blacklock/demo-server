@@ -9,7 +9,7 @@
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
-    <Timeout>20000</Timeout>
-    <ReliableResend>200</ReliableResend>
+    <Timeout>0</Timeout>
+    <ReliableResend>100</ReliableResend>
   </Client>
 </Settings>

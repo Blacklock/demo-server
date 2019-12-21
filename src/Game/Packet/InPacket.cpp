@@ -58,12 +58,17 @@ std::string InPacket::read_string(unsigned short size, bool encode) {
 }
 
 void InPacket::build(unsigned short buffer_size) {
+	/*std::cout << "PACKET RECEIVED\n";
+	for (int i = 0; i < buffer_size; i++) {
+		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
+	}
+	std::cout << "\n";*/
+
 	packet_length = buffer_size;
 
-	BasePacketHeader header;
-	header.raw = read<unsigned char>();
-	packet_type = header.fields.packet_type;
-	reliable_switch = header.fields.reliable_switch;
+	unsigned char header = read<unsigned char>();
+	packet_type = static_cast<PacketType>(header >> 6);
+	reliable_switch = (header >> 5) & 1;
 
 	unsigned short packet_length_header = read<unsigned short>(); // todo: get rid of this header
 
@@ -76,12 +81,6 @@ void InPacket::build(unsigned short buffer_size) {
 		packet_ack = read<unsigned short>();
 		ack_bitfield = read<uint32_t>();
 	}
-
-	/*std::cout << "PACKET RECEIVED\n";
-	for (int i = 0; i < buffer_size; i++) {
-		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
-	}
-	std::cout << "\n";*/
 }
 
 void InPacket::increase_buffer_index(unsigned short amount) {

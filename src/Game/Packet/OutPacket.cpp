@@ -9,10 +9,8 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch
 	buffer = buffer_in;
 	packet_type = type;
 
-	BasePacketHeader header;
-	header.fields.packet_type = packet_type;
-	header.fields.reliable_switch = rel_switch;
-	//write(static_cast<unsigned char>(packet_type));
+	unsigned char header = (static_cast<unsigned char>(packet_type) << 6) | (rel_switch << 5);
+	write(header);
 
 	// Reserve space for the header(s)
 	switch (packet_type) {

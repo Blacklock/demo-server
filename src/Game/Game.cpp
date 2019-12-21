@@ -39,7 +39,7 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 void Game::disconnectClient(Client& dc_client) {
 	// TODO: Send a PlayerDisconnect packet
 	// all_clients => client.reliable_queue.add(playerdisconnect,id);
-	OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer);
+	OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer, dc_client.server_rel_switch);
 
 	PlayerDisconnect::Fields pdc_fields{ dc_client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
@@ -75,17 +75,25 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 }
 
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {
+	// Check if the received reliable message is a resend of previous
+	bool unique_message = false;
+	if (packet.reliable_switch == client.client_rel_switch) {
+		unique_message = true;
+		client.client_rel_switch = !client.client_rel_switch;
+	}
+
 	// Receive an unreliable command
 	ReliableCmd command = packet.read<ReliableCmd>();
 	switch (command) {
 		case ReliableCmd::PlayerChat:
 		{
 			PlayerChat chat_message = PlayerChat(packet);
-			chat_message.fields.entity_id = client.id;
-
-			auto message = std::make_shared<PlayerChat>(chat_message);
-			for (auto& i_client : connections) {
-				i_client.second->reliable_queue.push(message);
+			if (unique_message) {
+				chat_message.fields.entity_id = client.id;
+				auto message = std::make_shared<PlayerChat>(chat_message);
+				for (auto& i_client : connections) {
+					i_client.second->reliable_queue.push(message);
+				}
 			}
 			break;
 		}
@@ -131,7 +139,9 @@ void Game::sendClientTick(Client& client) {
 	bool send_reliable = client.shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
-		send_reliable ? PacketType::Reliable : PacketType::Unreliable, client.buffer
+		send_reliable ? PacketType::Reliable : PacketType::Unreliable, 
+		client.buffer,
+		send_reliable ? client.server_rel_switch : false
 	);
 
 	// Write optional reliable message

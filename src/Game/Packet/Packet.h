@@ -8,15 +8,7 @@ enum class PacketType : unsigned char {
 	Fragment // Packet fragment
 };
 
-union BasePacketHeader { // Shows which fields have been modified
-	struct {
-		PacketType packet_type : 2;
-		bool reliable_switch : 1; // Reliable sequence switch (prevent resending of messages)
-		bool empty : 5;
-	} fields;
-	unsigned char raw;
-};
-
+// c++ bitfield order depends on the compiler, so we got rid of it and are just using bitwise operators now
 // f = reliable flip
 // id0 f0, <ACK id0>, id2 f0, <ACK id2 WITHOUT EXECUTIING, CAUSE f0 RECEIVED>, 
 // id3 f0, <ACK id3>, id4 f1, <ACK id4>, id1 f0, <CORRECT f0 RECEIVED, BUT ID SMALLER THAN LAST ACK, NO EXEC ONLY ACK>
