@@ -47,4 +47,6 @@ public:
 	void appendReliable(OutPacket& packet);
 	void bump();
 	bool hasTimedOut();
+private:
+	void nextReliable();
 };

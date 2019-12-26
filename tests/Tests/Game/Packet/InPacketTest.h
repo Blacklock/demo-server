@@ -9,7 +9,7 @@
 
 TEST(InPacketTest, handlesControlPackets) {
 	unsigned char buffer[8] = { // ConnRequest packet
-		static_cast<unsigned char>(PacketType::Control), // packet type
+		static_cast<unsigned char>(PacketType::Control) << 6, // packet type
 		0x00, 0x08, // packet length
 		static_cast<unsigned char>(ControlCmd::ConnRequest), // command
 		0x00, 0x01, 0x87, 0x04 // protocol id
@@ -45,7 +45,7 @@ TEST(InPacketTest, handlesUnreliablePackets) {
 
 TEST(InPacketTest, handlesStrings) {
 	unsigned char buffer[10] = {
-		static_cast<unsigned char>(PacketType::Control),
+		static_cast<unsigned char>(PacketType::Control) << 6,
 		0x00, 0x0a, // packet length
 		'H', 'e', 'l', 'l', 'o', '!', '!' // string
 	};
@@ -67,7 +67,7 @@ TEST(InPacketTest, handlesFakeLengths) {
 
 TEST(InPacketTest, handlesReadOverflow) {
 	unsigned char buffer[11] = {
-		static_cast<unsigned char>(PacketType::Control),
+		static_cast<unsigned char>(PacketType::Control) << 6,
 		0x00, 0x0b,
 		'O', 'v', 'e', 'r', 'f', 'l', 'o', 'w'
 	};

@@ -21,7 +21,7 @@ TEST_F(OutPacketTest, writesPacketLength) {
 TEST_F(OutPacketTest, writesControlHeaders) {
 	OutPacket packet = OutPacket(PacketType::Control, buffer);
 	ASSERT_EQ(packet.getBufferIndex(), 3);
-	ASSERT_EQ(packet.buffer[0], static_cast<unsigned char>(PacketType::Control));
+	ASSERT_EQ(packet.buffer[0] >> 6, static_cast<unsigned char>(PacketType::Control));
 }
 
 TEST_F(OutPacketTest, writesUnreliableHeaders) {

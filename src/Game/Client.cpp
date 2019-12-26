@@ -2,6 +2,9 @@
 #include "Game.h" // ...works?
 #include "../Config.h"
 
+#include <stdint.h>
+
+
 
 Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
 	game(client_game),
@@ -24,16 +27,20 @@ void Client::send(OutPacket& packet) {
 }
 
 void Client::ack(InPacket& packet) {
-	sequences.put(packet.packet_sequence); // Update ack (!!!)
+	sequences.put(packet.packet_sequence); // Update ack
 
-	// If newly received ack is larger than previous, update last received snapshot
-	last_snapshot = sequences.last_sequence;
+	last_snapshot = sequences.last_sequence; // Update the last received snapshot if needed
 
-	// TODO: We forgot about the ack bitfields!!!
-	if (reliable_ids.find(packet.packet_ack)) { // Reliable message acked
-		reliable_ids.reset();
-		reliable_queue.pop();
-		server_rel_switch = !server_rel_switch; // Flip the reliable sequence
+	if (reliable_ids.get_size() == 0) return; // No reliable message
+
+	// Find out if our reliable message has been acked
+
+	if (reliable_ids.find(packet.packet_ack)) nextReliable();
+
+	int32_t bitfield = packet.ack_bitfield;
+	for (int i = 1; bitfield > 0; ++i, bitfield >>= 1) {
+		if (bitfield & 1 == 1 && reliable_ids.find((packet.packet_ack - i + 65536) % 65536))
+			nextReliable();
 	}
 }
 
@@ -62,4 +69,10 @@ bool Client::hasTimedOut() {
 	long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_received).count();
 
 	return ms > config::TIMEOUT_MS;
+}
+
+void Client::nextReliable() { // Mark reliable message as received
+	reliable_ids.reset();
+	reliable_queue.pop();
+	server_rel_switch = !server_rel_switch; // Flip the reliable sequence
 }

@@ -17,6 +17,10 @@ public:
 		buffer_size(size),
 		buffer(new T[size]) {} // if we ever use this class, change this
 	
+	size_t get_size() {
+		return size;
+	}
+
 	size_t get_buffer_size() {
 		return buffer_size;
 	}
