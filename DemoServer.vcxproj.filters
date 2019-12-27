@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Game\Message">
       <UniqueIdentifier>{5e2389f9-51a0-4459-8b4f-5fea4cd11d7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Entity">
+      <UniqueIdentifier>{1ae8b9cd-098a-4681-af76-92b929b0b043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity">
+      <UniqueIdentifier>{c759b661-4a24-4575-9661-eaa6c962efe1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/GameServer.h">
@@ -81,14 +87,8 @@
     <ClInclude Include="src\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Message\PlayerEntity.h">
-      <Filter>Header Files\Game\Message</Filter>
-    </ClInclude>
     <ClInclude Include="src\Utils\MessageQueue.h">
       <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\Message\EntityMessage.h">
-      <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Message\ReliableMessage.h">
       <Filter>Header Files\Game\Message</Filter>
@@ -101,6 +101,12 @@
     </ClInclude>
     <ClInclude Include="src\Game\Message\PlayerChat.h">
       <Filter>Header Files\Game\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Entity\Entity.h">
+      <Filter>Header Files\Game\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Entity\Player.h">
+      <Filter>Header Files\Game\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -143,14 +149,8 @@
     <ClCompile Include="src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Message\PlayerEntity.cpp">
-      <Filter>Source Files\Game\Message</Filter>
-    </ClCompile>
     <ClCompile Include="src\Utils\MessageQueue.cpp">
       <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\Message\EntityMessage.cpp">
-      <Filter>Source Files\Game\Message</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Message\ReliableMessage.cpp">
       <Filter>Source Files\Game\Message</Filter>
@@ -163,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="src\Game\Message\PlayerChat.cpp">
       <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Entity\Entity.cpp">
+      <Filter>Source Files\Game\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Entity\Player.cpp">
+      <Filter>Source Files\Game\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

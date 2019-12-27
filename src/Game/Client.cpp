@@ -39,7 +39,7 @@ void Client::ack(InPacket& packet) {
 
 	int32_t bitfield = packet.ack_bitfield;
 	for (int i = 1; bitfield > 0; ++i, bitfield >>= 1) {
-		if (bitfield & 1 == 1 && reliable_ids.find((packet.packet_ack - i + 65536) % 65536))
+		if ((bitfield & 1) == 1 && reliable_ids.find((packet.packet_ack - i + 65536) % 65536))
 			nextReliable();
 	}
 }

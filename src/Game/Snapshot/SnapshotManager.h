@@ -4,7 +4,6 @@
 #include "../Packet/OutPacket.h"
 #include "../Client.h"
 #include "Snapshot.h"
-#include "../Message/PlayerEntity.h"
 
 
 class SnapshotManager {

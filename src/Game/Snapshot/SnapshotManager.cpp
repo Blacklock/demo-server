@@ -1,4 +1,5 @@
 #include "SnapshotManager.h"
+#include "../Entity/Player.h"
 #include "../../Config.h"
 
 #include <iostream>
@@ -6,13 +7,12 @@
 #include <unordered_map>
 #include <bitset>
 #include <string>
-//#include <stdint.h>
 
 
 SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::addPlayer(Client& client) { // this method might actually be unnecessary
-	master_snapshot.player_states[client.id] = PlayerEntity();
+	master_snapshot.player_states[client.id] = Player();
 }
 
 void SnapshotManager::removePlayer(Client& client) {
@@ -32,7 +32,7 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 
 	if (player_entity == master_snapshot.player_states.end()) { // Player state doesn't exist
 		std::cout << "PlayerEntity wasn't found! Creating a new one.\n";
-		master_snapshot.player_states[client.id] = PlayerEntity();
+		master_snapshot.player_states[client.id] = Player();
 		player_entity = master_snapshot.player_states.find(client.id);
 	}
 
@@ -70,10 +70,10 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 
 		packet.write(entity->first); // Write the entity ID
 
-		PlayerEntity::State last_entity; // Find given entity in the last snapshot
+		Player::State last_entity; // Find given entity in the last snapshot
 
 		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
-			last_entity = PlayerEntity::dummy_state; // If last_entity is nullptr, it's guaranteed to be sent again
+			last_entity = Player::dummy_state; // If last_entity is nullptr, it's guaranteed to be sent again
 		} else {
 			// Find the given entity in last_snapshot
 			auto last_entity_it = last_snapshot->player_states.find(entity->first);
@@ -81,7 +81,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			if (last_entity_it != last_snapshot->player_states.end()) {
 				last_entity = last_entity_it->second.entity_state;
 			} else { // Entity not found
-				last_entity = PlayerEntity::dummy_state;
+				last_entity = Player::dummy_state;
 			}
 		}
 

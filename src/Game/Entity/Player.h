@@ -2,12 +2,12 @@
 
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
-#include "EntityMessage.h"
+#include "Entity.h"
 
 #include <memory>
 
 
-class PlayerEntity : public EntityMessage {
+class Player : public Entity {
 public:
 	struct State { // Player state fields & default dummy values
 		int32_t pos_x = 0;
@@ -37,7 +37,7 @@ public:
 	//std::unique_ptr<State> entity_state;
 	//static const std::unique_ptr<State> dummy_state;
 public:
-	PlayerEntity();
+	Player();
 	void read(InPacket& packet);
 	void serialize(OutPacket& packet, State& last_state);
 };

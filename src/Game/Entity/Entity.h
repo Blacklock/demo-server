@@ -6,7 +6,7 @@
 #include <memory>
 
 
-class EntityMessage {
+class Entity {
 /*public:
 	std::unique_ptr<State> entity_state;
 	static const std::unique_ptr<State> dummy_state;

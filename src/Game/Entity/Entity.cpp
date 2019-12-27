@@ -1,9 +1,9 @@
-#include "EntityMessage.h"
+#include "Entity.h"
 
 #include "../../Config.h"
 
 
-bool EntityMessage::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
+bool Entity::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field) {
 	if (new_field != old_field) {
 		if (config::DEBUG) std::cout << static_cast<int>(new_field) << "\n";
 
@@ -15,7 +15,7 @@ bool EntityMessage::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_
 	return false;
 }
 
-bool EntityMessage::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
+bool Entity::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_field, bool encode) {
 	if (new_field != old_field) {
 		if (config::DEBUG) std::cout << new_field << " (old field: " << old_field << ")\n";
 

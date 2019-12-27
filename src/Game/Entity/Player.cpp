@@ -1,4 +1,4 @@
-#include "PlayerEntity.h"
+#include "Player.h"
 #include "../../Config.h"
 
 #include <iostream>
@@ -6,30 +6,30 @@
 
 
 //std::unique_ptr<State> PlayerEntity::dummy_state = std::make_unique<State>();
-const PlayerEntity::State PlayerEntity::dummy_state = PlayerEntity::State();
+const Player::State Player::dummy_state = Player::State();
 
-PlayerEntity::PlayerEntity() {
+Player::Player() {
 	entity_state = State();
 }
 
-void PlayerEntity::read(InPacket& packet) {
+void Player::read(InPacket& packet) {
 	// Update the player state
 
 	unsigned char field_flags = packet.read<unsigned char>();
 
 	// Iterate over field flags
 
-	for (int i = 0; i != (int)PlayerEntity::Fields::End; i++) {
+	for (int i = 0; i != (int)Player::Fields::End; i++) {
 		if (field_flags & 1) { // Field has been changed
 			// In the future we will have to check the validity of the given data (anticheat)
-			switch ((PlayerEntity::Fields)i) {
-				case PlayerEntity::Fields::PosX:
+			switch ((Player::Fields)i) {
+				case Player::Fields::PosX:
 					entity_state.pos_x = packet.read<int32_t>();
 					break;
-				case PlayerEntity::Fields::PosY:
+				case Player::Fields::PosY:
 					entity_state.pos_y = packet.read<int32_t>();
 					break;
-				case PlayerEntity::Fields::Score:
+				case Player::Fields::Score:
 					entity_state.score = packet.read<uint8_t>();
 					break;
 				default:
@@ -41,11 +41,11 @@ void PlayerEntity::read(InPacket& packet) {
 	}
 }
 
-void PlayerEntity::serialize(OutPacket& packet, State& last_state) {
+void Player::serialize(OutPacket& packet, State& last_state) {
 	// Compare snapshot values
 	// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
 
-	PlayerEntity::ModFields modified_fields = PlayerEntity::ModFields();
+	Player::ModFields modified_fields = Player::ModFields();
 	unsigned short modified_fields_bi = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 

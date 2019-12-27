@@ -10,7 +10,7 @@ private:
 	size_t buffer_size;
 	int head = 0;
 	int tail = 0;
-	int size = 0;
+	size_t size = 0;
 	bool full;
 public:
 	CircularBuffer<T>(size_t size) :

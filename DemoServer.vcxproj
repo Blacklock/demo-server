@@ -310,10 +310,10 @@
     <ClInclude Include="src\Game\Client.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src/GameServer.h" />
-    <ClInclude Include="src\Game\Message\EntityMessage.h" />
+    <ClInclude Include="src\Game\Entity\Entity.h" />
     <ClInclude Include="src\Game\Message\PlayerChat.h" />
     <ClInclude Include="src\Game\Message\PlayerDisconnect.h" />
-    <ClInclude Include="src\Game\Message\PlayerEntity.h" />
+    <ClInclude Include="src\Game\Entity\Player.h" />
     <ClInclude Include="src\Game\Message\ReliableMessage.h" />
     <ClInclude Include="src\Game\Packet\Packet.h" />
     <ClInclude Include="src/Socket.h" />
@@ -332,10 +332,10 @@
     <ClCompile Include="src/DemoServer.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
-    <ClCompile Include="src\Game\Message\EntityMessage.cpp" />
+    <ClCompile Include="src\Game\Entity\Entity.cpp" />
     <ClCompile Include="src\Game\Message\PlayerChat.cpp" />
     <ClCompile Include="src\Game\Message\PlayerDisconnect.cpp" />
-    <ClCompile Include="src\Game\Message\PlayerEntity.cpp" />
+    <ClCompile Include="src\Game\Entity\Player.cpp" />
     <ClCompile Include="src\Game\Message\ReliableMessage.cpp" />
     <ClCompile Include="src\Game\Packet\Packet.cpp" />
     <ClCompile Include="src/Socket.cpp" />
