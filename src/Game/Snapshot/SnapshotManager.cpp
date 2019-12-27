@@ -15,10 +15,9 @@ void SnapshotManager::addPlayer(Client& client) { // this method might actually 
 	master_snapshot.entities[client.id] = std::make_shared<Player>();
 }
 
-void SnapshotManager::removePlayer(Client& client) {
-	std::cout << "Connection " << static_cast<int>(client.id) << " has timed out.\n";
-
-	auto player_state = master_snapshot.entities.find(client.id);
+void SnapshotManager::removeEntity(unsigned char id) {
+	// Remove the entity from the master snapshot
+	auto player_state = master_snapshot.entities.find(id);
 	if (player_state != master_snapshot.entities.end()) {
 		master_snapshot.entities.erase(player_state->first);
 	}

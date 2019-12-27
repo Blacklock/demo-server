@@ -5,16 +5,17 @@
 #include "ReliableMessage.h"
 
 #include <memory>
+#include <stdint.h>
 
 
-class PlayerDisconnect : public ReliableMessage {
+class RemoveEntity : public ReliableMessage {
 public:
 	struct Fields {
 		uint8_t entity_id;
 	} fields;
 public:
-	PlayerDisconnect(InPacket& packet);
-	PlayerDisconnect(Fields& data);
+	RemoveEntity(InPacket& packet);
+	RemoveEntity(Fields& data);
 	void read(InPacket& packet);
 	void serialize(OutPacket& packet);
 };

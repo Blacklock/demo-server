@@ -40,7 +40,7 @@ void Player::read(InPacket& packet) {
 }
 
 void Player::serialize(OutPacket& packet) {
-	serialize(packet, dummy_state);
+	serialize(packet, dummy_state); // todo: get rid of dummy states, just pass an argument
 }
 
 void Player::serialize(OutPacket& packet, Entity& last_entity) {

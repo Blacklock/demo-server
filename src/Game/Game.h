@@ -28,7 +28,8 @@ public:
 	Game(Socket* socket);
 
 	bool connectClient(long long connection, InPacketInfo p_info);
-	void disconnectClient(Client& client);
+	//void disconnectClient(Client& client);
+	void removeEntity(unsigned char id);
 
 	void receiveMessage(Client& client, InPacket& packet);
 	void receiveReliableMessage(Client& client, InPacket& packet);

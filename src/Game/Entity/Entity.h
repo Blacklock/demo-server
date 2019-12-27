@@ -8,8 +8,6 @@
 
 class Entity {
 public:
-	bool enabled = true;
-public:
 	virtual void read(InPacket& packet) = 0;
 	virtual void serialize(OutPacket& packet) = 0;
 	virtual void serialize(OutPacket& packet, Entity& last_entity) = 0;

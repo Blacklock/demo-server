@@ -4,6 +4,7 @@
 #include "Snapshot/Snapshot.h"
 #include "Message/PlayerDisconnect.h"
 #include "Message/PlayerChat.h"
+#include "Message/RemoveEntity.h"
 #include "../Config.h"
 
 #include <iostream>
@@ -36,24 +37,38 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	return true;
 }
 
-void Game::disconnectClient(Client& dc_client) {
+/*void Game::disconnectClient(Client& dc_client) {
 	// TODO: Send a PlayerDisconnect packet
 	// all_clients => client.reliable_queue.add(playerdisconnect,id);
-	OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer, dc_client.server_rel_switch);
+	//OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer, dc_client.server_rel_switch);
 
 	PlayerDisconnect::Fields pdc_fields{ dc_client.id };
 	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
 
 	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
 	for (auto& client : connections) {
-		if (client.second.get() == &dc_client) continue;
+		// If we're removing a player entity, don't send the player his own RemoveEntity command?
+		// if (client.second.get() == &dc_client) continue;
 		client.second->reliable_queue.push(message);
 	}
 
-	snapshot_manager.removePlayer(dc_client);
+	snapshot_manager.removeEntity(dc_client);
 	
 	// TODO: Something like connection slots
 	//connections_num--;
+}*/
+
+void Game::removeEntity(unsigned char id) {
+	RemoveEntity::Fields re_fields{ id };
+
+	// Broadcast the RemoveEntity message
+	//RemoveEntity re_message = RemoveEntity(re_fields);
+	auto message = std::make_shared<RemoveEntity>(re_fields);
+	for (auto& bc_client : connections) {
+		// If we're removing a player entity, don't send the player his own RemoveEntity command?
+		// if (bc_client.second->id == id) continue;
+		bc_client.second->reliable_queue.push(message);
+	}
 }
 
 void Game::receiveMessage(Client& client, InPacket& packet) {
@@ -120,7 +135,9 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 	std::vector<std::thread> threads;
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
-			disconnectClient(*conn->second); // Disconnect the client
+			std::cout << "Connection " << static_cast<int>(conn->second->id) << " has timed out.\n";
+			//disconnectClient(*conn->second); // Disconnect the client
+			removeEntity(conn->second->id);
 			conn = connections.erase(conn); // Delete the client instance
 		} else {
 			threads.emplace_back(

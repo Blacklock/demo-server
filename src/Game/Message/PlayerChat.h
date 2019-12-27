@@ -11,7 +11,7 @@
 
 class PlayerChat : public ReliableMessage {
 public:
-	struct Fields { // Player state fields & default dummy values
+	struct Fields {
 		uint8_t entity_id;
         uint8_t message_length;
         std::string chat_message;
