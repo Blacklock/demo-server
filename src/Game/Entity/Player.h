@@ -32,12 +32,13 @@ public:
 		unsigned char raw;
 	};
 
-	State entity_state; // inline later?
+	State entity_state;
+private:
 	static const State dummy_state;
-	//std::unique_ptr<State> entity_state;
-	//static const std::unique_ptr<State> dummy_state;
 public:
 	Player();
-	void read(InPacket& packet);
-	void serialize(OutPacket& packet, State& last_state);
+	void read(InPacket& packet) override;
+	void serialize(OutPacket& packet) override;
+	void serialize(OutPacket& packet, Entity& last_entity) override;
+	void serialize(OutPacket& packet, const State& last_state);
 };

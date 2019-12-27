@@ -14,22 +14,20 @@ Player::Player() {
 
 void Player::read(InPacket& packet) {
 	// Update the player state
-
 	unsigned char field_flags = packet.read<unsigned char>();
 
 	// Iterate over field flags
-
-	for (int i = 0; i != (int)Player::Fields::End; i++) {
+	for (int i = 0; i != (int)Fields::End; i++) {
 		if (field_flags & 1) { // Field has been changed
 			// In the future we will have to check the validity of the given data (anticheat)
-			switch ((Player::Fields)i) {
-				case Player::Fields::PosX:
+			switch ((Fields)i) {
+				case Fields::PosX:
 					entity_state.pos_x = packet.read<int32_t>();
 					break;
-				case Player::Fields::PosY:
+				case Fields::PosY:
 					entity_state.pos_y = packet.read<int32_t>();
 					break;
-				case Player::Fields::Score:
+				case Fields::Score:
 					entity_state.score = packet.read<uint8_t>();
 					break;
 				default:
@@ -41,11 +39,19 @@ void Player::read(InPacket& packet) {
 	}
 }
 
-void Player::serialize(OutPacket& packet, State& last_state) {
+void Player::serialize(OutPacket& packet) {
+	serialize(packet, dummy_state);
+}
+
+void Player::serialize(OutPacket& packet, Entity& last_entity) {
+	serialize(packet, dynamic_cast<const Player&>(last_entity).entity_state); // static_cast!
+}
+
+void Player::serialize(OutPacket& packet, const State& last_state) {
 	// Compare snapshot values
 	// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
 
-	Player::ModFields modified_fields = Player::ModFields();
+	ModFields modified_fields = ModFields();
 	unsigned short modified_fields_bi = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
