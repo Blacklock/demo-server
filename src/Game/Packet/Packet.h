@@ -20,9 +20,8 @@ enum class UnreliableCmd : unsigned char {
 };
 
 enum class ReliableCmd : unsigned char {
-	PlayerDisconnect, // Server announcing that a player has disconnected
-	PlayerChat, // Server announcing a player chat message
-	RemoveEntity // Server announcing that an entity has been removed (replaces PlayerDisconnect?)
+	RemoveEntity, // Server announcing that an entity has been removed
+	PlayerChat // Server announcing a player chat message
 };
 
 enum class ControlCmd : unsigned char {

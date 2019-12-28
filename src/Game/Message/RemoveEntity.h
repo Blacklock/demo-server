@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Client.h"
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
 #include "ReliableMessage.h"
@@ -16,6 +17,8 @@ public:
 public:
 	RemoveEntity(InPacket& packet);
 	RemoveEntity(Fields& data);
-	void read(InPacket& packet);
-	void serialize(OutPacket& packet);
+	void read(InPacket& packet) override;
+	void serialize(OutPacket& packet) override;
+	void on_ack(Client& client) override;
+	void on_fail(Client& client) override;
 };

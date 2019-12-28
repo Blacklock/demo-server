@@ -2,9 +2,8 @@
 #include "Packet/Packet.h"
 #include "../GameServer.h"
 #include "Snapshot/Snapshot.h"
-#include "Message/PlayerDisconnect.h"
-#include "Message/PlayerChat.h"
 #include "Message/RemoveEntity.h"
+#include "Message/PlayerChat.h"
 #include "Entity/Player.h"
 #include "../Config.h"
 

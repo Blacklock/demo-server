@@ -16,6 +16,13 @@ Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned s
 	bump();
 }
 
+Client::~Client() {
+	while (!reliable_queue.empty()) {
+		reliable_queue.front()->on_fail(*this);
+		reliable_queue.pop();
+	}
+}
+
 void Client::send(OutPacket& packet) {
 	if (packet.packet_type == PacketType::Reliable) {
 		reliable_ids.put(packet.packet_sequence);
@@ -75,6 +82,7 @@ bool Client::hasTimedOut() {
 
 void Client::nextReliable() { // Mark reliable message as received
 	reliable_ids.reset();
+	reliable_queue.front()->on_ack(*this);
 	reliable_queue.pop();
 	send_reliable_instantly = true; // Send next reliable message instantly after this one
 	server_rel_switch = !server_rel_switch; // Flip the reliable sequence

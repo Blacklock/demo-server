@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../Client.h"
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
-#include "../Client.h"
 #include "ReliableMessage.h"
 
 #include <memory>
@@ -19,6 +19,8 @@ public:
 public:
 	PlayerChat(InPacket& packet);
 	PlayerChat(Fields& data);
-	void read(InPacket& packet);
-	void serialize(OutPacket& packet);
+	void read(InPacket& packet) override;
+	void serialize(OutPacket& packet) override;
+	void on_ack(Client& client) override;
+	void on_fail(Client& client) override;
 };

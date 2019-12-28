@@ -40,6 +40,7 @@ private:
 	CircularBuffer<unsigned short> reliable_ids = CircularBuffer<unsigned short>(8);
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
+	~Client();
 
 	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
 	void ack(InPacket& packet);
