@@ -7,12 +7,10 @@
 
 
 class SnapshotManager {
-private:
+public:
 	Snapshot master_snapshot = Snapshot(0); // id is 0?
 public:
 	SnapshotManager();
-	void addPlayer(Client& client);
-	void removeEntity(unsigned char id);
 	void updatePlayerState(Client& client, InPacket& packet);
 
 	void writeSnapshot(Client& client, OutPacket& packet);

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <stack>
 #include <stdint.h>
 
 
@@ -24,16 +25,18 @@ private:
 
 	SnapshotManager snapshot_manager = SnapshotManager();
 	uint8_t connections_num = 0;
+	std::stack<unsigned char> id_slots; // Available entity IDs
 public:
 	Game(Socket* socket);
 
 	bool connectClient(long long connection, InPacketInfo p_info);
-	//void disconnectClient(Client& client);
+	unsigned char createEntity(std::shared_ptr<Entity> entity);
 	void removeEntity(unsigned char id);
 
 	void receiveMessage(Client& client, InPacket& packet);
 	void receiveReliableMessage(Client& client, InPacket& packet);
 	void sendMessage(Client& client, OutPacket& packet);
+
 	void sendTickMessages();
 	void sendClientTick(Client& client);
 };

@@ -5,70 +5,62 @@
 #include "Message/PlayerDisconnect.h"
 #include "Message/PlayerChat.h"
 #include "Message/RemoveEntity.h"
+#include "Entity/Player.h"
 #include "../Config.h"
 
 #include <iostream>
-#include <stdint.h>
 #include <thread>
+#include <stdint.h>
 
 
-Game::Game(Socket* socket) : socket(socket) {}
+
+Game::Game(Socket* socket) : socket(socket) {
+	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
+}
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
 	std::cout << "Accepted connection " << static_cast<int>(connections_num) << "\n";
 
+	Player client_entity = Player();
+	unsigned char client_id = createEntity(std::make_shared<Player>(client_entity));
+
 	connections[connection] = std::make_unique<Client>(
-		this, connections_num, p_info.sender_address, p_info.sender_port
+		this, client_id, p_info.sender_address, p_info.sender_port
 	);
 
-	snapshot_manager.addPlayer(*connections[connection]); // Create a PlayerState for the new client
-
 	connections_num++;
-
-	// temp v
-	/*std::cout << "pushing reliable queue message playerdisconnect\n";
-	PlayerDisconnect::Fields pdc_fields{ 15 };
-	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
-	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
-	connections[connection]->reliable_queue.push(message);*/
-	// temp ^
 
 	return true;
 }
 
-/*void Game::disconnectClient(Client& dc_client) {
-	// TODO: Send a PlayerDisconnect packet
-	// all_clients => client.reliable_queue.add(playerdisconnect,id);
-	//OutPacket pdc_packet = OutPacket(PacketType::Reliable, buffer, dc_client.server_rel_switch);
+unsigned char Game::createEntity(std::shared_ptr<Entity> entity) {
+	unsigned char id = id_slots.top();
+	id_slots.pop();
 
-	PlayerDisconnect::Fields pdc_fields{ dc_client.id };
-	PlayerDisconnect pdc_message = PlayerDisconnect(pdc_fields);
+	snapshot_manager.master_snapshot.entities[id] = entity;
 
-	auto message = std::make_shared<PlayerDisconnect>(pdc_message);
-	for (auto& client : connections) {
-		// If we're removing a player entity, don't send the player his own RemoveEntity command?
-		// if (client.second.get() == &dc_client) continue;
-		client.second->reliable_queue.push(message);
-	}
-
-	snapshot_manager.removeEntity(dc_client);
-	
-	// TODO: Something like connection slots
-	//connections_num--;
-}*/
+	return id;
+}
 
 void Game::removeEntity(unsigned char id) {
 	RemoveEntity::Fields re_fields{ id };
-
-	// Broadcast the RemoveEntity message
-	//RemoveEntity re_message = RemoveEntity(re_fields);
 	auto message = std::make_shared<RemoveEntity>(re_fields);
-	for (auto& bc_client : connections) {
-		// If we're removing a player entity, don't send the player his own RemoveEntity command?
-		// if (bc_client.second->id == id) continue;
+
+	for (auto& bc_client : connections) { // Broadcast the RemoveEntity message
+		if (bc_client.second->id == id) continue;
 		bc_client.second->reliable_queue.push(message);
 	}
+
+	// Remove the entity from the master snapshot
+	auto player_state = snapshot_manager.master_snapshot.entities.find(id);
+	if (player_state != snapshot_manager.master_snapshot.entities.end()) {
+		snapshot_manager.master_snapshot.entities.erase(player_state->first);
+	}
+
+	// TODO:
+	// We can't simply id_slots.push(id), we need to wait for the
+	// reliable message to get acknowledged by all users.
 }
 
 void Game::receiveMessage(Client& client, InPacket& packet) {
@@ -136,9 +128,10 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
 			std::cout << "Connection " << static_cast<int>(conn->second->id) << " has timed out.\n";
-			//disconnectClient(*conn->second); // Disconnect the client
-			removeEntity(conn->second->id);
+
+			removeEntity(conn->second->id); // Remove the player entity
 			conn = connections.erase(conn); // Delete the client instance
+			connections_num--;
 		} else {
 			threads.emplace_back(
 				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()))

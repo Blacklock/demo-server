@@ -32,9 +32,9 @@ public:
 	bool server_rel_switch = 0;
 	bool client_rel_switch = 0;
 private:
-
 	std::chrono::steady_clock::time_point last_received;
 	std::chrono::steady_clock::time_point last_reliable_sent;
+	bool send_reliable_instantly = false;
 	
 	// Wait for any of the packets where we sent the reliable message to get acked
 	CircularBuffer<unsigned short> reliable_ids = CircularBuffer<unsigned short>(8);

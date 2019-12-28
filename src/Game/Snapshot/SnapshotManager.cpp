@@ -11,18 +11,6 @@
 
 SnapshotManager::SnapshotManager() {}
 
-void SnapshotManager::addPlayer(Client& client) { // this method might actually be unnecessary
-	master_snapshot.entities[client.id] = std::make_shared<Player>();
-}
-
-void SnapshotManager::removeEntity(unsigned char id) {
-	// Remove the entity from the master snapshot
-	auto player_state = master_snapshot.entities.find(id);
-	if (player_state != master_snapshot.entities.end()) {
-		master_snapshot.entities.erase(player_state->first);
-	}
-}
-
 void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
 	// Find the PlayerState struct or create a new one
