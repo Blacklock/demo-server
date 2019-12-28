@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <queue>
+#include <memory>
 
 
 class Game;

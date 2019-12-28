@@ -1,9 +1,9 @@
 #pragma once
 
+#include "ReliableMessage.h"
 #include "../Client.h"
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
-#include "ReliableMessage.h"
 
 #include <memory>
 #include <stdint.h>

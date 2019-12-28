@@ -22,7 +22,7 @@ void RemoveEntity::on_ack(Client& client) {
 	if (client.game->dead_entities.find(fields.entity_id) == client.game->dead_entities.end()) {
 		throw std::exception("Dead entity ID not found.");
 	}
-
+	
 	if (--client.game->dead_entities[fields.entity_id] <= 0) {
 		// All clients have acked the entity's deletion, free the ID
 		client.game->dead_entities.erase(fields.entity_id);

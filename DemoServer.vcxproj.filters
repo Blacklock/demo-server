@@ -93,9 +93,6 @@
     <ClInclude Include="src\Game\Message\ReliableMessage.h">
       <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Message\PlayerDisconnect.h">
-      <Filter>Header Files\Game\Message</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Game.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
@@ -156,9 +153,6 @@
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Message\ReliableMessage.cpp">
-      <Filter>Source Files\Game\Message</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\Message\PlayerDisconnect.cpp">
       <Filter>Source Files\Game\Message</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Game.cpp">

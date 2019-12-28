@@ -312,7 +312,6 @@
     <ClInclude Include="src/GameServer.h" />
     <ClInclude Include="src\Game\Entity\Entity.h" />
     <ClInclude Include="src\Game\Message\PlayerChat.h" />
-    <ClInclude Include="src\Game\Message\PlayerDisconnect.h" />
     <ClInclude Include="src\Game\Entity\Player.h" />
     <ClInclude Include="src\Game\Message\ReliableMessage.h" />
     <ClInclude Include="src\Game\Message\RemoveEntity.h" />
@@ -335,7 +334,6 @@
     <ClCompile Include="src/GameServer.cpp" />
     <ClCompile Include="src\Game\Entity\Entity.cpp" />
     <ClCompile Include="src\Game\Message\PlayerChat.cpp" />
-    <ClCompile Include="src\Game\Message\PlayerDisconnect.cpp" />
     <ClCompile Include="src\Game\Entity\Player.cpp" />
     <ClCompile Include="src\Game\Message\ReliableMessage.cpp" />
     <ClCompile Include="src\Game\Message\RemoveEntity.cpp" />

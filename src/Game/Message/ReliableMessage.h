@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../Client.h"
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
 
-#include <memory>
 
+class Client;
 
 class ReliableMessage {
 public:

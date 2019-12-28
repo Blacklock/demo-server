@@ -19,7 +19,6 @@ Game::Game(Socket* socket) : socket(socket) {
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
-	std::cout << "Accepted connection " << static_cast<int>(connections_num) << "\n";
 
 	Player client_entity = Player();
 	unsigned char client_id = createEntity(std::make_shared<Player>(client_entity));
@@ -27,6 +26,8 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	connections[connection] = std::make_unique<Client>(
 		this, client_id, p_info.sender_address, p_info.sender_port
 	);
+
+	std::cout << "Accepted connection " << static_cast<int>(client_id) << "\n";
 
 	connections_num++;
 
@@ -46,9 +47,17 @@ void Game::removeEntity(unsigned char id) {
 	RemoveEntity::Fields re_fields{ id };
 	auto message = std::make_shared<RemoveEntity>(re_fields);
 
+	dead_entities[id] = 0;
+
 	for (auto& bc_client : connections) { // Broadcast the RemoveEntity message
 		if (bc_client.second->id == id) continue;
+		dead_entities[id]++;
 		bc_client.second->reliable_queue.push(message);
+	}
+
+	if (dead_entities[id] == 0) { // Manually delete (for now?)
+		dead_entities.erase(id);
+		id_slots.push(id);
 	}
 
 	// Remove the entity from the master snapshot
@@ -56,10 +65,6 @@ void Game::removeEntity(unsigned char id) {
 	if (player_state != snapshot_manager.master_snapshot.entities.end()) {
 		snapshot_manager.master_snapshot.entities.erase(player_state->first);
 	}
-
-	// TODO:
-	// We can't simply id_slots.push(id), we need to wait for the
-	// reliable message to get acknowledged by all users.
 }
 
 void Game::receiveMessage(Client& client, InPacket& packet) {
