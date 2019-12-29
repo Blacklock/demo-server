@@ -21,6 +21,6 @@ public:
 	PlayerChat(Fields& data);
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
-	void on_ack(Client&) override;
-	void on_fail(Client&) override;
+	void onAck(Client&) override;
+	void onFail(Client&) override;
 };

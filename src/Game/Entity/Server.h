@@ -14,7 +14,7 @@ public:
 	};
 
 	enum class Fields : unsigned char {
-		Status, // 0=stopped, 1=paused, 2=running
+		Status, // 10=paused, 11=stopped, 20=running, 50=error
 		End
 	};
 

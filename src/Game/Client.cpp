@@ -18,7 +18,7 @@ Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned s
 
 Client::~Client() {
 	while (!reliable_queue.empty()) {
-		reliable_queue.front()->on_fail(*this);
+		reliable_queue.front()->onFail(*this);
 		reliable_queue.pop();
 	}
 }
@@ -82,7 +82,7 @@ bool Client::hasTimedOut() {
 
 void Client::nextReliable() { // Mark reliable message as received
 	reliable_ids.reset();
-	reliable_queue.front()->on_ack(*this);
+	reliable_queue.front()->onAck(*this);
 	reliable_queue.pop();
 	send_reliable_instantly = true; // Send next reliable message instantly after this one
 	server_rel_switch = !server_rel_switch; // Flip the reliable sequence

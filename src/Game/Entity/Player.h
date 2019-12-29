@@ -22,6 +22,9 @@ public:
 		End
 	};
 
+	// todo: we could consider switching to automatic modfield generation!
+	// count the amount of enum Fields etc
+	// also we need to standardize this
 	union ModFields {
 		struct {
 			bool pos_x : 1;

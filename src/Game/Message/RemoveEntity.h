@@ -19,6 +19,6 @@ public:
 	RemoveEntity(Fields& data);
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
-	void on_ack(Client& client) override;
-	void on_fail(Client& client) override;
+	void onAck(Client& client) override;
+	void onFail(Client& client) override;
 };

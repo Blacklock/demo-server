@@ -20,6 +20,6 @@ void PlayerChat::serialize(OutPacket& packet) {
     packet.write(fields.chat_message);
 }
 
-void PlayerChat::on_ack(Client&) {}
+void PlayerChat::onAck(Client&) {}
 
-void PlayerChat::on_fail(Client&) {}
+void PlayerChat::onFail(Client&) {}

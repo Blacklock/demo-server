@@ -18,7 +18,7 @@ void RemoveEntity::serialize(OutPacket& packet) {
 	packet.write(fields.entity_id);
 }
 
-void RemoveEntity::on_ack(Client& client) {
+void RemoveEntity::onAck(Client& client) {
 	if (client.game->dead_entities.find(fields.entity_id) == client.game->dead_entities.end()) {
 		throw std::exception("Dead entity ID not found.");
 	}
@@ -30,6 +30,6 @@ void RemoveEntity::on_ack(Client& client) {
 	}
 }
 
-void RemoveEntity::on_fail(Client& client) {
-	on_ack(client);
+void RemoveEntity::onFail(Client& client) {
+	onAck(client);
 }

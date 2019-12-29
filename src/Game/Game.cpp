@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <stdint.h>
 
@@ -17,9 +18,9 @@
 Game::Game(Socket* socket) : socket(socket) {
 	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
 
-	Server::State server_state = { /*.status=*/ 1 };
-	/*unsigned char server_id = createEntity(std::make_shared<Server>(server_state));
-	assert(server_id == 0);*/
+	Server::State server_state = { /*.status=*/ 20 };
+	unsigned char server_id = createEntity(std::make_shared<Server>(server_state));
+	assert(server_id == 0);
 }
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
@@ -31,10 +32,13 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 		this, client_id, p_info.sender_address, p_info.sender_port
 	);
 
+	std::string welcome_msg = "Player " + std::to_string(client_id) + " has joined the game.";
+	PlayerChat::Fields pc_fields{ 0, static_cast<uint8_t>(welcome_msg.length()), welcome_msg };
+	auto message = std::make_shared<PlayerChat>(pc_fields);
+	for (auto& bc_client : connections) bc_client.second->reliable_queue.push(message);
+
 	std::cout << "Accepted connection " << static_cast<int>(client_id) << "\n";
-
 	connections_num++;
-
 	return true;
 }
 
@@ -136,9 +140,14 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
 			std::cout << "Connection " << static_cast<int>(conn->second->id) << " has timed out.\n";
+			std::string dc_msg = "Player " + std::to_string(conn->second->id) + " has disconnected.";
 
 			removeEntity(conn->second->id); // Remove the player entity
 			conn = connections.erase(conn); // Delete the client instance
+
+			PlayerChat::Fields pc_fields{ 0, static_cast<uint8_t>(dc_msg.length()), dc_msg };
+			auto message = std::make_shared<PlayerChat>(pc_fields);
+			for (auto& bc_client : connections) bc_client.second->reliable_queue.push(message);
 			connections_num--;
 		} else {
 			threads.emplace_back(

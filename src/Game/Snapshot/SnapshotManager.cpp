@@ -23,7 +23,6 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 		player_entity = master_snapshot.entities.find(client.id);
 	}
 
-	//player_entity->second.read(packet); // Update the player state
 	player_entity->second->read(packet); // Update the player state
 }
 
@@ -56,6 +55,7 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			continue; // Don't send the client information about itself
 		}
 
+		// TODO: Don't write IDs of entities that have no modified fields!
 		packet.write(entity->first); // Write the entity ID
 
 		// Write the entity's delta fields

@@ -32,7 +32,7 @@ void Server::serialize(OutPacket& packet, const State& last_state) {
 	packet.write(modified_fields.raw);
 
 	// Write the changed data
-	modified_fields.fields.empty = writeDeltaField(packet, entity_state.status, last_state.status);
+	modified_fields.fields.status = writeDeltaField(packet, entity_state.status, last_state.status);
 
 	// Write the bitfield
 	unsigned short real_buffer_index = packet.getBufferIndex();
