@@ -308,6 +308,7 @@
   <ItemGroup>
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\Game\Client.h" />
+    <ClInclude Include="src\Game\Entity\Server.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src/GameServer.h" />
     <ClInclude Include="src\Game\Entity\Entity.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\Game\Client.cpp" />
     <ClCompile Include="src/DemoServer.cpp" />
+    <ClCompile Include="src\Game\Entity\Server.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src/GameServer.cpp" />
     <ClCompile Include="src\Game\Entity\Entity.cpp" />

@@ -5,23 +5,27 @@
 #include "Message/RemoveEntity.h"
 #include "Message/PlayerChat.h"
 #include "Entity/Player.h"
+#include "Entity/Server.h"
 #include "../Config.h"
 
+#include <cassert>
 #include <iostream>
 #include <thread>
 #include <stdint.h>
 
 
-
 Game::Game(Socket* socket) : socket(socket) {
 	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
+
+	Server::State server_state = { /*.status=*/ 1 };
+	/*unsigned char server_id = createEntity(std::make_shared<Server>(server_state));
+	assert(server_id == 0);*/
 }
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
 
-	Player client_entity = Player();
-	unsigned char client_id = createEntity(std::make_shared<Player>(client_entity));
+	unsigned char client_id = createEntity(std::make_shared<Player>());
 
 	connections[connection] = std::make_unique<Client>(
 		this, client_id, p_info.sender_address, p_info.sender_port
@@ -55,7 +59,7 @@ void Game::removeEntity(unsigned char id) {
 		bc_client.second->reliable_queue.push(message);
 	}
 
-	if (dead_entities[id] == 0) { // Manually delete (for now?)
+	if (dead_entities[id] == 0) { // Manually delete
 		dead_entities.erase(id);
 		id_slots.push(id);
 	}

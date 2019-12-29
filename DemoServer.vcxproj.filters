@@ -108,6 +108,9 @@
     <ClInclude Include="src\Game\Message\RemoveEntity.h">
       <Filter>Header Files\Game\Message</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Entity\Server.h">
+      <Filter>Header Files\Game\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/DemoServer.cpp">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="src\Game\Message\RemoveEntity.cpp">
       <Filter>Source Files\Game\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Entity\Server.cpp">
+      <Filter>Source Files\Game\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
