@@ -25,6 +25,7 @@ void Player::read(InPacket& packet) {
 			switch ((Fields)i) {
 				case Fields::PosX:
 					entity_state.pos_x = packet.read<int32_t>();
+					std::cout << "new pos x (read): " << entity_state.pos_x << "\n";
 					break;
 				case Fields::PosY:
 					entity_state.pos_y = packet.read<int32_t>();
@@ -51,17 +52,24 @@ void Player::serialize(OutPacket& packet, Entity& last_entity) {
 
 void Player::serialize(OutPacket& packet, const State& last_state) {
 	ModFields modified_fields = ModFields();
-	unsigned short modified_fields_bi = packet.getBufferIndex();
+	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
+
+	//std::cout << "last " << last_state.pos_x << " new " << entity_state.pos_x << "\n";
 
 	// Write the changed data
 	modified_fields.fields.pos_x = writeDeltaField(packet, entity_state.pos_x, last_state.pos_x);
 	modified_fields.fields.pos_y = writeDeltaField(packet, entity_state.pos_y, last_state.pos_y);
 	modified_fields.fields.score = writeDeltaField(packet, entity_state.score, last_state.score);
 
-	// Write the bitfield
 	unsigned short real_buffer_index = packet.getBufferIndex();
-	packet.setBufferIndex(modified_fields_bi);
-	packet.write(modified_fields.raw);
-	packet.setBufferIndex(real_buffer_index);
+	packet.setBufferIndex(modified_fields_i);
+
+	//if (modified_fields.raw != 0) { // Write the bitfield
+		std::cout << "writing bitfield hehe\n";
+		packet.write(modified_fields.raw);
+		packet.setBufferIndex(real_buffer_index);
+	//} else {
+	//	std::cout << "last " << last_state.pos_x << " new " << entity_state.pos_x << "\n";
+	//}
 }

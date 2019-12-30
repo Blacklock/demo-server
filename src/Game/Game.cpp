@@ -32,8 +32,8 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 		this, client_id, p_info.sender_address, p_info.sender_port
 	);
 
-	std::string welcome_msg = "Player " + std::to_string(client_id) + " has joined the game.";
-	PlayerChat::Fields pc_fields{ 0, static_cast<uint8_t>(welcome_msg.length()), welcome_msg };
+	std::string join_msg = "Player " + std::to_string(client_id) + " has joined the game.";
+	PlayerChat::Fields pc_fields{ 0, static_cast<uint8_t>(join_msg.length()), join_msg };
 	auto message = std::make_shared<PlayerChat>(pc_fields);
 	for (auto& bc_client : connections) bc_client.second->reliable_queue.push(message);
 

@@ -37,7 +37,11 @@ void Client::send(OutPacket& packet) {
 void Client::ack(InPacket& packet) {
 	sequences.put(packet.packet_sequence); // Update ack
 
-	last_snapshot = sequences.last_sequence; // Update the last received snapshot if needed
+	//last_snapshot = sequences.last_sequence; // REMOVE THIS CRP 
+	// Update the last acked snapshot if needed
+	// TODO: ID OVERFLOW, CREATE A STATIC ACKBUFFER FUNCTION
+	if (packet.packet_ack > last_snapshot)
+		last_snapshot = packet.packet_ack;
 
 	if (reliable_ids.get_size() == 0) return; // No reliable message
 

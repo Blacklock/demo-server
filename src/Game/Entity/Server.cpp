@@ -28,15 +28,17 @@ void Server::serialize(OutPacket& packet, Entity& last_entity) {
 
 void Server::serialize(OutPacket& packet, const State& last_state) {
 	ModFields modified_fields = ModFields();
-	unsigned short modified_fields_bi = packet.getBufferIndex();
+	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
 	// Write the changed data
 	modified_fields.fields.status = writeDeltaField(packet, entity_state.status, last_state.status);
 
-	// Write the bitfield
 	unsigned short real_buffer_index = packet.getBufferIndex();
-	packet.setBufferIndex(modified_fields_bi);
-	packet.write(modified_fields.raw);
-	packet.setBufferIndex(real_buffer_index);
+	packet.setBufferIndex(modified_fields_i);
+
+	//if (modified_fields.raw != 0) { // Write the bitfield
+		packet.write(modified_fields.raw);
+		packet.setBufferIndex(real_buffer_index);
+	//}
 }

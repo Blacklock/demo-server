@@ -23,6 +23,7 @@ void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
 		player_entity = master_snapshot.entities.find(client.id);
 	}
 
+	// TODO: If this isn't a fresh packet, IGNORE IT
 	player_entity->second->read(packet); // Update the player state
 }
 
@@ -32,6 +33,7 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
+	//packet.packet_sequence = client.server_sequence; // VERY TEMP!!!!!!!!!!!!
 
 	// Get the latest snapshot acked by the client
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
@@ -40,6 +42,7 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	writeDelta(packet, last_snapshot == nullptr ? nullptr : last_snapshot.get(), client.id);
 
 	// Deep copy master entity states into our new snapshot
+	// TODO: Is this right?
 	new_snapshot->entities = master_snapshot.entities;
 
 	// Add the new snapshot to the client's SnapshotBuffer
@@ -55,22 +58,27 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			continue; // Don't send the client information about itself
 		}
 
-		// TODO: Don't write IDs of entities that have no modified fields!
+		unsigned short pre_entity_index = packet.getBufferIndex();
 		packet.write(entity->first); // Write the entity ID
+		unsigned short entity_index = packet.getBufferIndex(); // incase we add int16 entity id's
 
 		// Write the entity's delta fields
-
 		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
 			entity->second->serialize(packet); // If last_entity is nullptr, it's guaranteed to be sent again
 		} else {
 			// Find the given entity in last_snapshot
 			auto last_entity_it = last_snapshot->entities.find(entity->first);
-
 			if (last_entity_it != last_snapshot->entities.end()) {
+				/*std::cout << "last snapshot id: " << last_snapshot->id << " ";
+				std::cout << "this packet id: " << packet.packet_sequence << "\n";*/
 				entity->second->serialize(packet, *last_entity_it->second);
 			} else { // Entity not found
 				entity->second->serialize(packet);
 			}
+		}
+
+		if (entity_index == packet.getBufferIndex()) { // Don't write IDs of unchanged entities
+			packet.setBufferIndex(pre_entity_index);
 		}
 
 		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
