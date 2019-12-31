@@ -4,8 +4,6 @@
 #include <stdint.h>
 
 
-const Player::State Player::dummy_state = Player::State();
-
 Player::Player() {
 	entity_state = State();
 }
@@ -43,22 +41,22 @@ void Player::read(InPacket& packet) {
 }
 
 void Player::serialize(OutPacket& packet) {
-	serialize(packet, dummy_state); // todo: get rid of dummy states, just pass an argument
+	serialize(packet, entity_state, true);
 }
 
 void Player::serialize(OutPacket& packet, Entity& last_entity) {
 	serialize(packet, static_cast<const Player&>(last_entity).entity_state);
 }
 
-void Player::serialize(OutPacket& packet, const State& last_state) {
+void Player::serialize(OutPacket& packet, const State& last_state, bool dummy) {
 	ModFields modified_fields = ModFields();
 	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
 	// Write the changed data
-	modified_fields.fields.pos_x = writeDeltaField(packet, entity_state.pos_x, last_state.pos_x);
-	modified_fields.fields.pos_y = writeDeltaField(packet, entity_state.pos_y, last_state.pos_y);
-	modified_fields.fields.score = writeDeltaField(packet, entity_state.score, last_state.score);
+	modified_fields.fields.pos_x = writeDeltaField(packet, entity_state.pos_x, last_state.pos_x, dummy);
+	modified_fields.fields.pos_y = writeDeltaField(packet, entity_state.pos_y, last_state.pos_y, dummy);
+	modified_fields.fields.score = writeDeltaField(packet, entity_state.score, last_state.score, dummy);
 
 	unsigned short real_buffer_index = packet.getBufferIndex();
 	packet.setBufferIndex(modified_fields_i);

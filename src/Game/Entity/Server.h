@@ -27,13 +27,11 @@ public:
 	};
 
 	State entity_state;
-private:
-	static const State dummy_state;
 public:
 	Server();
 	Server(State& state);
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
 	void serialize(OutPacket& packet, Entity& last_entity) override;
-	void serialize(OutPacket& packet, const State& last_state);
+	void serialize(OutPacket& packet, const State& last_state, bool dummy = false);
 };

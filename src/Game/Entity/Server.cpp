@@ -4,8 +4,6 @@
 #include <stdint.h>
 
 
-const Server::State Server::dummy_state = Server::State();
-
 Server::Server() {
 	entity_state = State();
 }
@@ -19,20 +17,20 @@ void Server::read(InPacket&) {
 }
 
 void Server::serialize(OutPacket& packet) {
-	serialize(packet, dummy_state);
+	serialize(packet, entity_state, true);
 }
 
 void Server::serialize(OutPacket& packet, Entity& last_entity) {
 	serialize(packet, static_cast<const Server&>(last_entity).entity_state);
 }
 
-void Server::serialize(OutPacket& packet, const State& last_state) {
+void Server::serialize(OutPacket& packet, const State& last_state, bool dummy) {
 	ModFields modified_fields = ModFields();
 	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
 	// Write the changed data
-	modified_fields.fields.status = writeDeltaField(packet, entity_state.status, last_state.status);
+	modified_fields.fields.status = writeDeltaField(packet, entity_state.status, last_state.status, dummy);
 
 	unsigned short real_buffer_index = packet.getBufferIndex();
 	packet.setBufferIndex(modified_fields_i);

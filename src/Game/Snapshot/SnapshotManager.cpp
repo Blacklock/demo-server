@@ -25,9 +25,7 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	writeDelta(packet, last_snapshot == nullptr ? nullptr : last_snapshot.get(), client.id);
 
 	// Copy master entity states into our new snapshot
-	// TODO: Is this right? I think it is? It probably is.
 	new_snapshot->entities = master_snapshot.entities;
-	//new_snapshot->entities.insert(master_snapshot.entities.begin(), master_snapshot.entities.end());
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);
