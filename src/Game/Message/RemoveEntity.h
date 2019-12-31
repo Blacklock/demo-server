@@ -6,21 +6,19 @@
 #include "../Packet/OutPacket.h"
 
 #include <memory>
-#include <string>
+#include <stdint.h>
 
 
-class PlayerChat : public ReliableMessage {
+class RemoveEntity : public ReliableMessage {
 public:
 	struct Fields {
 		uint8_t entity_id;
-        uint8_t message_length;
-        std::string chat_message;
 	} fields;
 public:
-	PlayerChat(InPacket& packet);
-	PlayerChat(Fields& data);
+	RemoveEntity(InPacket& packet);
+	RemoveEntity(Fields& data);
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
-	void onAck(Client&) override;
-	void onFail(Client&) override;
+	void onAck(Client& client) override;
+	void onFail(Client& client) override;
 };

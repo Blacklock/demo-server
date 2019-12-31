@@ -1,15 +1,18 @@
 #include "Player.h"
-#include "../../Config.h"
 
 #include <iostream>
 #include <stdint.h>
 
 
-//std::unique_ptr<State> PlayerEntity::dummy_state = std::make_unique<State>();
 const Player::State Player::dummy_state = Player::State();
 
 Player::Player() {
 	entity_state = State();
+}
+
+
+Player::Player(State& state) {
+	entity_state = state;
 }
 
 void Player::read(InPacket& packet) {
@@ -31,7 +34,7 @@ void Player::read(InPacket& packet) {
 					entity_state.score = packet.read<uint8_t>();
 					break;
 				default:
-					throw std::invalid_argument("Unknown PlayerState field.");
+					throw std::invalid_argument("Unknown PlayerEntity field.");
 			}
 		}
 
@@ -40,31 +43,28 @@ void Player::read(InPacket& packet) {
 }
 
 void Player::serialize(OutPacket& packet) {
-	serialize(packet, dummy_state);
+	serialize(packet, dummy_state); // todo: get rid of dummy states, just pass an argument
 }
 
 void Player::serialize(OutPacket& packet, Entity& last_entity) {
-	serialize(packet, dynamic_cast<const Player&>(last_entity).entity_state); // static_cast!
+	serialize(packet, static_cast<const Player&>(last_entity).entity_state);
 }
 
 void Player::serialize(OutPacket& packet, const State& last_state) {
-	// Compare snapshot values
-	// Whenever we add a new field, this has to be manually edited! Will look into a cleaner solution later
-
 	ModFields modified_fields = ModFields();
-	unsigned short modified_fields_bi = packet.getBufferIndex();
+	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
-	if (config::DEBUG) std::cout << "\t[PosX]\t";
+	// Write the changed data
 	modified_fields.fields.pos_x = writeDeltaField(packet, entity_state.pos_x, last_state.pos_x);
-	if (config::DEBUG) std::cout << "\t[PosY]\t";
 	modified_fields.fields.pos_y = writeDeltaField(packet, entity_state.pos_y, last_state.pos_y);
-	if (config::DEBUG) std::cout << "\t[Score]\t";
 	modified_fields.fields.score = writeDeltaField(packet, entity_state.score, last_state.score);
 
-	// Write the modified fields
 	unsigned short real_buffer_index = packet.getBufferIndex();
-	packet.setBufferIndex(modified_fields_bi);
-	packet.write(modified_fields.raw);
-	packet.setBufferIndex(real_buffer_index);
+	packet.setBufferIndex(modified_fields_i);
+
+	if (modified_fields.raw != 0) { // Write the bitfield
+		packet.write(modified_fields.raw);
+		packet.setBufferIndex(real_buffer_index);
+	}
 }

@@ -1,5 +1,5 @@
 #include "Client.h"
-#include "Game.h" // ...works?
+#include "Game.h"
 #include "../Config.h"
 
 #include <stdint.h>
@@ -16,10 +16,18 @@ Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned s
 	bump();
 }
 
+Client::~Client() {
+	while (!reliable_queue.empty()) {
+		reliable_queue.front()->onFail(*this);
+		reliable_queue.pop();
+	}
+}
+
 void Client::send(OutPacket& packet) {
 	if (packet.packet_type == PacketType::Reliable) {
 		reliable_ids.put(packet.packet_sequence);
 		last_reliable_sent = std::chrono::steady_clock::now();
+		send_reliable_instantly = false;
 	}
 
 	packet.setPacketLength();
@@ -27,9 +35,14 @@ void Client::send(OutPacket& packet) {
 }
 
 void Client::ack(InPacket& packet) {
-	sequences.put(packet.packet_sequence); // Update ack
+	bool newer = sequences.put(packet.packet_sequence); // Update our ack bitfield
 
-	last_snapshot = sequences.last_sequence; // Update the last received snapshot if needed
+	//last_snapshot = sequences.last_sequence;
+	// if (packet.packet_ack > last_snapshot) ... // no overflow check
+
+	if (newer) {
+		last_snapshot = packet.packet_ack;
+	}
 
 	if (reliable_ids.get_size() == 0) return; // No reliable message
 
@@ -46,6 +59,7 @@ void Client::ack(InPacket& packet) {
 
 bool Client::shouldSendReliable() {
 	if (reliable_queue.empty()) return false;
+	if (send_reliable_instantly) return true;
 
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_reliable_sent).count();
@@ -73,6 +87,8 @@ bool Client::hasTimedOut() {
 
 void Client::nextReliable() { // Mark reliable message as received
 	reliable_ids.reset();
+	reliable_queue.front()->onAck(*this);
 	reliable_queue.pop();
+	send_reliable_instantly = true; // Send next reliable message instantly after this one
 	server_rel_switch = !server_rel_switch; // Flip the reliable sequence
 }

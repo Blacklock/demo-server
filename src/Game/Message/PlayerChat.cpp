@@ -19,3 +19,7 @@ void PlayerChat::serialize(OutPacket& packet) {
     packet.write(fields.message_length);
     packet.write(fields.chat_message);
 }
+
+void PlayerChat::onAck(Client&) {}
+
+void PlayerChat::onFail(Client&) {}
