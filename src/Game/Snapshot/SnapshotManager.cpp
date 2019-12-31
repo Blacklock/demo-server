@@ -12,19 +12,12 @@
 SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
-	// TODO: We should compare the client packet sequence to last_playerdata_received, if we aren't yet
-	// Find the PlayerState struct or create a new one
+	// TODO: Check to make sure that this packet is fresh. We want to avoid PlayerData packets
+	// arriving in wrong orders and older data rewriting newer.
 
-	auto player_entity = master_snapshot.entities.find(client.id);
-
-	if (player_entity == master_snapshot.entities.end()) { // Player state doesn't exist
-		std::cout << "PlayerEntity wasn't found! Creating a new one.\n";
-		master_snapshot.entities[client.id] = std::make_shared<Player>();
-		player_entity = master_snapshot.entities.find(client.id);
-	}
-
-	// TODO: If this isn't a fresh packet, IGNORE IT
-	player_entity->second->read(packet); // Update the player state
+	std::shared_ptr<Player> pl = std::static_pointer_cast<Player>(master_snapshot.entities[client.id]);
+	master_snapshot.entities[client.id] = std::make_shared<Player>(*pl);
+	master_snapshot.entities[client.id]->read(packet); // Update the player state
 }
 
 void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
@@ -41,9 +34,10 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	// Send a dummy snapshot if needed
 	writeDelta(packet, last_snapshot == nullptr ? nullptr : last_snapshot.get(), client.id);
 
-	// Deep copy master entity states into our new snapshot
-	// TODO: Is this right?
+	// Copy master entity states into our new snapshot
+	// TODO: Is this right? I think it is? It probably is.
 	new_snapshot->entities = master_snapshot.entities;
+	//new_snapshot->entities.insert(master_snapshot.entities.begin(), master_snapshot.entities.end());
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);
@@ -69,8 +63,6 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			// Find the given entity in last_snapshot
 			auto last_entity_it = last_snapshot->entities.find(entity->first);
 			if (last_entity_it != last_snapshot->entities.end()) {
-				/*std::cout << "last snapshot id: " << last_snapshot->id << " ";
-				std::cout << "this packet id: " << packet.packet_sequence << "\n";*/
 				entity->second->serialize(packet, *last_entity_it->second);
 			} else { // Entity not found
 				entity->second->serialize(packet);
