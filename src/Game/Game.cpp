@@ -78,19 +78,26 @@ void Game::removeEntity(unsigned char id) {
 void Game::receiveMessage(Client& client, InPacket& packet) {
 	client.bump(); // Bump the client's last_received timer
 
+	bool newer = client.sequences.put(packet.packet_sequence); // Update our ack bitfield
+
 	// Receive an unreliable command
 	UnreliableCmd command = packet.read<UnreliableCmd>();
-	switch (command) {
+	switch (command) { // A GameLogic class or something eventually, perhaps?
 		case UnreliableCmd::Ping:
 			break;
 		case UnreliableCmd::PlayerData:
-			snapshot_manager.updatePlayerState(client, packet); // Update master game state
+			if (newer) {
+				std::shared_ptr<Player> player = snapshot_manager.getEntity<Player>(client.id);
+				player->read(packet);
+			}
 			break;
 		default:
 			throw std::invalid_argument("Unknown unreliable command.");
 	}
 
-	client.ack(packet);
+	if (newer) client.last_snapshot = packet.packet_ack;
+
+	client.ack(packet); // Check for reliable message acks
 }
 
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {

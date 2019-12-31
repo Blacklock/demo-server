@@ -35,15 +35,6 @@ void Client::send(OutPacket& packet) {
 }
 
 void Client::ack(InPacket& packet) {
-	bool newer = sequences.put(packet.packet_sequence); // Update our ack bitfield
-
-	//last_snapshot = sequences.last_sequence;
-	// if (packet.packet_ack > last_snapshot) ... // no overflow check
-
-	if (newer) {
-		last_snapshot = packet.packet_ack;
-	}
-
 	if (reliable_ids.get_size() == 0) return; // No reliable message
 
 	// Find out if our reliable message has been acked

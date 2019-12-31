@@ -3,22 +3,12 @@
 #include "../../Config.h"
 
 #include <iostream>
-#include <memory>
 #include <unordered_map>
 #include <bitset>
 #include <string>
 
 
 SnapshotManager::SnapshotManager() {}
-
-void SnapshotManager::updatePlayerState(Client& client, InPacket& packet) {
-	// TODO: Check to make sure that this packet is fresh. We want to avoid PlayerData packets
-	// arriving in wrong orders and older data rewriting newer.
-
-	std::shared_ptr<Player> pl = std::static_pointer_cast<Player>(master_snapshot.entities[client.id]);
-	master_snapshot.entities[client.id] = std::make_shared<Player>(*pl);
-	master_snapshot.entities[client.id]->read(packet); // Update the player state
-}
 
 void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	if (config::DEBUG) std::cout << "[Snapshot Info]\n";
