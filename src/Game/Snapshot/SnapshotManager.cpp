@@ -44,11 +44,11 @@ void SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 }
 
 // pass shared_ptr's instead of raw pointers? gotta figure out why we did this in the first place
-void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char client_id) {
+void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char entity_id) {
 	// Iterate over all entities in the master snapshot
 
 	for (auto entity = master_snapshot.entities.begin(); entity != master_snapshot.entities.end(); ++entity) {
-		if (entity->first == client_id) {
+		if (entity->first == entity_id) {
 			continue; // Don't send the client information about itself
 		}
 

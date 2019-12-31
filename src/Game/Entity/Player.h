@@ -41,6 +41,7 @@ private:
 public:
 	Player();
 	Player(State& state);
+	//Player(const Player&) = default;
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
 	void serialize(OutPacket& packet, Entity& last_entity) override;

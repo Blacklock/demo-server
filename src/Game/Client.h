@@ -25,9 +25,9 @@ public:
 
 	unsigned char buffer[512]; // MAX_PACKET_SIZE (!)
 
-	AckBuffer sequences = AckBuffer();
+	AckBuffer sequences = AckBuffer(); // Sequences we've received from the client
 	unsigned short server_sequence = 1; // Sequences start at 1
-	unsigned short last_snapshot = 0; // Last acked snapshot's ID
+	unsigned short last_snapshot = 0; // Last snapshot acked by the client
 
 	// Flip for every new reliable message
 	bool server_rel_switch = 0;

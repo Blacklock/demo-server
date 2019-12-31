@@ -35,13 +35,14 @@ void Client::send(OutPacket& packet) {
 }
 
 void Client::ack(InPacket& packet) {
-	sequences.put(packet.packet_sequence); // Update ack
+	bool newer = sequences.put(packet.packet_sequence); // Update our ack bitfield
 
-	//last_snapshot = sequences.last_sequence; // REMOVE THIS CRP 
-	// Update the last acked snapshot if needed
-	// TODO: ID OVERFLOW, CREATE A STATIC ACKBUFFER FUNCTION
-	if (packet.packet_ack > last_snapshot)
+	//last_snapshot = sequences.last_sequence;
+	// if (packet.packet_ack > last_snapshot) ... // no overflow check
+
+	if (newer) {
 		last_snapshot = packet.packet_ack;
+	}
 
 	if (reliable_ids.get_size() == 0) return; // No reliable message
 

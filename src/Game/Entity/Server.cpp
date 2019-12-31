@@ -37,8 +37,8 @@ void Server::serialize(OutPacket& packet, const State& last_state) {
 	unsigned short real_buffer_index = packet.getBufferIndex();
 	packet.setBufferIndex(modified_fields_i);
 
-	//if (modified_fields.raw != 0) { // Write the bitfield
+	if (modified_fields.raw != 0) { // Write the bitfield
 		packet.write(modified_fields.raw);
 		packet.setBufferIndex(real_buffer_index);
-	//}
+	}
 }
