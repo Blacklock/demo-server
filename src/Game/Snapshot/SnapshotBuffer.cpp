@@ -5,7 +5,7 @@ SnapshotBuffer::SnapshotBuffer(unsigned short size) :
 	size(size),
 	snapshots(size) {}
 
-void SnapshotBuffer::add(std::shared_ptr<Snapshot> snapshot) { // todo: add const
+void SnapshotBuffer::add(const std::shared_ptr<Snapshot> snapshot) {
 	snapshots[snapshot->id % size] = snapshot;
 }
 

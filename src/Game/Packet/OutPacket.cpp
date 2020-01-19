@@ -16,15 +16,15 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch
 	if (packet_type != PacketType::Control) buffer_index += (2 + 2 + 4);
 };
 
-unsigned short OutPacket::get_buffer_index() {
+unsigned short OutPacket::getBufferIndex() {
 	return buffer_index;
 }
 
-void OutPacket::set_buffer_index(unsigned short new_index) {
+void OutPacket::setBufferIndex(unsigned short new_index) {
 	buffer_index = new_index;
 }
 
-void OutPacket::set_headers(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
+void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type == PacketType::Control) {
 		throw std::logic_error("Headers cannot be sent on control packets.");
 	}
@@ -77,12 +77,6 @@ void OutPacket::write(uint32_t value) {
 }
 
 void OutPacket::write(int32_t value) {
-	// no need to rewrite all of this
-	/*buffer[buffer_index] = (unsigned char)(value >> 24);
-	buffer[buffer_index + 1] = (unsigned char)(value >> 16);
-	buffer[buffer_index + 2] = (unsigned char)(value >> 8);
-	buffer[buffer_index + 3] = (unsigned char)value;
-	buffer_index += 4;*/
 	write((uint32_t)value);
 }
 

@@ -50,7 +50,7 @@ void Player::serialize(OutPacket& packet, Entity& last_entity) {
 
 void Player::serialize(OutPacket& packet, const State& last_state, bool dummy) {
 	ModFields modified_fields = ModFields();
-	unsigned short modified_fields_i = packet.get_buffer_index();
+	unsigned short modified_fields_i = packet.getBufferIndex();
 	packet.write(modified_fields.raw);
 
 	// Write the changed data
@@ -58,11 +58,11 @@ void Player::serialize(OutPacket& packet, const State& last_state, bool dummy) {
 	modified_fields.fields.pos_y = writeDeltaField(packet, entity_state.pos_y, last_state.pos_y, dummy);
 	modified_fields.fields.score = writeDeltaField(packet, entity_state.score, last_state.score, dummy);
 
-	unsigned short real_buffer_index = packet.get_buffer_index();
-	packet.set_buffer_index(modified_fields_i);
+	unsigned short real_buffer_index = packet.getBufferIndex();
+	packet.setBufferIndex(modified_fields_i);
 
 	if (modified_fields.raw != 0) { // Write the bitfield
 		packet.write(modified_fields.raw);
-		packet.set_buffer_index(real_buffer_index);
+		packet.setBufferIndex(real_buffer_index);
 	}
 }

@@ -10,7 +10,7 @@ PlayerChat::PlayerChat(Fields& data) : fields(data) {}
 
 void PlayerChat::read(InPacket& packet) {
     fields.message_length = packet.read<unsigned char>();
-    fields.chat_message = packet.read_string(fields.message_length);
+    fields.chat_message = packet.readString(fields.message_length);
 }
 
 void PlayerChat::serialize(OutPacket& packet) {

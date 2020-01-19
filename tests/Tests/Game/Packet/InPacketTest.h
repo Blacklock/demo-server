@@ -48,9 +48,9 @@ TEST(InPacketTest, handlesStrings) {
 	};
 	InPacket packet = InPacket(buffer, 8);
 
-	EXPECT_EQ(packet.read_string(4), "Hell");
-	EXPECT_EQ(packet.read_string(1), "o");
-	EXPECT_EQ(packet.read_string(2), "!!");
+	EXPECT_EQ(packet.readString(4), "Hell");
+	EXPECT_EQ(packet.readString(1), "o");
+	EXPECT_EQ(packet.readString(2), "!!");
 }
 
 TEST(InPacketTest, handlesReadOverflow) {
@@ -60,7 +60,7 @@ TEST(InPacketTest, handlesReadOverflow) {
 	};
 	InPacket packet = InPacket(buffer, 9);
 
-	EXPECT_EQ(packet.read_string(7), "Overflo");
-	EXPECT_EQ(packet.read_string(1), "w");
-	ASSERT_THROW(packet.read_string(1), std::out_of_range);
+	EXPECT_EQ(packet.readString(7), "Overflo");
+	EXPECT_EQ(packet.readString(1), "w");
+	ASSERT_THROW(packet.readString(1), std::out_of_range);
 }

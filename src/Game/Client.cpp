@@ -30,11 +30,11 @@ void Client::send(OutPacket& packet) {
 		send_reliable_instantly = false;
 	}
 
-	game->socket->sendPacket(packet.buffer, packet.get_buffer_index(), ip, port);
+	game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
 
 void Client::ack(InPacket& packet) {
-	if (reliable_ids.get_size() == 0) return; // No reliable message
+	if (reliable_ids.getSize() == 0) return; // No reliable message
 
 	// Find out if our reliable message has been acked
 

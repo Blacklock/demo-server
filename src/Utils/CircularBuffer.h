@@ -17,11 +17,11 @@ public:
 		buffer_size(size),
 		buffer(new T[size]) {} // if we ever use this class, change this
 	
-	size_t get_size() {
+	size_t getSize() {
 		return size;
 	}
 
-	size_t get_buffer_size() {
+	size_t getBufferSize() {
 		return buffer_size;
 	}
 
@@ -39,7 +39,7 @@ public:
 		full = head == tail;
 	};
 
-	template<class T> void get_buffer(T buffer_out[]) {
+	template<class T> void getBuffer(T buffer_out[]) {
 		// Returns the whole buffer, from tail to head
 
 		for (int i = 0; i < size; i++) {

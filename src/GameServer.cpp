@@ -15,11 +15,6 @@ GameServer::GameServer(unsigned short port) {
 	std::cout << "DEBUG: " << (config::DEBUG ? "On" : "Off") << "\n";
 
 	startGameLoop();
-
-	/*std::thread t(&GameServer::startGameLoop, this);
-	while (true) { // get rid of this monstrosity
-		std::cin;
-	}*/
 }
 
 void GameServer::createGame() {
@@ -116,7 +111,7 @@ bool GameServer::processPacket() {
 						out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
 
 						socket.sendPacket(
-							out_packet.buffer, out_packet.get_buffer_index(),
+							out_packet.buffer, out_packet.getBufferIndex(),
 							p_info.sender_address, p_info.sender_port
 						);
 					} else {

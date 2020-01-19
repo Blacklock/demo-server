@@ -13,6 +13,6 @@ private:
 public:
 	SnapshotBuffer(unsigned short size);
 
-	void add(std::shared_ptr<Snapshot> snapshot); // pass raw?
+	void add(const std::shared_ptr<Snapshot> snapshot);
 	std::shared_ptr<Snapshot> get(unsigned short id);
 };

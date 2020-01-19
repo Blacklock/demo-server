@@ -96,7 +96,6 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 	}
 
 	if (newer) client.last_snapshot = packet.packet_ack;
-
 	client.ack(packet); // Check for reliable message acks
 }
 
@@ -131,14 +130,13 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
-	packet.set_headers(
+	packet.setHeaders(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
 		client.sequences.ack_bitfield
 	);
 
-	client.server_sequence++; // Increase our sequence by one
-
+	client.server_sequence++;
 	client.send(packet);
 }
 

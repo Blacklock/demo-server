@@ -14,15 +14,15 @@ protected:
 
 TEST_F(OutPacketTest, writesControlHeaders) {
 	OutPacket packet = OutPacket(PacketType::Control, buffer);
-	ASSERT_EQ(packet.get_buffer_index(), 1);
+	ASSERT_EQ(packet.getBufferIndex(), 1);
 	ASSERT_EQ(packet.buffer[0] >> 6, static_cast<unsigned char>(PacketType::Control));
 }
 
 TEST_F(OutPacketTest, writesUnreliableHeaders) {
 	OutPacket packet = OutPacket(PacketType::Unreliable, buffer);
 	ASSERT_EQ(packet.buffer[0], static_cast<unsigned char>(PacketType::Unreliable));
-	ASSERT_EQ(packet.get_buffer_index(), 11);
-	packet.set_headers(5, 3, 0x01);
+	ASSERT_EQ(packet.getBufferIndex(), 9);
+	packet.setHeaders(5, 3, 0x01);
 	EXPECT_EQ(packet.buffer[2], 0x05);
 	EXPECT_EQ(packet.buffer[4], 0x03);
 	EXPECT_EQ(packet.buffer[8], 0x01);
@@ -65,7 +65,7 @@ TEST_F(OutPacketTest, writesStrings) {
 	packet.write(" ");
 	packet.write("world!");
 
-	ASSERT_EQ(packet.get_buffer_index(), 10);
+	ASSERT_EQ(packet.getBufferIndex(), 10);
 	ASSERT_EQ(packet.buffer[1], 'H');
 	ASSERT_EQ(packet.buffer[2], 'i');
 	ASSERT_EQ(packet.buffer[3], ' ');

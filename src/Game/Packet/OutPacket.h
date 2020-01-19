@@ -10,9 +10,9 @@ class OutPacket : public Packet {
 public:
 	OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch = 0);
 
-	unsigned short get_buffer_index();
-	void set_buffer_index(unsigned short new_index);
-	void set_headers(unsigned short sequence, unsigned short ack, uint32_t bitfield);
+	unsigned short getBufferIndex();
+	void setBufferIndex(unsigned short new_index);
+	void setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield);
 
 	void write(ControlCmd value);
 	void write(UnreliableCmd value);
