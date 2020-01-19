@@ -30,8 +30,7 @@ void Client::send(OutPacket& packet) {
 		send_reliable_instantly = false;
 	}
 
-	packet.setPacketLength();
-	game->socket->sendPacket(packet.buffer, packet.packet_length, ip, port);
+	game->socket->sendPacket(packet.buffer, packet.get_buffer_index(), ip, port);
 }
 
 void Client::ack(InPacket& packet) {

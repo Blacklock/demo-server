@@ -131,7 +131,7 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 }
 
 void Game::sendMessage(Client& client, OutPacket& packet) {
-	packet.setHeaders(
+	packet.set_headers(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
 		client.sequences.ack_bitfield

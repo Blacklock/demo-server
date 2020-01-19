@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <unordered_map>
-#include <bitset>
 #include <string>
 
 
@@ -40,9 +39,9 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			continue; // Don't send the client information about itself
 		}
 
-		unsigned short pre_entity_index = packet.getBufferIndex();
+		unsigned short pre_entity_index = packet.get_buffer_index();
 		packet.write(entity->first); // Write the entity ID
-		unsigned short entity_index = packet.getBufferIndex(); // incase we add int16 entity id's
+		unsigned short entity_index = packet.get_buffer_index(); // incase we add int16 entity id's
 
 		// Write the entity's delta fields
 		if (last_snapshot == nullptr) { // Last snapshot doesn't exist anymore (too old), send all of the fields
@@ -57,8 +56,8 @@ void SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			}
 		}
 
-		if (entity_index == packet.getBufferIndex()) { // Don't write IDs of unchanged entities
-			packet.setBufferIndex(pre_entity_index);
+		if (entity_index == packet.get_buffer_index()) { // Don't write IDs of unchanged entities
+			packet.set_buffer_index(pre_entity_index);
 		}
 
 		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";

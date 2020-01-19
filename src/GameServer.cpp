@@ -114,10 +114,9 @@ bool GameServer::processPacket() {
 						// Send conn response packet
 						OutPacket out_packet = OutPacket(PacketType::Control, buffer);
 						out_packet.write(game_found ? ControlCmd::ConnAccept : ControlCmd::ConnDeny);
-						out_packet.setPacketLength();
 
 						socket.sendPacket(
-							out_packet.buffer, out_packet.packet_length,
+							out_packet.buffer, out_packet.get_buffer_index(),
 							p_info.sender_address, p_info.sender_port
 						);
 					} else {

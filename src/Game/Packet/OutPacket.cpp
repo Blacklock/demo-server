@@ -12,28 +12,19 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch
 	unsigned char header = (static_cast<unsigned char>(packet_type) << 6) | (rel_switch << 5);
 	write(header);
 
-	// Reserve space for the header(s)
-	switch (packet_type) {
-		case PacketType::Control:
-			buffer_index += 2;
-			break;
-		case PacketType::Unreliable:
-		case PacketType::Reliable:
-			buffer_index += (2 + 2 + 2 + 4);
-			break;
-	}
-	//buffer_index += packet_type == PacketType::Unreliable ? (2 + 2 + 2 + 4) : 2;
+	// Reserve space for the headers
+	if (packet_type != PacketType::Control) buffer_index += (2 + 2 + 4);
 };
 
-unsigned short OutPacket::getBufferIndex() {
+unsigned short OutPacket::get_buffer_index() {
 	return buffer_index;
 }
 
-void OutPacket::setBufferIndex(unsigned short new_index) {
+void OutPacket::set_buffer_index(unsigned short new_index) {
 	buffer_index = new_index;
 }
 
-void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
+void OutPacket::set_headers(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type == PacketType::Control) {
 		throw std::logic_error("Headers cannot be sent on control packets.");
 	}
@@ -41,26 +32,16 @@ void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t
 	packet_sequence = sequence;
 
 	unsigned short real_buffer_index = buffer_index;
-	buffer_index = 3;
+	buffer_index = 1;
 
 	write(sequence);
 	write(ack);
 	write(bitfield);
 
 	buffer_index = real_buffer_index;
-}
-
-void OutPacket::setPacketLength() {
-	// Set actual packet length
-	packet_length = buffer_index;
-
-	buffer_index = 1;
-	write(packet_length);
-
-	buffer_index = packet_length;
 
 	/*std::cout << "PACKET SEND\n";
-	for (int i = 0; i < packet_length; i++) {
+	for (int i = 0; i < buffer_index; i++) {
 		std::cout << std::bitset<8>(buffer[i]).to_string() << " ";
 	}
 	std::cout << "\n";*/

@@ -70,12 +70,6 @@ void InPacket::build(unsigned short buffer_size) {
 	packet_type = static_cast<PacketType>(header >> 6);
 	reliable_switch = (header >> 5) & 1;
 
-	unsigned short packet_length_header = read<unsigned short>(); // todo: get rid of this header
-
-	if (packet_length != packet_length_header) {
-		throw std::exception("Packet length not equal to import size.");
-	}
-
 	if (packet_type != PacketType::Control) {
 		packet_sequence = read<unsigned short>();
 		packet_ack = read<unsigned short>();
