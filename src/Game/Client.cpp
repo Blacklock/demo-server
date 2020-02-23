@@ -3,7 +3,7 @@
 #include "../Config.h"
 
 #include <stdint.h>
-
+#include <iostream>
 
 
 Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
@@ -23,14 +23,22 @@ Client::~Client() {
 	}
 }
 
-void Client::send(OutPacket& packet) {
+void Client::send(OutPacket& packet, bool fake_send) {
 	if (packet.packet_type == PacketType::Reliable) {
 		reliable_ids.put(packet.packet_sequence);
 		last_reliable_sent = std::chrono::steady_clock::now();
 		send_reliable_instantly = false;
 	}
 
-	game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
+	// Simulated outgoing packet loss rate
+	/*float r = (float)rand() / RAND_MAX;
+	if (r < config::OUT_LOSS) {
+		std::cout << "out failed " << r << "\n";
+		return;
+	}*/
+	//std::cout << "out passed\n";
+
+	if (!fake_send) game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
 
 void Client::ack(InPacket& packet) {

@@ -129,7 +129,7 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	receiveMessage(client, packet);
 }
 
-void Game::sendMessage(Client& client, OutPacket& packet) {
+void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 	packet.setHeaders(
 		client.server_sequence, 
 		client.sequences.empty ? (unsigned short)0 : client.sequences.last_sequence,
@@ -137,7 +137,8 @@ void Game::sendMessage(Client& client, OutPacket& packet) {
 	);
 
 	client.server_sequence++;
-	client.send(packet);
+
+	client.send(packet, fake_send);
 }
 
 void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
@@ -155,9 +156,15 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 			for (auto& bc_client : connections) bc_client.second->reliable_queue.push(message);
 			connections_num--;
 		} else {
+			// Simulated outgoing packet loss rate
+			float r = (float)rand() / RAND_MAX;
+			if (r < config::OUT_LOSS) {
+				std::cout << "out fail " << r << "\n";
+			}
 			threads.emplace_back(
-				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()))
+				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
 			);
+		
 			++conn;
 		}
 	}
@@ -167,7 +174,7 @@ void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
 	}
 }
 
-void Game::sendClientTick(Client& client) {
+void Game::sendClientTick(Client& client, bool fake_send) {
 	bool send_reliable = client.shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
@@ -181,7 +188,7 @@ void Game::sendClientTick(Client& client) {
 
 	// Write snapshot message
 	tick_packet.write(UnreliableCmd::Snapshot);
-	snapshot_manager.writeSnapshot(client, tick_packet);
+	snapshot_manager.writeSnapshot(client, tick_packet); // TODO: Don't send empty messages!!!
 
-	sendMessage(client, tick_packet); // Send the packet
+	sendMessage(client, tick_packet, fake_send); // Send the packet
 }

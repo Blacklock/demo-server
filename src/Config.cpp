@@ -6,6 +6,11 @@ namespace config {
 	unsigned short GAME_PORT;
 	unsigned int GAME_PROTOCOL;
 
+	// NetSim
+	unsigned int PING;
+	float IN_LOSS;
+	float OUT_LOSS;
+
 	// Game
 	bool DEBUG;
 	unsigned int MAX_CONNECTIONS;
@@ -28,6 +33,12 @@ void config::load_config(const char* filename) {
 
 	GAME_PORT = static_cast<unsigned short>(std::atoi(game_server.child_value("Port")));
 	GAME_PROTOCOL = std::atoi(game_server.child_value("Protocol"));
+
+	auto net_sim = doc.select_node("/Settings/NetSim").node();
+
+	PING = std::atoi(net_sim.child_value("Ping"));
+	IN_LOSS = std::stof(net_sim.child_value("InLoss"));
+	OUT_LOSS = std::stof(net_sim.child_value("OutLoss"));
 
 	auto game = doc.select_node("/Settings/Game").node();
 	

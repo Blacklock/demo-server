@@ -1,4 +1,5 @@
 #include "GameServer.h"
+#include "Config.h"
 
 #include <iostream>
 #include <thread>
@@ -8,6 +9,7 @@
 
 
 GameServer::GameServer(unsigned short port) {
+	srand(static_cast<int>(time(NULL))); // Set seed
 	socket.create(port);
 	createGame(); // Create a single game instance
 
@@ -58,6 +60,13 @@ bool GameServer::processPacket() {
 	InPacketInfo p_info = socket.receivePacket(buffer);
 
 	if (p_info.buffer_size <= 0) return false; // No more packets to receive
+
+	// Simulated incoming packet loss rate
+	float r = (float)rand() / RAND_MAX;
+	if (r < config::IN_LOSS) {
+		std::cout << "oops " << r << "\n";
+		return true;
+	}
 
 	try {
 		if (p_info.buffer_size > MAX_PACKET_SIZE) throw std::exception("Packet too large.");

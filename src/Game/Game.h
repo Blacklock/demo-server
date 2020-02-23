@@ -38,8 +38,8 @@ public:
 
 	void receiveMessage(Client& client, InPacket& packet);
 	void receiveReliableMessage(Client& client, InPacket& packet);
-	void sendMessage(Client& client, OutPacket& packet);
+	void sendMessage(Client& client, OutPacket& packet, bool fake_send = false);
 
 	void sendTickMessages();
-	void sendClientTick(Client& client);
+	void sendClientTick(Client& client, bool fake_send);
 };

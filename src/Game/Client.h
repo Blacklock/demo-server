@@ -43,7 +43,8 @@ public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
 	~Client();
 
-	void send(OutPacket& packet); // we should make unreliable packets Message classes too!
+	// TODO: we should make unreliable packets Message classes too!
+	void send(OutPacket& packet, bool fake_send = false);
 	void ack(InPacket& packet);
 	bool shouldSendReliable();
 	void appendReliable(OutPacket& packet);

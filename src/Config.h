@@ -9,6 +9,11 @@ namespace config {
 	extern unsigned short GAME_PORT;
 	extern unsigned int GAME_PROTOCOL;
 
+	// NetSim
+	extern unsigned int PING;
+	extern float IN_LOSS;
+	extern float OUT_LOSS;
+
 	// Game
 	extern bool DEBUG;
 	extern unsigned int MAX_CONNECTIONS;

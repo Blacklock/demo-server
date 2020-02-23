@@ -4,6 +4,11 @@
     <Port>12345</Port>
     <Protocol>100100</Protocol>
   </GameServer>
+  <NetSim>
+    <Ping>0</Ping>
+    <InLoss>0.00</InLoss>
+    <OutLoss>0.00</OutLoss>
+  </NetSim>
   <Game>
     <Debug>off</Debug>
     <MaxConnections>4</MaxConnections>

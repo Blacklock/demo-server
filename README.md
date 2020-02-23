@@ -19,6 +19,9 @@ Located in [settings.xml](settings.xml).
 |------------------------|-----------------------------------------------------------------------|
 | GameServer/Port        | Specifies the port that the server will be listening on.              |
 | GameServer/Protocol    | The game's protocol ID that clients use to connect.                   |
+| NetSim/Ping            | Simulated ping before sending a message (TODO).                       |
+| NetSim/InLoss          | Percentage of incoming packets to skip.                               |
+| NetSim/OutLoss         | Percentage of outgoing packets to skip.                               |
 | Game/Debug             | Set to on/off. Enabling will print logs in the console.               |
 | Game/MaxConnections    | Maximum amount of connections per game instance.                      |
 | Client/Timeout         | Time (ms) to wait before timing out the client. Set to 0 to disable.  |
