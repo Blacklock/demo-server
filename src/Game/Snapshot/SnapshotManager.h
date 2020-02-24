@@ -21,6 +21,6 @@ public:
 		return new_entity;
 	}
 
-	void writeSnapshot(Client& client, OutPacket& packet);
-	void writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char entity_id);
+	bool writeSnapshot(Client& client, OutPacket& packet);
+	bool writeDelta(OutPacket& packet, Snapshot* last_snapshot, unsigned char entity_id);
 };

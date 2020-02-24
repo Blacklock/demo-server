@@ -188,7 +188,9 @@ void Game::sendClientTick(Client& client, bool fake_send) {
 
 	// Write snapshot message
 	tick_packet.write(UnreliableCmd::Snapshot);
-	snapshot_manager.writeSnapshot(client, tick_packet); // TODO: Don't send empty messages!!!
 
-	sendMessage(client, tick_packet, fake_send); // Send the packet
+	// Make sure that the packet isn't empty before sending it
+	if (snapshot_manager.writeSnapshot(client, tick_packet) || send_reliable) {
+		sendMessage(client, tick_packet, fake_send);
+	}
 }
