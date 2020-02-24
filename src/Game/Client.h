@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <queue>
+#include <set>
 #include <memory>
 
 
@@ -37,8 +38,8 @@ private:
 	std::chrono::steady_clock::time_point last_reliable_sent;
 	bool send_reliable_instantly = false;
 	
-	// Wait for any of the packets where we sent the reliable message to get acked
-	CircularBuffer<unsigned short> reliable_ids = CircularBuffer<unsigned short>(8);
+	CircularBuffer<int> unacked_ids = CircularBuffer<int>(32);
+	std::set<unsigned short> reliable_ids = std::set<unsigned short>();
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
 	~Client();

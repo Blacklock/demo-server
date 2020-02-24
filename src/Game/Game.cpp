@@ -96,7 +96,7 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 	}
 
 	if (newer) client.last_snapshot = packet.packet_ack;
-	client.ack(packet); // Check for reliable message acks
+	client.ack(packet);
 }
 
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {

@@ -7,7 +7,6 @@ namespace config {
 	unsigned int GAME_PROTOCOL;
 
 	// NetSim
-	unsigned int PING;
 	float IN_LOSS;
 	float OUT_LOSS;
 
@@ -36,7 +35,6 @@ void config::load_config(const char* filename) {
 
 	auto net_sim = doc.select_node("/Settings/NetSim").node();
 
-	PING = std::atoi(net_sim.child_value("Ping"));
 	IN_LOSS = std::stof(net_sim.child_value("InLoss"));
 	OUT_LOSS = std::stof(net_sim.child_value("OutLoss"));
 

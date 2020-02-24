@@ -10,7 +10,6 @@ namespace config {
 	extern unsigned int GAME_PROTOCOL;
 
 	// NetSim
-	extern unsigned int PING;
 	extern float IN_LOSS;
 	extern float OUT_LOSS;
 

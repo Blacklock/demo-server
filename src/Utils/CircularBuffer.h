@@ -5,8 +5,9 @@
 
 template<class T>
 class CircularBuffer {
-private:
+public:
 	T* buffer;
+private:
 	size_t buffer_size;
 	int head = 0;
 	int tail = 0;
@@ -39,19 +40,19 @@ public:
 		full = head == tail;
 	};
 
-	template<class T> void getBuffer(T buffer_out[]) {
-		// Returns the whole buffer, from tail to head
-
-		for (int i = 0; i < size; i++) {
-			buffer_out[i] = buffer[(i + tail) % buffer_size];
-		}
-	}
-
 	template<class T> bool find(T value) {
-		// Returns the whole buffer, from tail to head
-
 		for (size_t i = 0; i < size; i++) {
 			if (buffer[(i + tail) % buffer_size] == value) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	template<class T> bool replace(T value, T new_value) {
+		for (size_t i = 0; i < size; i++) {
+			if (buffer[(i + tail) % buffer_size] == value) {
+				buffer[(i + tail) % buffer_size] = new_value;
 				return true;
 			}
 		}

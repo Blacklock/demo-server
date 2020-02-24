@@ -25,33 +25,37 @@ Client::~Client() {
 
 void Client::send(OutPacket& packet, bool fake_send) {
 	if (packet.packet_type == PacketType::Reliable) {
-		reliable_ids.put(packet.packet_sequence);
+		reliable_ids.emplace(packet.packet_sequence);
 		last_reliable_sent = std::chrono::steady_clock::now();
 		send_reliable_instantly = false;
 	}
+	unacked_ids.put(packet.packet_sequence);
 
-	// Simulated outgoing packet loss rate
-	/*float r = (float)rand() / RAND_MAX;
-	if (r < config::OUT_LOSS) {
-		std::cout << "out failed " << r << "\n";
-		return;
-	}*/
-	//std::cout << "out passed\n";
-
+	std::cout << "sent nr " << packet.packet_sequence << "\n";
 	if (!fake_send) game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
 
 void Client::ack(InPacket& packet) {
-	if (reliable_ids.getSize() == 0) return; // No reliable message
+	//if (reliable_ids.getSize() == 0) return; // No reliable message
 
 	// Find out if our reliable message has been acked
-
-	if (reliable_ids.find(packet.packet_ack)) nextReliable();
+	if (unacked_ids.replace(static_cast<int>(packet.packet_ack), -1)) {
+		std::cout << "eyy we found nr " << packet.packet_ack << "\n";
+		if (reliable_ids.find(packet.packet_ack) != reliable_ids.end()) {
+			nextReliable();
+		}
+	}
 
 	int32_t bitfield = packet.ack_bitfield;
+
 	for (int i = 1; bitfield > 0; ++i, bitfield >>= 1) {
-		if ((bitfield & 1) == 1 && reliable_ids.find((packet.packet_ack - i + 65536) % 65536))
-			nextReliable();
+		int bitfield_ack = (packet.packet_ack - i + 65536) % 65536;
+		if ((bitfield & 1) == 1 && unacked_ids.replace(bitfield_ack, -1)) {
+			std::cout << "EYY we found nr " << bitfield_ack << "\n";
+			if (reliable_ids.find(static_cast<unsigned short>(bitfield_ack)) != reliable_ids.end()) {
+				nextReliable();
+			}
+		}
 	}
 }
 
@@ -84,7 +88,7 @@ bool Client::hasTimedOut() {
 }
 
 void Client::nextReliable() { // Mark reliable message as received
-	reliable_ids.reset();
+	reliable_ids.clear();
 	reliable_queue.front()->onAck(*this);
 	reliable_queue.pop();
 	send_reliable_instantly = true; // Send next reliable message instantly after this one
