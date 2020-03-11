@@ -6,7 +6,7 @@
 template<class T>
 class CircularBuffer {
 public:
-	T* buffer;
+	T* buffer; // TODO: Back to private!
 private:
 	size_t buffer_size;
 	int head = 0;
@@ -17,14 +17,6 @@ public:
 	CircularBuffer<T>(size_t size) :
 		buffer_size(size),
 		buffer(new T[size]) {} // if we ever use this class, change this
-	
-	size_t getSize() {
-		return size;
-	}
-
-	size_t getBufferSize() {
-		return buffer_size;
-	}
 
 	template<class T> void put(T value) {
 		// Appends value to end of buffer
@@ -57,6 +49,32 @@ public:
 			}
 		}
 		return false;
+	}
+
+	template<class T> int count(T value) {
+		int c = 0;
+		for (size_t i = 0; i < size; i++) {
+			if (buffer[(i + tail) % buffer_size] == value) {
+				c++;
+			}
+		}
+		return c;
+	}
+
+	T getLast() {
+		return buffer[tail];
+	}
+
+	size_t getSize() {
+		return size;
+	}
+
+	size_t getBufferSize() {
+		return buffer_size;
+	}
+
+	bool isFull() {
+		return full;
 	}
 
 	void reset() {

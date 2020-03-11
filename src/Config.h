@@ -18,6 +18,7 @@ namespace config {
 	extern unsigned int MAX_CONNECTIONS;
 
 	// Client
+	extern unsigned int PACKET_LOSS_COUNT;
 	extern unsigned int TIMEOUT_MS;
 	extern unsigned int RELIABLE_RESEND_MS;
 

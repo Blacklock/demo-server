@@ -23,6 +23,7 @@ Located in [settings.xml](settings.xml).
 | NetSim/OutLoss         | Percentage of outgoing packets to skip.                               |
 | Game/Debug             | Set to on/off. Enabling will print logs in the console.               |
 | Game/MaxConnections    | Maximum amount of connections per game instance.                      |
+| Client/PacketLossCount | Amount of packets to use when calculating outgoing packet loss.       |
 | Client/Timeout         | Time (ms) to wait before timing out the client. Set to 0 to disable.  |
 | Client/ReliableResend  | Time (ms) to wait before resending a reliable message.                |
 

@@ -141,7 +141,7 @@ void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 	client.send(packet, fake_send);
 }
 
-void Game::sendTickMessages() { // TODO: We should consider thread pools!!!!!
+void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 	std::vector<std::thread> threads;
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {

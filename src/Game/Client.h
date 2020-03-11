@@ -5,6 +5,7 @@
 #include "../Utils/CircularBuffer.h"
 #include "Snapshot/SnapshotBuffer.h"
 #include "Message/ReliableMessage.h"
+#include "../Config.h"
 
 #include <chrono>
 #include <queue>
@@ -38,6 +39,7 @@ private:
 	std::chrono::steady_clock::time_point last_reliable_sent;
 	bool send_reliable_instantly = false;
 	
+	CircularBuffer<bool> packet_loss_tracker = CircularBuffer<bool>(config::PACKET_LOSS_COUNT);
 	CircularBuffer<int> unacked_ids = CircularBuffer<int>(32);
 	std::set<unsigned short> reliable_ids = std::set<unsigned short>();
 public:

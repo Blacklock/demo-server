@@ -13,6 +13,7 @@
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
+    <PacketLossCount>128</PacketLossCount>
     <Timeout>0</Timeout>
     <ReliableResend>100</ReliableResend>
   </Client>

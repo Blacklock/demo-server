@@ -15,6 +15,7 @@ namespace config {
 	unsigned int MAX_CONNECTIONS;
 
 	// Client
+	unsigned int PACKET_LOSS_COUNT;
 	unsigned int TIMEOUT_MS;
 	unsigned int RELIABLE_RESEND_MS;
 }
@@ -45,6 +46,7 @@ void config::load_config(const char* filename) {
 
 	auto client = doc.select_node("/Settings/Client").node();
 
+	PACKET_LOSS_COUNT = std::atoi(client.child_value("PacketLossCount"));
 	TIMEOUT_MS = std::atoi(client.child_value("Timeout"));
 	RELIABLE_RESEND_MS = std::atoi(client.child_value("ReliableResend"));
 }

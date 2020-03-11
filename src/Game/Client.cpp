@@ -1,6 +1,5 @@
 #include "Client.h"
 #include "Game.h"
-#include "../Config.h"
 
 #include <stdint.h>
 #include <iostream>
@@ -29,9 +28,15 @@ void Client::send(OutPacket& packet, bool fake_send) {
 		last_reliable_sent = std::chrono::steady_clock::now();
 		send_reliable_instantly = false;
 	}
+
+	if (unacked_ids.isFull()) {
+		packet_loss_tracker.put(unacked_ids.getLast() == -1);
+		double ratio = (double)packet_loss_tracker.count(true) / (double)packet_loss_tracker.getSize();
+		std::cout << ratio << "\n";
+	}
+
 	unacked_ids.put(packet.packet_sequence);
 
-	std::cout << "sent nr " << packet.packet_sequence << "\n";
 	if (!fake_send) game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
 
@@ -40,18 +45,16 @@ void Client::ack(InPacket& packet) {
 
 	// Find out if our reliable message has been acked
 	if (unacked_ids.replace(static_cast<int>(packet.packet_ack), -1)) {
-		std::cout << "eyy we found nr " << packet.packet_ack << "\n";
 		if (reliable_ids.find(packet.packet_ack) != reliable_ids.end()) {
 			nextReliable();
 		}
 	}
 
-	int32_t bitfield = packet.ack_bitfield;
+	uint32_t bitfield = packet.ack_bitfield;
 
 	for (int i = 1; bitfield > 0; ++i, bitfield >>= 1) {
 		int bitfield_ack = (packet.packet_ack - i + 65536) % 65536;
 		if ((bitfield & 1) == 1 && unacked_ids.replace(bitfield_ack, -1)) {
-			std::cout << "EYY we found nr " << bitfield_ack << "\n";
 			if (reliable_ids.find(static_cast<unsigned short>(bitfield_ack)) != reliable_ids.end()) {
 				nextReliable();
 			}
