@@ -1,6 +1,8 @@
 #include "RemoveEntity.h"
 #include "../Game.h"
 
+#include <plog/Log.h>
+
 
 RemoveEntity::RemoveEntity(InPacket& packet) {
 	read(packet);
@@ -10,6 +12,7 @@ RemoveEntity::RemoveEntity(Fields& data) : fields(data) {}
 
 void RemoveEntity::read(InPacket& packet) {
 	packet;
+	LOGW << "Client packets can't contain RemoveEntity messages";
 	throw std::exception("Client packets can't contain RemoveEntity messages.");
 }
 
@@ -20,6 +23,7 @@ void RemoveEntity::serialize(OutPacket& packet) {
 
 void RemoveEntity::onAck(Client& client) {
 	if (client.game->dead_entities.find(fields.entity_id) == client.game->dead_entities.end()) {
+		LOGE << "Dead entity ID not found";
 		throw std::exception("Dead entity ID not found.");
 	}
 	

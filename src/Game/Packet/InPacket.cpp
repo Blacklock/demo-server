@@ -1,5 +1,6 @@
 #include "InPacket.h"
 
+#include <plog/Log.h>
 #include <iostream>
 #include <stdint.h>
 //#include <bitset>
@@ -51,7 +52,10 @@ template<> int32_t InPacket::read<int32_t>() {
 };
 
 std::string InPacket::readString(unsigned short size, bool encode) {
-	if (encode) throw std::exception("String encoding not implemented!");
+	if (encode) {
+		LOGE << "String encoding not implemented!";
+		throw std::exception("String encoding not implemented!");
+	}
 
 	increaseBufferIndex(size);
 	return std::string(&buffer[buffer_index - size], &buffer[buffer_index]);
@@ -80,6 +84,7 @@ void InPacket::build(unsigned short buffer_size) {
 void InPacket::increaseBufferIndex(unsigned short amount) {
 	buffer_index += amount;
 	if (buffer_index > packet_length) {
+		LOGE << "Buffer index exceeds packet size";
 		throw std::out_of_range("Buffer index exceeds packet size.");
 	}
 }

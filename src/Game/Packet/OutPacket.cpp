@@ -1,6 +1,7 @@
 #include "Packet.h"
 #include "OutPacket.h"
 
+#include <plog/Log.h>
 #include <iostream>
 //#include <bitset>
 
@@ -26,7 +27,8 @@ void OutPacket::setBufferIndex(unsigned short new_index) {
 
 void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type == PacketType::Control) {
-		throw std::logic_error("Headers cannot be sent on control packets.");
+		LOGE << "Headers cannot be set on control packets";
+		throw std::logic_error("Headers cannot be set on control packets.");
 	}
 
 	packet_sequence = sequence;

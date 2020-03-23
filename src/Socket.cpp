@@ -1,5 +1,6 @@
 #include "Socket.h"
 
+#include <plog/Log.h>
 #include <iostream>
 #include <string>
 
@@ -13,6 +14,7 @@ Socket::Socket(unsigned int max_packet_size) {
 		WSADATA WsaData; // Contains information about the socket implementation
 
 		if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR) { // Must be first winsock func called on windows
+			LOGF << "Failed to initialize the WinSock DLL";
 			throw std::exception("Failed to initialize the WinSock DLL.");
 		}
 	#endif
@@ -39,6 +41,7 @@ void Socket::sendPacket(const unsigned char packet[], unsigned short packet_size
 	int sent_bytes = sendto(handle, (const char*)packet, packet_size, 0, (sockaddr*)&address, sizeof(address));
 
 	if (sent_bytes != packet_size) {
+		LOGE << "Failed to send packet";
 		throw std::exception("Failed to send packet.");
 	}
 }
@@ -69,6 +72,7 @@ void Socket::create(unsigned short port) {
 
 	// if (handle <= 0) ...
 	if (handle == INVALID_SOCKET) {
+		LOGF << "Failed to create socket";
 		throw std::exception("Failed to create a socket.");
 	}
 
@@ -88,11 +92,13 @@ void Socket::create(unsigned short port) {
 	#if PLATFORM == PLATFORM_WINDOWS
 			DWORD nonblocking = 1;
 			if (ioctlsocket(handle, FIONBIO, &nonblocking) == SOCKET_ERROR) {
+				LOGF << "Failed to set socket to non-blocking mode.";
 				throw std::exception("Failed to set socket to non-blocking mode.");
 			}
 	#elif PLATFORM == PLATFORM_UNIX
 			int nonblocking = 1;
 			if (fcntl(handle, F_SETFL, O_NONBLOCK, nonblocking) == -1) {
+				LOGF << "Failed to set socket to non-blocking mode.";
 				throw std::exception("Failed to set socket to non-blocking mode.");
 			}
 	#endif

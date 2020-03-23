@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include <plog/Log.h>
 #include <iostream>
 #include <stdint.h>
 
@@ -32,7 +33,8 @@ void Player::read(InPacket& packet) {
 					entity_state.score = packet.read<uint8_t>();
 					break;
 				default:
-					throw std::invalid_argument("Unknown PlayerEntity field.");
+					LOGW << "Unknown Player entity field";
+					throw std::invalid_argument("Unknown Player entity field.");
 			}
 		}
 

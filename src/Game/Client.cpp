@@ -1,6 +1,7 @@
 #include "Client.h"
 #include "Game.h"
 
+#include <plog/Log.h>
 #include <stdint.h>
 #include <iostream>
 
@@ -32,7 +33,7 @@ void Client::send(OutPacket& packet, bool fake_send) {
 	if (unacked_ids.isFull()) {
 		packet_loss_tracker.put(unacked_ids.getLast() == -1);
 		double ratio = (double)packet_loss_tracker.count(true) / (double)packet_loss_tracker.getSize();
-		std::cout << ratio << "\n";
+		LOGV << ratio << "\n";
 	}
 
 	unacked_ids.put(packet.packet_sequence);

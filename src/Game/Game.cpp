@@ -8,6 +8,7 @@
 #include "Entity/Server.h"
 #include "../Config.h"
 
+#include <plog/Log.h>
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -37,7 +38,7 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 	auto message = std::make_shared<PlayerChat>(pc_fields);
 	for (auto& bc_client : connections) bc_client.second->reliable_queue.push(message);
 
-	std::cout << "Accepted connection " << static_cast<int>(client_id) << "\n";
+	LOGI << "Accepted connection " << static_cast<int>(client_id);
 	connections_num++;
 	return true;
 }
@@ -92,6 +93,7 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 			}
 			break;
 		default:
+			LOGW << "Unknown unreliable command";
 			throw std::invalid_argument("Unknown unreliable command.");
 	}
 
@@ -107,25 +109,26 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 		client.client_rel_switch = !client.client_rel_switch;
 	}
 
+	// Receive an unreliable command
 	ReliableCmd command = packet.read<ReliableCmd>();
-	if (unique_message) {
-		switch (command) {
-		case ReliableCmd::PlayerChat:
-		{
-			PlayerChat chat_message = PlayerChat(packet);
+	switch (command) {
+	case ReliableCmd::PlayerChat:
+	{
+		PlayerChat chat_message = PlayerChat(packet);
+		if (unique_message) {
 			chat_message.fields.entity_id = client.id;
 			auto message = std::make_shared<PlayerChat>(chat_message);
 			for (auto& i_client : connections) {
-				if (i_client.second.get() == &client) continue;
 				i_client.second->reliable_queue.push(message);
 			}
-			break;
 		}
-		default:
-			throw std::invalid_argument("Unknown reliable command.");
-		}
+		break;
 	}
-	
+	default:
+		LOGW << "Unknown reliable command";
+		throw std::invalid_argument("Unknown reliable command.");
+	}
+
 	receiveMessage(client, packet);
 }
 
@@ -144,7 +147,7 @@ void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 	std::vector<std::thread> threads;
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
-			std::cout << "Connection " << static_cast<int>(conn->second->id) << " has timed out.\n";
+			LOGI << "Connection " << static_cast<int>(conn->second->id) << " has timed out.";
 			std::string dc_msg = "Player " + std::to_string(conn->second->id) + " has disconnected.";
 
 			removeEntity(conn->second->id); // Remove the player entity

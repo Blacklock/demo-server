@@ -1,6 +1,7 @@
 #include "Entity.h"
-
 #include "../../Config.h"
+
+#include <plog/Log.h>
 
 
 bool Entity::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_field, bool dummy) {
@@ -11,7 +12,7 @@ bool Entity::writeDeltaField(OutPacket& packet, uint8_t new_field, uint8_t old_f
 		return true;
 	}
 
-	if (config::DEBUG) std::cout << "Unchanged\n";
+	if (config::DEBUG) LOGV << "Unchanged";
 	return false;
 }
 
@@ -41,6 +42,6 @@ bool Entity::writeDeltaField(OutPacket& packet, int32_t new_field, int32_t old_f
 		return true;
 	}
 
-	if (config::DEBUG) std::cout << "Unchanged\n";
+	if (config::DEBUG) LOGV << "Unchanged";
 	return false;
 }

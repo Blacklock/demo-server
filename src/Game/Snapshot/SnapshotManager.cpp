@@ -2,6 +2,7 @@
 #include "../Entity/Player.h"
 #include "../../Config.h"
 
+#include <plog/Log.h>
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -10,8 +11,8 @@
 SnapshotManager::SnapshotManager() {}
 
 bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
-	if (config::DEBUG) std::cout << "[Snapshot Info]\n";
-	if (config::DEBUG) std::cout << "[SID]\t" << static_cast<int>(client.server_sequence) << "\n";
+	if (config::DEBUG) LOGV << "[Snapshot Info]";
+	if (config::DEBUG) LOGV << "[SID]\t" << static_cast<int>(client.server_sequence);
 
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
@@ -68,7 +69,7 @@ bool SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			empty_snapshot = false;
 		}
 
-		if (config::DEBUG) std::cout << "[EID]\t" << static_cast<int>(entity->first) << "\n";
+		if (config::DEBUG) LOGV << "[EID]\t" << static_cast<int>(entity->first);
 	}
 
 	return !empty_snapshot;
