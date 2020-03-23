@@ -107,25 +107,25 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 		client.client_rel_switch = !client.client_rel_switch;
 	}
 
-	// Receive an unreliable command
 	ReliableCmd command = packet.read<ReliableCmd>();
-	switch (command) {
+	if (unique_message) {
+		switch (command) {
 		case ReliableCmd::PlayerChat:
 		{
 			PlayerChat chat_message = PlayerChat(packet);
-			if (unique_message) {
-				chat_message.fields.entity_id = client.id;
-				auto message = std::make_shared<PlayerChat>(chat_message);
-				for (auto& i_client : connections) {
-					i_client.second->reliable_queue.push(message);
-				}
+			chat_message.fields.entity_id = client.id;
+			auto message = std::make_shared<PlayerChat>(chat_message);
+			for (auto& i_client : connections) {
+				if (i_client.second.get() == &client) continue;
+				i_client.second->reliable_queue.push(message);
 			}
 			break;
 		}
 		default:
 			throw std::invalid_argument("Unknown reliable command.");
+		}
 	}
-
+	
 	receiveMessage(client, packet);
 }
 
@@ -137,7 +137,6 @@ void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 	);
 
 	client.server_sequence++;
-
 	client.send(packet, fake_send);
 }
 
@@ -158,9 +157,6 @@ void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 		} else {
 			// Simulated outgoing packet loss rate
 			float r = (float)rand() / RAND_MAX;
-			if (r < config::OUT_LOSS) {
-				std::cout << "out fail " << r << "\n";
-			}
 			threads.emplace_back(
 				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
 			);

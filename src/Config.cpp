@@ -6,10 +6,6 @@ namespace config {
 	unsigned short GAME_PORT;
 	unsigned int GAME_PROTOCOL;
 
-	// NetSim
-	float IN_LOSS;
-	float OUT_LOSS;
-
 	// Game
 	bool DEBUG;
 	unsigned int MAX_CONNECTIONS;
@@ -18,6 +14,14 @@ namespace config {
 	unsigned int PACKET_LOSS_COUNT;
 	unsigned int TIMEOUT_MS;
 	unsigned int RELIABLE_RESEND_MS;
+
+	// Logger
+	std::string SEVERITY;
+	std::string LOG_FILE;
+
+	// NetSim
+	float IN_LOSS;
+	float OUT_LOSS;
 }
 
 std::string as_utf8(const char* str) {
@@ -34,11 +38,6 @@ void config::load_config(const char* filename) {
 	GAME_PORT = static_cast<unsigned short>(std::atoi(game_server.child_value("Port")));
 	GAME_PROTOCOL = std::atoi(game_server.child_value("Protocol"));
 
-	auto net_sim = doc.select_node("/Settings/NetSim").node();
-
-	IN_LOSS = std::stof(net_sim.child_value("InLoss"));
-	OUT_LOSS = std::stof(net_sim.child_value("OutLoss"));
-
 	auto game = doc.select_node("/Settings/Game").node();
 	
 	DEBUG = as_utf8(game.child_value("Debug")) == "on";
@@ -49,4 +48,14 @@ void config::load_config(const char* filename) {
 	PACKET_LOSS_COUNT = std::atoi(client.child_value("PacketLossCount"));
 	TIMEOUT_MS = std::atoi(client.child_value("Timeout"));
 	RELIABLE_RESEND_MS = std::atoi(client.child_value("ReliableResend"));
+
+	auto logger = doc.select_node("/Settings/Logger").node();
+
+	SEVERITY = as_utf8(logger.child_value("Severity"));
+	LOG_FILE = as_utf8(logger.child_value("LogFile"));
+
+	auto net_sim = doc.select_node("/Settings/NetSim").node();
+
+	IN_LOSS = std::stof(net_sim.child_value("InLoss"));
+	OUT_LOSS = std::stof(net_sim.child_value("OutLoss"));
 }

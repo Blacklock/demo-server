@@ -4,17 +4,21 @@
     <Port>12345</Port>
     <Protocol>100100</Protocol>
   </GameServer>
-  <NetSim>
-    <InLoss>0.00</InLoss>
-    <OutLoss>0.00</OutLoss>
-  </NetSim>
   <Game>
     <Debug>off</Debug>
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
-    <PacketLossCount>128</PacketLossCount>
+    <PacketLossCount>1024</PacketLossCount>
     <Timeout>0</Timeout>
     <ReliableResend>100</ReliableResend>
   </Client>
+  <Logger>
+    <Severity>info</Severity>
+    <LogFile>server.log</LogFile>
+  </Logger>
+  <NetSim>
+    <InLoss>0.00</InLoss>
+    <OutLoss>0.00</OutLoss>
+  </NetSim>
 </Settings>

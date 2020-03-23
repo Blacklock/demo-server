@@ -2,19 +2,56 @@
 #include "Config.h"
 
 #include <iostream>
+#include <string>
 #include <thread>
 #include <chrono>
 #include <unordered_map>
 #include <stdint.h>
+#include <plog/Log.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
 
+
+namespace plog {
+	static std::unordered_map<std::string, Severity> const log_levels = {
+		{"none", Severity::none},
+		{"fatal", Severity::fatal},
+		{"error", Severity::error},
+		{"warning", Severity::warning},
+		{"info", Severity::info},
+		{"debug", Severity::debug},
+		{"verbose", Severity::verbose}
+	};
+
+	class ConsoleFormatter {
+	public:
+		static util::nstring header() {
+			return util::nstring();
+		}
+
+		static util::nstring format(const Record& record) {
+			util::nstringstream ss;
+			ss << "[" << record.getFunc() << "@" << record.getLine() << "] ";
+			ss << record.getMessage() << "\n";
+			return ss.str();
+		}
+	};
+}
 
 GameServer::GameServer(unsigned short port) {
+	// Logger
+	auto it = plog::log_levels.find(config::SEVERITY);
+	plog::Severity max_severity = it != plog::log_levels.end() ? it->second : plog::Severity::info;
+	static plog::ColorConsoleAppender<plog::ConsoleFormatter> consoleAppender;
+	plog::init(max_severity, config::LOG_FILE.c_str()).addAppender(&consoleAppender);
+
+	LOGI << "Initializing game server";
+
+	// Game initialization
 	srand(static_cast<int>(time(NULL))); // Set seed
 	socket.create(port);
 	createGame(); // Create a single game instance
-
-	std::cout << "Starting DemoServer...\n";
-	std::cout << "DEBUG: " << (config::DEBUG ? "On" : "Off") << "\n";
+	
+	LOGI << "Debug mode: " << (config::DEBUG ? "On" : "Off");
 
 	startGameLoop();
 }
