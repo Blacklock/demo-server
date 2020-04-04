@@ -11,7 +11,29 @@
 #include <queue>
 #include <set>
 #include <memory>
+#include <iostream>
 
+
+struct TimestampedId {
+	int id;
+	std::chrono::steady_clock::time_point timestamp;
+
+	TimestampedId() : id(0), timestamp(std::chrono::steady_clock::now()) {}
+
+	TimestampedId(int id, std::chrono::steady_clock::time_point timestamp) : id(id), timestamp(timestamp) {}
+
+	void operator=(const int value) {
+		if (id != -1 && value == -1) { // has been acked
+			//auto time_now = std::chrono::steady_clock::now();
+			//std::cout << "Ping: " << std::chrono::duration_cast<std::chrono::milliseconds>(time_now - timestamp).count() << "ms\n";
+		}
+		id = value;
+	}
+
+	bool operator==(const int value) {
+		return id == value;
+	}
+};
 
 class Game;
 
@@ -40,7 +62,7 @@ private:
 	bool send_reliable_instantly = false;
 	
 	CircularBuffer<bool> packet_loss_tracker = CircularBuffer<bool>(config::PACKET_LOSS_COUNT);
-	CircularBuffer<int> unacked_ids = CircularBuffer<int>(32);
+	CircularBuffer<TimestampedId> unacked_ids = CircularBuffer<TimestampedId>(33);
 	std::set<unsigned short> reliable_ids = std::set<unsigned short>();
 public:
 	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);

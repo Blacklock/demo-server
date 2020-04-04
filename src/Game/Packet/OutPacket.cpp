@@ -85,5 +85,5 @@ void OutPacket::write(int32_t value) {
 void OutPacket::write(std::string value) {
 	size_t size = value.size();
 	memcpy(&buffer[buffer_index], value.c_str(), size);
-	buffer_index += size;
+	buffer_index += static_cast<unsigned short>(size);
 }

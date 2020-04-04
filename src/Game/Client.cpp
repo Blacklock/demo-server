@@ -3,7 +3,6 @@
 
 #include <plog/Log.h>
 #include <stdint.h>
-#include <iostream>
 
 
 Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
@@ -31,12 +30,12 @@ void Client::send(OutPacket& packet, bool fake_send) {
 	}
 
 	if (unacked_ids.isFull()) {
-		packet_loss_tracker.put(unacked_ids.getLast() == -1);
+		packet_loss_tracker.put(unacked_ids.getLast().id == -1);
 		double ratio = (double)packet_loss_tracker.count(true) / (double)packet_loss_tracker.getSize();
-		LOGV << ratio << "\n";
+		LOGV << "Packet loss %: " << ratio << "\n";
 	}
 
-	unacked_ids.put(packet.packet_sequence);
+	unacked_ids.put(TimestampedId(packet.packet_sequence, std::chrono::steady_clock::now()));
 
 	if (!fake_send) game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
