@@ -4,19 +4,32 @@
 
 #include <plog/Log.h>
 #include <iostream>
-#include <unordered_map>
 #include <string>
 
 
 SnapshotManager::SnapshotManager() {}
 
+void SnapshotManager::cacheEntities() {
+	cached_entities =
+		std::make_shared<std::unordered_map<unsigned char, std::shared_ptr<Entity>>>(master_snapshot);
+}
+
 bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	if (config::DEBUG) LOGV << "[Snapshot Info]";
 	if (config::DEBUG) LOGV << "[SID]\t" << static_cast<int>(client.server_sequence);
 
+	// TODO:
+	// Why are new_snapshot/last_snapshot shared pointers? I don't see them being shared anywhere.
+	// If I'm not wrong, then we should either stop using sharedptr here or make it so that
+	// different clients do actually share the same Snapshots (better option, we'd save even
+	// more memory).
+
+	// TODO2: Still gotta remove the sharedptr's over here!!!
+
+	if (cached_entities == nullptr) cacheEntities();
+
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
-	//packet.packet_sequence = client.server_sequence; // VERY TEMP!!!!!!!!!!!!
 
 	// Get the latest snapshot acked by the client
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
@@ -27,7 +40,8 @@ bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	}
 
 	// Copy master entity states into our new snapshot
-	new_snapshot->entities = master_snapshot.entities;
+	//new_snapshot->entities = master_snapshot.entities;
+	new_snapshot->entities = cached_entities;
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);
@@ -41,7 +55,7 @@ bool SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 
 	// Iterate over all entities in the master snapshot
 
-	for (auto entity = master_snapshot.entities.begin(); entity != master_snapshot.entities.end(); ++entity) {
+	for (auto entity = master_snapshot.begin(); entity != master_snapshot.end(); ++entity) {
 		if (entity->first == entity_id) {
 			continue; // Don't send the client information about itself
 		}
@@ -55,8 +69,8 @@ bool SnapshotManager::writeDelta(OutPacket& packet, Snapshot* last_snapshot, uns
 			entity->second->serialize(packet); // If last_entity is nullptr, it's guaranteed to be sent again
 		} else {
 			// Find the given entity in last_snapshot
-			auto last_entity_it = last_snapshot->entities.find(entity->first);
-			if (last_entity_it != last_snapshot->entities.end()) {
+			auto last_entity_it = last_snapshot->entities->find(entity->first);
+			if (last_entity_it != last_snapshot->entities->end()) {
 				entity->second->serialize(packet, *last_entity_it->second);
 			} else { // Entity not found
 				entity->second->serialize(packet);

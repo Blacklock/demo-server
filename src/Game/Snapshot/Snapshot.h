@@ -11,7 +11,8 @@
 class Snapshot {
 public:
 	const unsigned short id; // Snapshot packet ID
-	std::unordered_map<unsigned char, std::shared_ptr<Entity>> entities; // Entity IDs/states
+	//std::unordered_map<unsigned char, std::shared_ptr<Entity>> entities;
+	std::shared_ptr<std::unordered_map<unsigned char, std::shared_ptr<Entity>>> entities; // Entity IDs/states
 public:
 	Snapshot(unsigned short id);
 };

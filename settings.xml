@@ -5,7 +5,7 @@
     <Protocol>100100</Protocol>
   </GameServer>
   <Game>
-    <Debug>off</Debug>
+    <Debug>false</Debug>
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>

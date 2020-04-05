@@ -47,7 +47,7 @@ unsigned char Game::createEntity(std::shared_ptr<Entity> entity) {
 	unsigned char id = id_slots.top();
 	id_slots.pop();
 
-	snapshot_manager.master_snapshot.entities[id] = entity;
+	snapshot_manager.master_snapshot[id] = entity;
 
 	return id;
 }
@@ -70,9 +70,9 @@ void Game::removeEntity(unsigned char id) {
 	}
 
 	// Remove the entity from the master snapshot
-	auto player_state = snapshot_manager.master_snapshot.entities.find(id);
-	if (player_state != snapshot_manager.master_snapshot.entities.end()) {
-		snapshot_manager.master_snapshot.entities.erase(player_state->first);
+	auto player_state = snapshot_manager.master_snapshot.find(id);
+	if (player_state != snapshot_manager.master_snapshot.end()) {
+		snapshot_manager.master_snapshot.erase(player_state->first);
 	}
 }
 
@@ -145,6 +145,11 @@ void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 
 void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 	std::vector<std::thread> threads;
+
+	if (connections.size() > 0) { // Create a cached snapshot to be inserted in snapshot buffers
+		snapshot_manager.cacheEntities();
+	}
+
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
 			LOGI << "Connection " << static_cast<int>(conn->second->id) << " has timed out.";

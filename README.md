@@ -19,7 +19,7 @@ Located in [settings.xml](settings.xml).
 |------------------------|-------------------------------------------------------------------------|
 | GameServer/Port        | Specifies the port that the server will be listening on.                |
 | GameServer/Protocol    | The game's protocol ID that clients use to connect.                     |
-| Game/Debug             | Set to on/off. Enabling will print logs in the console.                 |
+| Game/Debug             | Set to true/false.                                                      |
 | Game/MaxConnections    | Maximum amount of connections per game instance.                        |
 | Client/PacketLossCount | Amount of packets to use when calculating outgoing packet loss.         |
 | Client/Timeout         | Time (ms) to wait before timing out the client. Set to 0 to disable.    |
