@@ -39,4 +39,7 @@ public:
 	unsigned char* buffer = nullptr;
 protected:
 	unsigned short buffer_index = 0;
+public:
+	unsigned short getBufferIndex();
+	void setBufferIndex(unsigned short new_index);
 };

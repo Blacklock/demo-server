@@ -103,11 +103,13 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	// Check if the received reliable message is a resend of previous
-	bool unique_message = false;
-	if (packet.reliable_switch == client.client_rel_switch) {
-		unique_message = true;
-		client.client_rel_switch = !client.client_rel_switch;
+	if (packet.reliable_switch != client.client_rel_switch) {
+		packet.setBufferIndex(packet.getBufferIndex() + client.last_reliable_size);
+		return;
 	}
+
+	client.client_rel_switch = !client.client_rel_switch;
+	unsigned short pre_reliable_index = packet.getBufferIndex();
 
 	// Receive an unreliable command
 	ReliableCmd command = packet.read<ReliableCmd>();
@@ -115,12 +117,10 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	case ReliableCmd::PlayerChat:
 	{
 		PlayerChat chat_message = PlayerChat(packet);
-		if (unique_message) {
-			chat_message.fields.entity_id = client.id;
-			auto message = std::make_shared<PlayerChat>(chat_message);
-			for (auto& i_client : connections) {
-				i_client.second->reliable_queue.push(message);
-			}
+		chat_message.fields.entity_id = client.id;
+		auto message = std::make_shared<PlayerChat>(chat_message);
+		for (auto& i_client : connections) {
+			i_client.second->reliable_queue.push(message);
 		}
 		break;
 	}
@@ -128,6 +128,9 @@ void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 		LOGW << "Unknown reliable command";
 		throw std::invalid_argument("Unknown reliable command.");
 	}
+
+	unsigned short post_reliable_index = packet.getBufferIndex();
+	client.last_reliable_size = post_reliable_index - pre_reliable_index;
 
 	receiveMessage(client, packet);
 }

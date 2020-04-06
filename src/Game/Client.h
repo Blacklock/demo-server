@@ -56,6 +56,7 @@ public:
 	// Flip for every new reliable message
 	bool server_rel_switch = 0;
 	bool client_rel_switch = 0;
+	int last_reliable_size; // Size of last received reliable message
 private:
 	std::chrono::steady_clock::time_point last_received;
 	std::chrono::steady_clock::time_point last_reliable_sent;

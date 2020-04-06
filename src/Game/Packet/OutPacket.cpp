@@ -17,14 +17,6 @@ OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch
 	if (packet_type != PacketType::Control) buffer_index += (2 + 2 + 4);
 };
 
-unsigned short OutPacket::getBufferIndex() {
-	return buffer_index;
-}
-
-void OutPacket::setBufferIndex(unsigned short new_index) {
-	buffer_index = new_index;
-}
-
 void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t bitfield) {
 	if (packet_type == PacketType::Control) {
 		LOGE << "Headers cannot be set on control packets";
