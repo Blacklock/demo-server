@@ -165,16 +165,22 @@ void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 		} else {
 			// Simulated outgoing packet loss rate
 			float r = (float)rand() / RAND_MAX;
-			threads.emplace_back(
-				std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
-			);
+			if (config::MULTITHREADING) {
+				threads.emplace_back(
+					std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
+				);
+			} else {
+				sendClientTick(*conn->second.get(), r < config::OUT_LOSS);
+			}
 		
 			++conn;
 		}
 	}
 
-	for (auto& th : threads) { // Wait for all tick threads to finish
-		th.join();
+	if (config::MULTITHREADING) {
+		for (auto& th : threads) { // Wait for all tick threads to finish
+			th.join();
+		}
 	}
 }
 

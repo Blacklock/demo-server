@@ -12,6 +12,7 @@ namespace config {
 
 	// Game
 	extern bool DEBUG;
+	extern bool MULTITHREADING;
 	extern unsigned int MAX_CONNECTIONS;
 
 	// Client

@@ -18,15 +18,9 @@ bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	if (config::DEBUG) LOGV << "[Snapshot Info]";
 	if (config::DEBUG) LOGV << "[SID]\t" << static_cast<int>(client.server_sequence);
 
-	// TODO:
-	// Why are new_snapshot/last_snapshot shared pointers? I don't see them being shared anywhere.
-	// If I'm not wrong, then we should either stop using sharedptr here or make it so that
-	// different clients do actually share the same Snapshots (better option, we'd save even
-	// more memory).
-
-	// TODO2: Still gotta remove the sharedptr's over here!!!
-
 	if (cached_entities == nullptr) cacheEntities();
+
+	// TODO: new/last_snapshot could be unique pointers stored inside the SnapshotBuffer
 
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
@@ -40,7 +34,6 @@ bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	}
 
 	// Copy master entity states into our new snapshot
-	//new_snapshot->entities = master_snapshot.entities;
 	new_snapshot->entities = cached_entities;
 
 	// Add the new snapshot to the client's SnapshotBuffer

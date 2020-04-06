@@ -6,6 +6,7 @@
   </GameServer>
   <Game>
     <Debug>false</Debug>
+    <Multithreading>true</Multithreading>
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
