@@ -10,7 +10,7 @@
 
 
 namespace plog {
-	static std::unordered_map<std::string, Severity> const log_levels = {
+	static std::unordered_map<std::string, Severity> const log_levels = { // ...severityFromString function?
 		{"none", Severity::none},
 		{"fatal", Severity::fatal},
 		{"error", Severity::error},

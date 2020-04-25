@@ -20,8 +20,6 @@ bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 
 	if (cached_entities == nullptr) cacheEntities();
 
-	// TODO: new/last_snapshot could be unique pointers stored inside the SnapshotBuffer
-
 	// Create a new delta-compressed snapshot
 	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
 
