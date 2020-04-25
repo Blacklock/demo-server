@@ -5,6 +5,7 @@ namespace config {
 	// GameServer
 	unsigned short GAME_PORT;
 	unsigned int GAME_PROTOCOL;
+	unsigned int TICKRATE;
 
 	// Game
 	bool DEBUG;
@@ -12,9 +13,9 @@ namespace config {
 	unsigned int MAX_CONNECTIONS;
 
 	// Client
-	unsigned int PACKET_LOSS_COUNT;
 	unsigned int TIMEOUT_MS;
 	unsigned int RELIABLE_RESEND_MS;
+	unsigned int PACKET_LOG_COUNT;
 
 	// Logger
 	std::string SEVERITY;
@@ -38,6 +39,7 @@ void config::load_config(const char* filename) {
 
 	GAME_PORT = static_cast<unsigned short>(std::atoi(game_server.child_value("Port")));
 	GAME_PROTOCOL = std::atoi(game_server.child_value("Protocol"));
+	TICKRATE = std::atoi(game_server.child_value("Tickrate"));
 
 	auto game = doc.select_node("/Settings/Game").node();
 	
@@ -47,9 +49,9 @@ void config::load_config(const char* filename) {
 
 	auto client = doc.select_node("/Settings/Client").node();
 
-	PACKET_LOSS_COUNT = std::atoi(client.child_value("PacketLossCount"));
 	TIMEOUT_MS = std::atoi(client.child_value("Timeout"));
 	RELIABLE_RESEND_MS = std::atoi(client.child_value("ReliableResend"));
+	PACKET_LOG_COUNT = std::atoi(client.child_value("PacketLogCount"));
 
 	auto logger = doc.select_node("/Settings/Logger").node();
 

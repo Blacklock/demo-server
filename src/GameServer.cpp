@@ -29,16 +29,17 @@ void GameServer::createGame() {
 
 void GameServer::startGameLoop() {
 	// TODO: Tickrate in configs
-	using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>; // Tickrate
-	auto nextTick = std::chrono::steady_clock::now() + delta(1);
+	//using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>; // Tickrate
+	std::chrono::seconds delta = std::chrono::seconds(1) / config::TICKRATE;
+	auto next_tick = std::chrono::steady_clock::now() + delta;
 
 	std::unique_lock<std::mutex> lock(mtx);
 
 	while (!stopGameLoop) {
 		tick();
 
-		control.wait_until(lock, nextTick, []{ return false; });
-		nextTick += delta(1);
+		control.wait_until(lock, next_tick, []{ return false; });
+		next_tick += delta;
 	}
 }
 

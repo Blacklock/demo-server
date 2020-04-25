@@ -3,6 +3,7 @@
   <GameServer>
     <Port>12345</Port>
     <Protocol>100100</Protocol>
+    <Tickrate>64</Tickrate>
   </GameServer>
   <Game>
     <Debug>false</Debug>
@@ -10,9 +11,9 @@
     <MaxConnections>4</MaxConnections>
   </Game>
   <Client>
-    <PacketLossCount>1024</PacketLossCount>
     <Timeout>0</Timeout>
     <ReliableResend>100</ReliableResend>
+    <PacketLogCount>128</PacketLogCount>
   </Client>
   <Logger>
     <Severity>info</Severity>

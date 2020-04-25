@@ -31,8 +31,9 @@ void Client::send(OutPacket& packet, bool fake_send) {
 
 	if (unacked_ids.isFull()) {
 		packet_loss_tracker.put(unacked_ids.getLast().id == -1);
-		double ratio = (double)packet_loss_tracker.count(true) / (double)packet_loss_tracker.getSize();
-		LOGV << "Packet loss %: " << ratio << "\n";
+		double ratio = (double)packet_loss_tracker.count(false) / (double)packet_loss_tracker.getSize();
+
+		//LOGV << "Packet loss %: " << ratio << "\n";
 	}
 
 	unacked_ids.put(TimestampedId(packet.packet_sequence, std::chrono::steady_clock::now()));
@@ -95,5 +96,5 @@ void Client::nextReliable() { // Mark reliable message as received
 	reliable_queue.front()->onAck(*this);
 	reliable_queue.pop();
 	send_reliable_instantly = true; // Send next reliable message instantly after this one
-	server_rel_switch = !server_rel_switch; // Flip the reliable sequence
+	server_rel_switch = !server_rel_switch; // Flip our reliable switch
 }

@@ -62,7 +62,7 @@ private:
 	std::chrono::steady_clock::time_point last_reliable_sent;
 	bool send_reliable_instantly = false;
 	
-	CircularBuffer<bool> packet_loss_tracker = CircularBuffer<bool>(config::PACKET_LOSS_COUNT);
+	CircularBuffer<bool> packet_loss_tracker = CircularBuffer<bool>(config::PACKET_LOG_COUNT);
 	CircularBuffer<TimestampedId> unacked_ids = CircularBuffer<TimestampedId>(33);
 	std::set<unsigned short> reliable_ids = std::set<unsigned short>();
 public:

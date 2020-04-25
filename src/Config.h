@@ -3,12 +3,14 @@
 #include "pugixml.hpp"
 #include <iostream>
 #include <string>
+#include <stdint.h>
 
 
 namespace config {
 	// GameServer
 	extern unsigned short GAME_PORT;
 	extern unsigned int GAME_PROTOCOL;
+	extern unsigned int TICKRATE;
 
 	// Game
 	extern bool DEBUG;
@@ -16,9 +18,9 @@ namespace config {
 	extern unsigned int MAX_CONNECTIONS;
 
 	// Client
-	extern unsigned int PACKET_LOSS_COUNT;
 	extern unsigned int TIMEOUT_MS;
 	extern unsigned int RELIABLE_RESEND_MS;
+	extern unsigned int PACKET_LOG_COUNT;
 
 	// Logger
 	extern std::string SEVERITY;

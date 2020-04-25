@@ -104,7 +104,7 @@ void Game::receiveMessage(Client& client, InPacket& packet) {
 void Game::receiveReliableMessage(Client& client, InPacket& packet) {
 	// Check if the received reliable message is a resend of previous
 	if (packet.reliable_switch != client.client_rel_switch) {
-		packet.setBufferIndex(packet.getBufferIndex() + client.last_reliable_size);
+		packet.setBufferIndex(packet.getBufferIndex() + static_cast<unsigned short>(client.last_reliable_size));
 		return;
 	}
 
