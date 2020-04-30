@@ -4,6 +4,7 @@
 #include <string>
 #include <stdint.h>
 
+#include "../../../../src/Game/Packet/Packet.cpp"
 #include "../../../../src/Game/Packet/InPacket.cpp"
 
 

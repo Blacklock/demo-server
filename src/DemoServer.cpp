@@ -48,4 +48,8 @@ int main()
 
 	// Server
 	GameServer server(config::GAME_PORT);
+	
+	/*std::cout << "Press any key to close the program.\n";
+	std::cin.get();
+	std::cin.get();*/
 }
