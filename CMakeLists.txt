@@ -22,7 +22,7 @@ ExternalProject_Add(pugixml
 
 ExternalProject_Add(plog
     GIT_REPOSITORY https://github.com/SergiusTheBest/plog # ... /tree/v1.10
-	GIT_TAG "1.1.0"
+	GIT_TAG "1.1.0" # previous working: 1.1.0, new 1.1.5
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 )
 
