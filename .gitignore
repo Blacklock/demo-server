@@ -1,3 +1,8 @@
+# Custom
+
+builds/
+_builds/
+
 ### Compiled Object files
 *.slo
 *.lo
