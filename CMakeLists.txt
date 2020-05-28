@@ -19,33 +19,31 @@ endif()
 ### Dependencies
 
 include(FetchContent)
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+# set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 FetchContent_Declare(
 	pugixml
 	GIT_REPOSITORY https://github.com/zeux/pugixml.git
 	GIT_TAG	v1.10
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+	# CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 )
 FetchContent_Declare(
 	plog
 	GIT_REPOSITORY https://github.com/SergiusTheBest/plog.git
 	GIT_TAG 1.1.5 # previous working: 1.1.0, new 1.1.5
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    # CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 )
 FetchContent_MakeAvailable(pugixml plog)
 
-### Link
+### Etc
 
-file(GLOB_RECURSE SOURCES # TODO: We shouldn't use GLOB
-	"${PROJECT_SOURCE_DIR}/src/*.h"
-	"${PROJECT_SOURCE_DIR}/src/*.cpp"
-)
+add_subdirectory(src)
 
-add_executable(DemoServer ${SOURCES})
-target_link_libraries(DemoServer PRIVATE pugixml plog::plog) # pugixml::pugixml doesn't want to work!
-
-target_compile_features(DemoServer PRIVATE cxx_std_17)
+# if(MSVC)
+#   target_compile_options(DemoServer PRIVATE /W4 /WX)
+# else()
+#   target_compile_options(DemoServer PRIVATE -Wall -Wextra -pedantic)
+# endif()
 
 ### Source groups (TODO) (can we make them automatically follow the folder structure?)
 
