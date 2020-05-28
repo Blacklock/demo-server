@@ -13,7 +13,7 @@ private:
 	int head = 0;
 	int tail = 0;
 	size_t size = 0;
-	bool full;
+	bool full = false;
 public:
 	CircularBuffer<T>(size_t size) :
 		buffer_size(size),
