@@ -2,6 +2,7 @@
 
 builds/
 _builds/
+/CMakeSettings.json
 
 ### Compiled Object files
 *.slo

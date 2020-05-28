@@ -5,6 +5,7 @@
 #include "Config.h"
 
 #include <plog/Log.h>
+//#include <plog/Severity.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include <iostream>
 
@@ -27,7 +28,7 @@ namespace plog {
 		}
 
 		static util::nstring format(const Record& record) {
-			util::nstringstream ss;
+			util::nostringstream ss;
 			ss << "[" << record.getFunc() << "@" << record.getLine() << "] ";
 			ss << record.getMessage() << "\n";
 			return ss.str();
