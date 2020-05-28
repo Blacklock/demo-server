@@ -17,6 +17,7 @@ Located in [settings.xml](settings.xml).
 
 | Variable               | Description                                                             |
 |------------------------|-------------------------------------------------------------------------|
+| GameServer/Version     | Set automatically by CMake.                                             |
 | GameServer/Port        | Specifies the port that the server will be listening on.                |
 | GameServer/Protocol    | The game's protocol ID that clients use to connect.                     |
 | GameServer/Tickrate    | Amount of ticks per second.                                             |

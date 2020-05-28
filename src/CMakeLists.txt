@@ -11,7 +11,12 @@ set_target_properties(DemoServer PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${
 target_compile_features(DemoServer PRIVATE cxx_std_17)
 
 configure_file(
-	${PROJECT_SOURCE_DIR}/settings.xml
-    ${PROJECT_BINARY_DIR}/bin/settings.xml
-	COPYONLY
+	"${PROJECT_SOURCE_DIR}/settings.xml"
+    "${PROJECT_BINARY_DIR}/bin/settings.xml"
 )
+
+if(MSVC)
+  target_compile_options(DemoServer PRIVATE /W4)
+else()
+  target_compile_options(DemoServer PRIVATE -Wall -Wextra -pedantic)
+endif()

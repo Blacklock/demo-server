@@ -11,7 +11,7 @@
 
 
 GameServer::GameServer(unsigned short port) {
-	LOGI << "Initializing game server";
+	LOGI << "DemoServer v" << config::VERSION;
 
 	// Game initialization
 	srand(static_cast<int>(time(NULL))); // Set seed
