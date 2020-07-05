@@ -8,6 +8,7 @@
 
 namespace config {
 	// GameServer
+	extern std::string VERSION;
 	extern unsigned short GAME_PORT;
 	extern unsigned int GAME_PROTOCOL;
 	extern unsigned int TICKRATE;

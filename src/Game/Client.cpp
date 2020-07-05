@@ -31,8 +31,7 @@ void Client::send(OutPacket& packet, bool fake_send) {
 
 	if (unacked_ids.isFull()) {
 		packet_loss_tracker.put(unacked_ids.getLast().id == -1);
-		double ratio = (double)packet_loss_tracker.count(false) / (double)packet_loss_tracker.getSize();
-
+		//double ratio = (double)packet_loss_tracker.count(false) / (double)packet_loss_tracker.getSize();
 		//LOGV << "Packet loss %: " << ratio << "\n";
 	}
 

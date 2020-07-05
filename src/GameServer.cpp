@@ -11,7 +11,7 @@
 
 
 GameServer::GameServer(unsigned short port) {
-	LOGI << "Initializing game server";
+	LOGI << "DemoServer v" << config::VERSION;
 
 	// Game initialization
 	srand(static_cast<int>(time(NULL))); // Set seed
@@ -19,6 +19,9 @@ GameServer::GameServer(unsigned short port) {
 	createGame(); // Create a single game instance
 	
 	LOGI << "Debug mode: " << (config::DEBUG ? "On" : "Off");
+
+	std::string test = "hello";
+	throw std::exception("program crashes");
 
 	startGameLoop();
 }

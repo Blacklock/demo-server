@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Settings>
   <GameServer>
+    <Version>${PROJECT_VERSION}</Version>
     <Port>12345</Port>
     <Protocol>100100</Protocol>
     <Tickrate>64</Tickrate>

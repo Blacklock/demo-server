@@ -3,6 +3,7 @@
 
 namespace config {
 	// GameServer
+	std::string VERSION;
 	unsigned short GAME_PORT;
 	unsigned int GAME_PROTOCOL;
 	unsigned int TICKRATE;
@@ -37,6 +38,7 @@ void config::load_config(const char* filename) {
 
 	auto game_server = doc.select_node("/Settings/GameServer").node();
 
+	VERSION = as_utf8(game_server.child_value("Version"));
 	GAME_PORT = static_cast<unsigned short>(std::atoi(game_server.child_value("Port")));
 	GAME_PROTOCOL = std::atoi(game_server.child_value("Protocol"));
 	TICKRATE = std::atoi(game_server.child_value("Tickrate"));
