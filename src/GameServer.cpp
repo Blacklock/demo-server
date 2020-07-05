@@ -20,6 +20,9 @@ GameServer::GameServer(unsigned short port) {
 	
 	LOGI << "Debug mode: " << (config::DEBUG ? "On" : "Off");
 
+	std::string test = "hello";
+	throw std::exception("program crashes");
+
 	startGameLoop();
 }
 

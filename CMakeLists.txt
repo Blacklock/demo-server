@@ -14,6 +14,8 @@ project(DemoServer
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_CXX_EXTENSIONS OFF)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+	include(CTest) # only in debug?
 endif()
 
 ### Dependencies
@@ -38,6 +40,11 @@ FetchContent_MakeAvailable(pugixml plog)
 ### Other
 
 add_subdirectory(src)
+
+if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) AND BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 
 ### Source groups (TODO) (can we make them automatically follow the folder structure?)
 
