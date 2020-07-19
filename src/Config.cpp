@@ -46,7 +46,7 @@ void config::load_config(const char* filename) {
 	auto game = doc.select_node("/Settings/Game").node();
 	
 	DEBUG = as_utf8(game.child_value("Debug")) == "true";
-	MULTITHREADING = as_utf8(game.child_value("Debug")) == "true";
+	MULTITHREADING = as_utf8(game.child_value("Multithreading")) == "true";
 	MAX_CONNECTIONS = std::atoi(game.child_value("MaxConnections"));
 
 	auto client = doc.select_node("/Settings/Client").node();

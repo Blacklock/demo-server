@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 
-GameServer::GameServer(unsigned short port) {
+GameServer::GameServer(unsigned short port) : pool(config::MULTITHREADING ? std::thread::hardware_concurrency() : 0) {
 	LOGI << "DemoServer v" << config::VERSION;
 
 	// Game initialization
@@ -19,6 +19,18 @@ GameServer::GameServer(unsigned short port) {
 	createGame(); // Create a single game instance
 	
 	LOGI << "Debug mode: " << (config::DEBUG ? "On" : "Off");
+
+	// (!!!) pool.push only appears to work in the constructor
+	/*pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });
+	pool.push([](int id) { std::cout << id; });*/
 
 	startGameLoop();
 }
@@ -33,7 +45,7 @@ void GameServer::startGameLoop() {
 	//using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>; // Tickrate
 	//auto nextTick = std::chrono::steady_clock::now() + delta(1);
 
-	std::unique_lock<std::mutex> lock(mtx);
+	std::unique_lock<std::mutex> lock(mtx); // removethis
 
 	while (!stopGameLoop) {
 		tick();

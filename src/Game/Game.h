@@ -5,6 +5,7 @@
 #include "Packet/OutPacket.h"
 #include "Client.h"
 #include "Snapshot/SnapshotManager.h"
+#include "../Utils/ctpl.h"
 
 #include <memory>
 #include <vector>
@@ -18,8 +19,9 @@ class GameServer;
 class Game {
 public:
 	Socket* socket;
-	std::unordered_map<long long, std::unique_ptr<Client>> connections;
+	ctpl::thread_pool* pool;
 
+	std::unordered_map<long long, std::unique_ptr<Client>> connections;
 	std::stack<unsigned char> id_slots; // Available entity IDs
 	// Entities waiting for their ID slot to be freed (once all RemoveEntity's have been acked)
 	std::unordered_map<unsigned char, unsigned int> dead_entities;
@@ -31,6 +33,7 @@ private:
 	uint8_t connections_num = 0; // Amount of connected clients
 public:
 	Game(Socket* socket);
+	Game(Socket* socket, ctpl::thread_pool* pool);
 
 	bool connectClient(long long connection, InPacketInfo p_info);
 	unsigned char createEntity(std::shared_ptr<Entity> entity);

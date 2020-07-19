@@ -16,12 +16,16 @@
 #include <stdint.h>
 
 
-Game::Game(Socket* socket) : socket(socket) {
+Game::Game(Socket* socket) : Game(socket, nullptr) {}
+
+Game::Game(Socket* socket, ctpl::thread_pool* pool) : socket(socket), pool(pool) {
 	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
 
 	Server::State server_state = { /*.status=*/ 20 };
 	unsigned char server_id = createEntity(std::make_shared<Server>(server_state));
 	assert(server_id == 0);
+
+	pool->push([](int id) { std::cout << id; });
 }
 
 bool Game::connectClient(long long connection, InPacketInfo p_info) {
@@ -147,8 +151,6 @@ void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 }
 
 void Game::sendTickMessages() { // TODO: Thread pools, maybe?
-	std::vector<std::thread> threads;
-
 	if (connections.size() > 0) { // Create a cached snapshot to be inserted in snapshot buffers
 		snapshot_manager.cacheEntities();
 	}
@@ -169,11 +171,15 @@ void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 			// Simulated outgoing packet loss rate
 			float r = (float)rand() / RAND_MAX;
 			if (config::MULTITHREADING) {
-				threads.emplace_back(
-					std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
-				);
+				//threads.emplace_back(
+				//	std::thread(&Game::sendClientTick, this, std::ref(*conn->second.get()), r < config::OUT_LOSS)
+				//);
+				//pool->push(std::ref(Game::sendClientTick), this, std::ref(*conn->second.get()), r < config::OUT_LOSS);
+				std::cout << "going\n";
+				//pool->push([](int id) { std::cout << id; });
+				//pool->push([](int, Game* game, Client& client, bool fake_send) { std::cout << "going2\n";  game->sendClientTick(client, fake_send); }, this, std::ref(*conn->second.get()), r < config::OUT_LOSS);
 			} else {
-				sendClientTick(*conn->second.get(), r < config::OUT_LOSS);
+				//sendClientTick(*conn->second.get(), r < config::OUT_LOSS);
 			}
 		
 			++conn;
@@ -181,13 +187,14 @@ void Game::sendTickMessages() { // TODO: Thread pools, maybe?
 	}
 
 	if (config::MULTITHREADING) {
-		for (auto& th : threads) { // Wait for all tick threads to finish
-			th.join();
-		}
+		//for (auto& th : threads) { // Wait for all tick threads to finish
+		//	th.join();
+		//}
 	}
 }
 
 void Game::sendClientTick(Client& client, bool fake_send) {
+	std::cout << "started\n";
 	bool send_reliable = client.shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
@@ -206,4 +213,5 @@ void Game::sendClientTick(Client& client, bool fake_send) {
 	if (snapshot_manager.writeSnapshot(client, tick_packet) || send_reliable) {
 		sendMessage(client, tick_packet, fake_send);
 	}
+	std::cout << "ended\n";
 }

@@ -6,6 +6,7 @@
 #include "Game/Client.h"
 #include "Game/Snapshot/Snapshot.h"
 #include "Game/Game.h"
+#include "Utils/ctpl.h"
 #include "Config.h"
 
 #include <memory>
@@ -17,6 +18,7 @@ class GameServer {
 public:
 	static const unsigned int MAX_PACKET_SIZE = 512;
 	unsigned char buffer[MAX_PACKET_SIZE]; // use pointers
+	ctpl::thread_pool pool;
 private:
 	Socket socket = Socket(MAX_PACKET_SIZE);
 	std::condition_variable control;
