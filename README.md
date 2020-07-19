@@ -6,10 +6,11 @@ Demo Server is a multiplayer game server written in C++. The server uses a custo
 
 **Setup (Windows)**
 
-1. Open the project using [Visual Studio 2019](https://visualstudio.microsoft.com)
-2. Install the required NuGet packages
-3. Run the Google Test unit tests with `Test -> Run -> All Tests`
-4. Build & run `DemoServer.exe` to launch the server. A custom Unity game client is being used to interact with the server
+1. Download [Boost 1.71.0](https://www.boost.org/users/history/version_1_71_0.html) 
+2. Optionally open the project using [Visual Studio 2019](https://visualstudio.microsoft.com)
+3. Build the project using CMake
+4. Run the Google Test unit tests with `Test -> Run -> All Tests`
+5. Run `DemoServer.exe` to launch the project. A custom Unity game client is being used to interact with the server
 
 ## Config
 
