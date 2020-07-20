@@ -20,23 +20,15 @@ GameServer::GameServer(unsigned short port) : pool(config::MULTITHREADING ? std:
 	
 	LOGI << "Debug mode: " << (config::DEBUG ? "On" : "Off");
 
-	// (!!!) pool.push only appears to work in the constructor
-	/*pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });
-	pool.push([](int id) { std::cout << id; });*/
-
 	startGameLoop();
 }
 
 void GameServer::createGame() {
-	games.emplace_back(std::make_unique<Game>(&socket));
+	if (config::MULTITHREADING) {
+		games.emplace_back(std::make_unique<Game>(&socket, &pool));
+	} else {
+		games.emplace_back(std::make_unique<Game>(&socket));
+	}
 }
 
 void GameServer::startGameLoop() {
@@ -45,15 +37,12 @@ void GameServer::startGameLoop() {
 	//using delta = std::chrono::duration<std::int64_t, std::ratio<1, 64>>; // Tickrate
 	//auto nextTick = std::chrono::steady_clock::now() + delta(1);
 
-	std::unique_lock<std::mutex> lock(mtx); // removethis
+	std::unique_lock<std::mutex> lock(mtx);
 
 	while (!stopGameLoop) {
 		tick();
-
 		control.wait_until(lock, next_tick, []{ return false; }); // do we even need controls?
-		next_tick += delta; // maybe this should be = steadyclock.now() + delta
-		//control.wait_until(lock, nextTick, [] { return false; });
-		//nextTick += delta(1);
+		next_tick += delta; // TODO: maybe this should be = steadyclock.now() + delta
 	}
 }
 
