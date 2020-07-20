@@ -9,6 +9,7 @@
 #include "Utils/ctpl.h"
 #include "Config.h"
 
+#include <boost/pool/object_pool.hpp>
 #include <memory>
 #include <vector>
 #include <condition_variable>
@@ -18,9 +19,11 @@ class GameServer {
 public:
 	static const unsigned int MAX_PACKET_SIZE = 512;
 	unsigned char buffer[MAX_PACKET_SIZE]; // use pointers
-	ctpl::thread_pool pool;
 private:
 	Socket socket = Socket(MAX_PACKET_SIZE);
+	boost::object_pool<unsigned char[MAX_PACKET_SIZE]> buf_pool; // unnecessary??
+	ctpl::thread_pool t_pool;
+
 	std::condition_variable control;
 	std::mutex mtx;
 	bool stopGameLoop = false;

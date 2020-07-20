@@ -47,8 +47,6 @@ public:
 	SnapshotBuffer snapshots;
 	std::queue<std::shared_ptr<ReliableMessage>> reliable_queue;
 
-	unsigned char buffer[512]; // MAX_PACKET_SIZE (!)
-
 	AckBuffer sequences = AckBuffer(); // Sequences we've received from the client
 	unsigned short server_sequence = 1; // Sequences start at 1
 	unsigned short last_snapshot = 0; // Last snapshot acked by the client

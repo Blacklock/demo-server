@@ -10,7 +10,10 @@
 #include <stdint.h>
 
 
-GameServer::GameServer(unsigned short port) : pool(config::MULTITHREADING ? std::thread::hardware_concurrency() : 0) {
+GameServer::GameServer(unsigned short port) : 
+	buf_pool(1, 0),
+	t_pool(config::MULTITHREADING ? std::thread::hardware_concurrency() : 0) 
+{
 	LOGI << "DemoServer v" << config::VERSION;
 
 	// Game initialization
@@ -25,9 +28,9 @@ GameServer::GameServer(unsigned short port) : pool(config::MULTITHREADING ? std:
 
 void GameServer::createGame() {
 	if (config::MULTITHREADING) {
-		games.emplace_back(std::make_unique<Game>(&socket, &pool));
+		games.emplace_back(std::make_unique<Game>(&socket, &buf_pool, &t_pool));
 	} else {
-		games.emplace_back(std::make_unique<Game>(&socket));
+		games.emplace_back(std::make_unique<Game>(&socket, &buf_pool));
 	}
 }
 
@@ -66,7 +69,7 @@ void GameServer::tick() { // TODO: Multithreading
 }
 
 bool GameServer::processPacket() {
-	InPacketInfo p_info = socket.receivePacket(buffer);
+	InPacketInfo p_info = socket.receivePacket(buffer); // TODO: Multithreading
 
 	if (p_info.buffer_size <= 0) return false; // No more packets to receive
 
