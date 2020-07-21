@@ -31,8 +31,6 @@ public:
 	// Entities waiting for their ID slot to be freed (once all RemoveEntity's have been acked)
 	std::unordered_map<unsigned char, unsigned int> dead_entities;
 private:
-	unsigned char buffer[MAX_PACKET_SIZE];
-
 	SnapshotManager snapshot_manager = SnapshotManager();
 	uint8_t connections_num = 0; // Amount of connected clients
 public:

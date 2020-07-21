@@ -9,10 +9,12 @@
 #include "../Config.h"
 
 #include <plog/Log.h>
+#include <thread>
+#include <atomic>
+#include <future>
 #include <cassert>
 #include <iostream>
 #include <string>
-#include <thread>
 #include <stdint.h>
 
 
@@ -153,10 +155,13 @@ void Game::sendMessage(Client& client, OutPacket& packet, bool fake_send) {
 }
 
 void Game::sendTickMessages() {
+	std::vector<std::future<bool>> task_futures;
+
 	if (connections.size() > 0) { // Create a cached snapshot to be inserted in snapshot buffers
 		snapshot_manager.cacheEntities();
 	}
 
+	//std::atomic<int32_t> tasks_remaining = 0;
 	for (auto conn = connections.begin(); conn != connections.end(); ) { // Loop over clients
 		if (conn->second->hasTimedOut()) {
 			LOGI << "Connection " << static_cast<int>(conn->second->id) << " has timed out.";
@@ -173,13 +178,28 @@ void Game::sendTickMessages() {
 			// Simulated outgoing packet loss rate
 			bool fake_send = ((float)rand() / RAND_MAX) < config::OUT_LOSS;
 			if (config::MULTITHREADING) {
-				// TODO: we must ensure that the Client doesn't get destroyed before sendClientTick finishes
-				t_pool->push([=](int) { this->sendClientTick(*conn->second.get(), fake_send); });
+				//tasks_remaining++;
+				task_futures.emplace_back(
+					t_pool->push([=](int) {
+						this->sendClientTick(*conn->second.get(), fake_send);
+						return true;
+						//tasks_remaining--;
+					})
+				);
+				
+				// TODO: we must ensure that the Client doesn't get destroyed before sendClientTick finishes (shared pointers!)
 			} else {
 				sendClientTick(*conn->second.get(), fake_send);
 			}
-			// because we don't join the threads at the end of the loop, we must ensure they are finished by THE START of the next tick instead??
 			++conn;
+		}
+	}
+
+	// This is a temporary solution to make sure client data isn't modified in-between reads.
+	// We may safely get rid of this once Client has been made completely thread-safe.
+	if (config::MULTITHREADING) {
+		for (auto& f : task_futures)
+			f.wait();
 		}
 	}
 }
@@ -195,11 +215,8 @@ void Game::sendClientTick(Client& client, bool fake_send) {
 		send_reliable ? client.server_rel_switch : false
 	);
 
-	// Write optional reliable message
-	if (send_reliable) client.appendReliable(tick_packet);
-
-	// Write snapshot message
-	tick_packet.write(UnreliableCmd::Snapshot);
+	if (send_reliable) client.appendReliable(tick_packet); // Write optional reliable message
+	tick_packet.write(UnreliableCmd::Snapshot); // Write snapshot message
 
 	// Make sure that the packet isn't empty before sending it
 	if (snapshot_manager.writeSnapshot(client, tick_packet) || send_reliable) {
