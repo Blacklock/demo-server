@@ -92,7 +92,7 @@ bool GameServer::processPacket() {
 		long long connection = ((long long)p_info.sender_address << 32) + p_info.sender_port;
 		bool connection_exists = false;
 
-		std::unordered_map<long long, std::unique_ptr<Client>>::iterator conn;
+		std::unordered_map<long long, std::shared_ptr<Client>>::iterator conn;
 		for (auto&& game : games) {
 			conn = game->connections.find(connection);
 			connection_exists = conn != game->connections.end();

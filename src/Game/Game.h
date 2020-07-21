@@ -26,7 +26,7 @@ public:
 	object_pool* buf_pool;
 	ctpl::thread_pool* t_pool;
 
-	std::unordered_map<long long, std::unique_ptr<Client>> connections;
+	std::unordered_map<long long, std::shared_ptr<Client>> connections;
 	std::stack<unsigned char> id_slots; // Available entity IDs
 	// Entities waiting for their ID slot to be freed (once all RemoveEntity's have been acked)
 	std::unordered_map<unsigned char, unsigned int> dead_entities;
@@ -46,5 +46,5 @@ public:
 	void sendMessage(Client& client, OutPacket& packet, bool fake_send = false);
 
 	void sendTickMessages();
-	void sendClientTick(Client& client, bool fake_send);
+	void sendClientTick(std::shared_ptr<Client> client, bool fake_send);
 };

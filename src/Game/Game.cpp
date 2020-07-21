@@ -37,7 +37,7 @@ bool Game::connectClient(long long connection, InPacketInfo p_info) {
 
 	unsigned char client_id = createEntity(std::make_shared<Player>());
 
-	connections[connection] = std::make_unique<Client>(
+	connections[connection] = std::make_shared<Client>(
 		this, client_id, p_info.sender_address, p_info.sender_port
 	);
 
@@ -181,15 +181,13 @@ void Game::sendTickMessages() {
 				//tasks_remaining++;
 				task_futures.emplace_back(
 					t_pool->push([=](int) {
-						this->sendClientTick(*conn->second.get(), fake_send);
+						this->sendClientTick(conn->second, fake_send);
 						return true;
 						//tasks_remaining--;
 					})
 				);
-				
-				// TODO: we must ensure that the Client doesn't get destroyed before sendClientTick finishes (shared pointers!)
 			} else {
-				sendClientTick(*conn->second.get(), fake_send);
+				sendClientTick(conn->second, fake_send);
 			}
 			++conn;
 		}
@@ -198,28 +196,28 @@ void Game::sendTickMessages() {
 	// This is a temporary solution to make sure client data isn't modified in-between reads.
 	// We may safely get rid of this once Client has been made completely thread-safe.
 	if (config::MULTITHREADING) {
-		for (auto& f : task_futures)
+		for (auto& f : task_futures) {
 			f.wait();
 		}
 	}
 }
 
-void Game::sendClientTick(Client& client, bool fake_send) {
+void Game::sendClientTick(std::shared_ptr<Client> client, bool fake_send) {
 	auto buffer = buf_pool->construct();
 
-	bool send_reliable = client.shouldSendReliable();
+	bool send_reliable = client->shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
 		send_reliable ? PacketType::Reliable : PacketType::Unreliable, 
 		*buffer,
-		send_reliable ? client.server_rel_switch : false
+		send_reliable ? client->server_rel_switch : false
 	);
 
-	if (send_reliable) client.appendReliable(tick_packet); // Write optional reliable message
+	if (send_reliable) client->appendReliable(tick_packet); // Write optional reliable message
 	tick_packet.write(UnreliableCmd::Snapshot); // Write snapshot message
 
 	// Make sure that the packet isn't empty before sending it
-	if (snapshot_manager.writeSnapshot(client, tick_packet) || send_reliable) {
-		sendMessage(client, tick_packet, fake_send);
+	if (snapshot_manager.writeSnapshot(*client.get(), tick_packet) || send_reliable) {
+		sendMessage(*client.get(), tick_packet, fake_send); // TODO: socket sendto() isn't thread-safe, I think
 	}
 }
