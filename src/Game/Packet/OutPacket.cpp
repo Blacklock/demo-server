@@ -6,7 +6,7 @@
 //#include <bitset>
 
 
-OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch) {
+OutPacket::OutPacket(PacketType type, unsigned char buffer_in[], bool rel_switch) { // TODO: move rel_switch into setHeaders
 	buffer = buffer_in;
 	packet_type = type;
 
@@ -26,8 +26,9 @@ void OutPacket::setHeaders(unsigned short sequence, unsigned short ack, uint32_t
 	packet_sequence = sequence;
 
 	unsigned short real_buffer_index = buffer_index;
-	buffer_index = 1;
-
+	buffer_index = 1; // 0
+	
+	//write()
 	write(sequence);
 	write(ack);
 	write(bitfield);

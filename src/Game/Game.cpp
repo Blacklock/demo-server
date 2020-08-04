@@ -10,7 +10,8 @@
 
 #include <plog/Log.h>
 #include <thread>
-#include <atomic>
+#include <mutex>
+#include <shared_mutex>
 #include <future>
 #include <cassert>
 #include <iostream>
@@ -195,6 +196,7 @@ void Game::sendTickMessages() {
 
 	// This is a temporary solution to make sure client data isn't modified in-between reads.
 	// We may safely get rid of this once Client has been made completely thread-safe.
+	// The lock in sendClientTick is useless for now
 	if (config::MULTITHREADING) {
 		for (auto& f : task_futures) {
 			f.wait();
@@ -205,6 +207,9 @@ void Game::sendTickMessages() {
 void Game::sendClientTick(std::shared_ptr<Client> client, bool fake_send) {
 	auto buffer = buf_pool->construct();
 
+	std::shared_lock lock(client->mtx); // Crude solution ... for now
+
+	// TODO: make atomic, move this + packet construction / potentially snapshot write out of the lock
 	bool send_reliable = client->shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
@@ -217,6 +222,7 @@ void Game::sendClientTick(std::shared_ptr<Client> client, bool fake_send) {
 	tick_packet.write(UnreliableCmd::Snapshot); // Write snapshot message
 
 	// Make sure that the packet isn't empty before sending it
+	// Multithreading: THIS PART WRITES, SEPARATE IT
 	if (snapshot_manager.writeSnapshot(*client.get(), tick_packet) || send_reliable) {
 		sendMessage(*client.get(), tick_packet, fake_send); // TODO: socket sendto() isn't thread-safe, I think
 	}

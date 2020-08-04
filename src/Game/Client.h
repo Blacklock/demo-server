@@ -7,6 +7,8 @@
 #include "Message/ReliableMessage.h"
 #include "../Config.h"
 
+#include <atomic>
+#include <shared_mutex>
 #include <chrono>
 #include <queue>
 #include <set>
@@ -23,10 +25,10 @@ struct TimestampedId {
 	TimestampedId(int id, std::chrono::steady_clock::time_point timestamp) : id(id), timestamp(timestamp) {}
 
 	void operator=(const int value) {
-		if (id != -1 && value == -1) { // has been acked
-			//auto time_now = std::chrono::steady_clock::now();
-			//std::cout << "Ping: " << std::chrono::duration_cast<std::chrono::milliseconds>(time_now - timestamp).count() << "ms\n";
-		}
+		/*if (id != -1 && value == -1) { // has been acked
+			auto time_now = std::chrono::steady_clock::now();
+			std::cout << "Ping: " << std::chrono::duration_cast<std::chrono::milliseconds>(time_now - timestamp).count() << "ms\n";
+		}*/
 		id = value;
 	}
 
@@ -45,8 +47,9 @@ public:
 
 	Game* game;
 	SnapshotBuffer snapshots;
-	std::queue<std::shared_ptr<ReliableMessage>> reliable_queue;
 
+	std::shared_mutex mtx;
+	std::queue<std::shared_ptr<ReliableMessage>> reliable_queue;
 	AckBuffer sequences = AckBuffer(); // Sequences we've received from the client
 	unsigned short server_sequence = 1; // Sequences start at 1
 	unsigned short last_snapshot = 0; // Last snapshot acked by the client

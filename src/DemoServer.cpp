@@ -2,6 +2,7 @@
 //
 
 #include "GameServer.h"
+//#include "Temp.cpp"
 #include "Config.h"
 
 #include <plog/Log.h>
@@ -38,6 +39,9 @@ namespace plog {
 
 int main()
 {
+	//start();
+	//return 0;
+
 	// Config
 	config::load_config("settings.xml");
 
