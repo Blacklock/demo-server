@@ -32,14 +32,16 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(pugixml plog)
 
 set(Boost_DEBUG ON)
+#set()
 set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 set(Boost_ARCHITECTURE -x64)
 #set(Boost_LIB_PREFIX lib)
 find_package(
 	Boost
 	1.71.0 EXACT
 	REQUIRED
-	COMPONENTS thread
+	COMPONENTS system thread
 )
 
 ### Other
