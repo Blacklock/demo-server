@@ -48,7 +48,9 @@ public:
 	Game* game;
 	SnapshotBuffer snapshots;
 
-	std::shared_mutex mtx;
+	std::shared_mutex access;
+	//boost::shared_mutex access;
+
 	std::queue<std::shared_ptr<ReliableMessage>> reliable_queue;
 	AckBuffer sequences = AckBuffer(); // Sequences we've received from the client
 	unsigned short server_sequence = 1; // Sequences start at 1

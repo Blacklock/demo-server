@@ -3,10 +3,13 @@
 #include "../Packet/InPacket.h"
 #include "../Packet/OutPacket.h"
 
+#include <shared_mutex>
 #include <memory>
 
 
 class Entity {
+protected:
+	std::shared_mutex access;
 public:
 	virtual void read(InPacket& packet) = 0;
 	virtual void serialize(OutPacket& packet) = 0;

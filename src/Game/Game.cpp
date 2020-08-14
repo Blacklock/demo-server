@@ -8,6 +8,8 @@
 #include "Entity/Server.h"
 #include "../Config.h"
 
+//#include <boost/thread/locks.hpp>
+//#include <boost/thread/shared_mutex.hpp>
 #include <plog/Log.h>
 #include <thread>
 #include <mutex>
@@ -207,9 +209,9 @@ void Game::sendTickMessages() {
 void Game::sendClientTick(std::shared_ptr<Client> client, bool fake_send) {
 	auto buffer = buf_pool->construct();
 
-	std::shared_lock lock(client->mtx); // Crude solution ... for now
+	std::shared_lock r_lock(client->access);
 
-	// TODO: make atomic, move this + packet construction / potentially snapshot write out of the lock
+	// TODO: make atomic maybe, move this + packet construction out of lock
 	bool send_reliable = client->shouldSendReliable();
 
 	OutPacket tick_packet = OutPacket( // We might not need a packet type at all in the future
@@ -221,8 +223,10 @@ void Game::sendClientTick(std::shared_ptr<Client> client, bool fake_send) {
 	if (send_reliable) client->appendReliable(tick_packet); // Write optional reliable message
 	tick_packet.write(UnreliableCmd::Snapshot); // Write snapshot message
 
+	r_lock.unlock();
+	std::unique_lock w_lock(client->access);
+
 	// Make sure that the packet isn't empty before sending it
-	// Multithreading: THIS PART WRITES, SEPARATE IT
 	if (snapshot_manager.writeSnapshot(*client.get(), tick_packet) || send_reliable) {
 		sendMessage(*client.get(), tick_packet, fake_send); // TODO: socket sendto() isn't thread-safe, I think
 	}

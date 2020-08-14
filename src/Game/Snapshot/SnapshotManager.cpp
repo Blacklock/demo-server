@@ -10,6 +10,7 @@
 SnapshotManager::SnapshotManager() {}
 
 void SnapshotManager::cacheEntities() {
+	std::unique_lock lock(cache_access);
 	cached_entities =
 		std::make_shared<std::unordered_map<unsigned char, std::shared_ptr<Entity>>>(master_snapshot);
 }
@@ -17,11 +18,6 @@ void SnapshotManager::cacheEntities() {
 bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 	if (config::DEBUG) LOGV << "[Snapshot Info]";
 	if (config::DEBUG) LOGV << "[SID]\t" << static_cast<int>(client.server_sequence);
-
-	if (cached_entities == nullptr) cacheEntities();
-
-	// Create a new delta-compressed snapshot
-	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
 
 	// Get the latest snapshot acked by the client
 	std::shared_ptr<Snapshot> last_snapshot = client.snapshots.get(client.last_snapshot);
@@ -31,8 +27,15 @@ bool SnapshotManager::writeSnapshot(Client& client, OutPacket& packet) {
 		return false; // No entities changed since last snapshot, don't save it
 	}
 
+	// Create a new delta-compressed snapshot
+	std::shared_ptr<Snapshot> new_snapshot = std::make_shared<Snapshot>(client.server_sequence);
+
 	// Copy master entity states into our new snapshot
-	new_snapshot->entities = cached_entities;
+	if (cached_entities == nullptr) cacheEntities();
+	{
+		std::shared_lock lock(cache_access);
+		new_snapshot->entities = cached_entities;
+	}
 
 	// Add the new snapshot to the client's SnapshotBuffer
 	client.snapshots.add(new_snapshot);

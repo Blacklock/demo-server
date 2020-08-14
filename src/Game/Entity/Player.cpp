@@ -9,7 +9,6 @@ Player::Player() {
 	entity_state = State();
 }
 
-
 Player::Player(State& state) {
 	entity_state = state;
 }
@@ -17,6 +16,8 @@ Player::Player(State& state) {
 void Player::read(InPacket& packet) {
 	// Update the player state
 	unsigned char field_flags = packet.read<unsigned char>();
+
+	std::unique_lock lock(access);
 
 	// Iterate over field flags
 	for (int i = 0; i != (int)Fields::End; i++) {
@@ -43,10 +44,12 @@ void Player::read(InPacket& packet) {
 }
 
 void Player::serialize(OutPacket& packet) {
+	std::shared_lock lock(access);
 	serialize(packet, entity_state, true);
 }
 
 void Player::serialize(OutPacket& packet, Entity& last_entity) {
+	std::shared_lock lock(access);
 	serialize(packet, static_cast<const Player&>(last_entity).entity_state);
 }
 

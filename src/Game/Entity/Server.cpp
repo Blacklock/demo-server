@@ -17,10 +17,12 @@ void Server::read(InPacket&) {
 }
 
 void Server::serialize(OutPacket& packet) {
+	std::shared_lock lock(access);
 	serialize(packet, entity_state, true);
 }
 
 void Server::serialize(OutPacket& packet, Entity& last_entity) {
+	std::shared_lock lock(access);
 	serialize(packet, static_cast<const Server&>(last_entity).entity_state);
 }
 

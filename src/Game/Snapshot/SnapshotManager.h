@@ -5,6 +5,7 @@
 #include "../Client.h"
 #include "Snapshot.h"
 
+#include <shared_mutex>
 #include <unordered_map>
 #include <memory>
 
@@ -15,6 +16,7 @@ public:
 private:
 	//std::shared_ptr<Snapshot> cached_snapshot;
 	std::shared_ptr<std::unordered_map<unsigned char, std::shared_ptr<Entity>>> cached_entities;
+	std::shared_mutex cache_access;
 public:
 	SnapshotManager();
 
