@@ -30,6 +30,7 @@ public:
 public:
 	Server();
 	Server(State& state);
+	Server(const Server& other);
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;
 	void serialize(OutPacket& packet, Entity& last_entity) override;

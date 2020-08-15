@@ -39,6 +39,7 @@ public:
 public:
 	Player();
 	Player(State& state);
+	Player(const Player& other);
 	//Player(const Player&) = default;
 	void read(InPacket& packet) override;
 	void serialize(OutPacket& packet) override;

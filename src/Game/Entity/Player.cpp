@@ -13,6 +13,10 @@ Player::Player(State& state) {
 	entity_state = state;
 }
 
+Player::Player(const Player& other) {
+	entity_state = other.entity_state;
+}
+
 void Player::read(InPacket& packet) {
 	// Update the player state
 	unsigned char field_flags = packet.read<unsigned char>();

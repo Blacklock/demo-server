@@ -12,6 +12,10 @@ Server::Server(State& state) {
 	entity_state = state;
 }
 
+Server::Server(const Server& other) {
+	entity_state = other.entity_state;
+}
+
 void Server::read(InPacket&) {
 	throw std::exception("Entity isn't modifiable by clients.");
 }
