@@ -44,7 +44,7 @@ void GameServer::startGameLoop() {
 
 	while (!stopGameLoop) {
 		tick();
-		control.wait_until(lock, next_tick, []{ return false; }); // do we even need controls?
+		control.wait_until(lock, next_tick, []{ return false; });
 		next_tick += delta; // TODO: maybe this should be = steadyclock.now() + delta
 	}
 }

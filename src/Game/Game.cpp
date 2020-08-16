@@ -26,7 +26,8 @@ Game::Game(Socket* socket, object_pool* buf_pool) : Game(socket, buf_pool, nullp
 Game::Game(Socket* socket, object_pool* buf_pool, ctpl::thread_pool* t_pool) : 
 	socket(socket), 
 	buf_pool(buf_pool), 
-	t_pool(t_pool) 
+	t_pool(t_pool),
+	network_sim(this)
 {
 	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
 
@@ -35,13 +36,13 @@ Game::Game(Socket* socket, object_pool* buf_pool, ctpl::thread_pool* t_pool) :
 	assert(server_id == 0);
 }
 
-bool Game::connectClient(long long connection, InPacketInfo p_info) {
+bool Game::connectClient(long long connection, InPacketInfo p_info, bool simulated_client) {
 	if (connections_num >= config::MAX_CONNECTIONS) return false;
 
 	unsigned char client_id = createEntity(std::make_shared<Player>());
 
 	connections[connection] = std::make_shared<Client>(
-		this, client_id, p_info.sender_address, p_info.sender_port
+		this, client_id, p_info.sender_address, p_info.sender_port, simulated_client
 	);
 
 	std::string join_msg = "Player " + std::to_string(client_id) + " has joined the game.";

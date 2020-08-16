@@ -44,6 +44,7 @@ public:
 	const unsigned char id;
 	const unsigned long ip;
 	const unsigned short port;
+	bool simulated_client;
 
 	Game* game;
 	SnapshotBuffer snapshots;
@@ -69,7 +70,7 @@ private:
 	CircularBuffer<TimestampedId> unacked_ids = CircularBuffer<TimestampedId>(33);
 	std::set<unsigned short> reliable_ids = std::set<unsigned short>();
 public:
-	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port);
+	Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port, bool sc = false);
 	~Client();
 
 	void send(OutPacket& packet, bool fake_send = false);

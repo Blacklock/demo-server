@@ -23,7 +23,7 @@ public:
 	template<class T> std::shared_ptr<T> getEntity(unsigned char id) {
 		std::shared_ptr<T> entity = std::dynamic_pointer_cast<T>(master_snapshot[id]);
 		std::shared_ptr<T> new_entity = std::make_shared<T>(*entity);
-		master_snapshot[id] = new_entity;
+		master_snapshot[id] = new_entity; // TODO: Is this going to cause trouble around multithreaded code later?
 		return new_entity;
 	}
 

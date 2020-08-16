@@ -24,11 +24,11 @@ private:
 	boost::object_pool<unsigned char[MAX_PACKET_SIZE]> buf_pool; // unnecessary??
 	ctpl::thread_pool t_pool;
 
+	std::vector<std::unique_ptr<Game>> games;
+
 	std::condition_variable control;
 	std::mutex mtx;
 	bool stopGameLoop = false;
-
-	std::vector<std::unique_ptr<Game>> games;
 public:
 	GameServer(unsigned short port);
 

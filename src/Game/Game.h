@@ -5,6 +5,7 @@
 #include "Packet/OutPacket.h"
 #include "Client.h"
 #include "Snapshot/SnapshotManager.h"
+#include "NetSim/NetSim.h"
 #include "../Utils/ctpl.h"
 
 #include <boost/pool/object_pool.hpp>
@@ -32,12 +33,13 @@ public:
 	std::unordered_map<unsigned char, unsigned int> dead_entities;
 private:
 	SnapshotManager snapshot_manager = SnapshotManager();
+	NetSim network_sim;
 	uint8_t connections_num = 0; // Amount of connected clients
 public:
 	Game(Socket* socket, object_pool* buf_pool);
 	Game(Socket* socket, object_pool* buf_pool, ctpl::thread_pool* t_pool);
 
-	bool connectClient(long long connection, InPacketInfo p_info);
+	bool connectClient(long long connection, InPacketInfo p_info, bool simulated_client = false);
 	unsigned char createEntity(std::shared_ptr<Entity> entity);
 	void removeEntity(unsigned char id);
 

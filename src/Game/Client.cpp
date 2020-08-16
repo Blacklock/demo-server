@@ -5,12 +5,13 @@
 #include <stdint.h>
 
 
-Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port) :
+Client::Client(Game* client_game, unsigned char id, unsigned long ip, unsigned short port, bool sc) :
 	game(client_game),
 	id(id),
 	ip(ip),
 	port(port),
-	snapshots(SnapshotBuffer(32))
+	snapshots(SnapshotBuffer(32)),
+	simulated_client(sc)
 {
 	bump();
 }
@@ -37,7 +38,8 @@ void Client::send(OutPacket& packet, bool fake_send) {
 
 	unacked_ids.put(TimestampedId(packet.packet_sequence, std::chrono::steady_clock::now()));
 
-	if (!fake_send) game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
+	if (!fake_send && !simulated_client) 
+		game->socket->sendPacket(packet.buffer, packet.getBufferIndex(), ip, port);
 }
 
 void Client::ack(InPacket& packet) {
