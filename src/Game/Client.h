@@ -16,6 +16,8 @@
 #include <iostream>
 
 
+class Game;
+
 struct TimestampedId {
 	int id;
 	std::chrono::steady_clock::time_point timestamp;
@@ -36,8 +38,6 @@ struct TimestampedId {
 		return id == value;
 	}
 };
-
-class Game;
 
 class Client {
 public:

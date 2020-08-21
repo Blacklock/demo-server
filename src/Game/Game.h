@@ -3,9 +3,9 @@
 #include "../Socket.h"
 #include "Packet/InPacket.h"
 #include "Packet/OutPacket.h"
+#include "NetSim/NetSim.h"
 #include "Client.h"
 #include "Snapshot/SnapshotManager.h"
-#include "NetSim/NetSim.h"
 #include "../Utils/ctpl.h"
 
 #include <boost/pool/object_pool.hpp>
@@ -33,7 +33,7 @@ public:
 	std::unordered_map<unsigned char, unsigned int> dead_entities;
 private:
 	SnapshotManager snapshot_manager = SnapshotManager();
-	NetSim network_sim;
+	std::unique_ptr<NetSim> network_sim;
 	uint8_t connections_num = 0; // Amount of connected clients
 public:
 	Game(Socket* socket, object_pool* buf_pool);

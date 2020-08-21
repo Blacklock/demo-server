@@ -26,14 +26,15 @@ Game::Game(Socket* socket, object_pool* buf_pool) : Game(socket, buf_pool, nullp
 Game::Game(Socket* socket, object_pool* buf_pool, ctpl::thread_pool* t_pool) : 
 	socket(socket), 
 	buf_pool(buf_pool), 
-	t_pool(t_pool),
-	network_sim(this)
+	t_pool(t_pool)
 {
 	for (int i = 255; i >= 0; --i) id_slots.push(static_cast<unsigned char>(i));
 
 	Server::State server_state = { /*.status=*/ 20 };
 	unsigned char server_id = createEntity(std::make_shared<Server>(server_state));
 	assert(server_id == 0);
+
+	network_sim = std::make_unique<NetSim>(this, 5);
 }
 
 bool Game::connectClient(long long connection, InPacketInfo p_info, bool simulated_client) {
